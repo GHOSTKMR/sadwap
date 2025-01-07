@@ -4,18 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View PDF Files</title>
-    <!-- Link to Bootstrap CSS (Bootstrap 4 or 5) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        /* Optional: Styling to hide download buttons in browsers (not foolproof) */
         iframe {
             width: 100%;
             height: 60vh;
             border: none;
         }
 
-        /* Styling the links to make them look like buttons */
         .pdf-link {
             display: block;
             margin: 10px 0;
@@ -46,30 +43,27 @@
 
     <div class="row">
         <div class="col-12 col-md-4">
-            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('chicken Burger.pdf')">Chicken Burger</a>
-            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('Grilled Chicken Meal.pdf')">Grilled Chicken Meal</a>
-            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('Grilled Chicken Sandwich.pdf')">Grilled Chicken Sandwich</a>
-            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('Lafino Philly Steak.pdf')">Lafino Philly Steak</a>
-            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('Quotro Chicken.pdf')">Quotro Chicken</a>
-            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf6.pdf')">soon</a>
-            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf7.pdf')">soon</a>
-            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf8.pdf')">soon</a>
-            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf9.pdf')">soon</a>
-            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf10.pdf')">soon</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('chicken%20Burger.pdf')">Chicken Burger</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('Grilled%20Chicken%20Meal.pdf')">Grilled Chicken Meal</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('Grilled%20Chicken%20Sandwich.pdf')">Grilled Chicken Sandwich</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('Lafino%20Philly%20Steak.pdf')">Lafino Philly Steak</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('Quotro%20Chicken.pdf')">Quotro Chicken</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf6.pdf')">Soon</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf7.pdf')">Soon</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf8.pdf')">Soon</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf9.pdf')">Soon</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf10.pdf')">Soon</a>
         </div>
 
-        <!-- PDF Viewer -->
         <div class="col-12 col-md-8">
             <iframe id="pdfViewer" src="" type="application/pdf"></iframe>
         </div>
     </div>
 </div>
 
-<!-- Link to Bootstrap JS (Optional, for Bootstrap components like modals, tooltips, etc.) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Function to change the PDF source in the iframe
     function loadPDF(pdfFile) {
         document.getElementById('pdfViewer').src = pdfFile;
     }
