@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Frozen Ordering Sheet</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #343a40; /* Dark background */
+      color: #f8f9fa; /* Light text color */
+    }
+
+    h2 {
+      color: #fff; /* White title */
+    }
+
+    .table-container {
+      margin-top: 20px;
+    }
+
+    .table th, .table td {
+      vertical-align: middle;
+    }
+
+    .input-boxes {
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    .input-boxes label {
+      font-weight: bold;
+      color: #f8f9fa; /* Light text color for labels */
+    }
+
+    .form-control {
+      background-color: #495057; /* Dark input background */
+      color: #f8f9fa; /* Light text in inputs */
+    }
+
+    .form-select {
+      background-color: #495057; /* Dark select background */
+      color: #f8f9fa; /* Light text in select */
+    }
+
+    .btn-primary {
+      background-color: #007bff; /* Bootstrap primary button color */
+      border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3; /* Darker blue for hover */
+      border-color: #0056b3;
+    }
+
+    .table thead {
+      background-color: #007bff; /* Header background color */
+      color: #fff; /* White text in header */
+    }
+
+    .table-striped tbody tr:nth-child(odd) {
+      background-color: #495057; /* Stripes in table rows */
+    }
+
+    .table-bordered td, .table-bordered th {
+      border: 1px solid #dee2e6; /* Light borders */
+    }
+
+    .d-flex {
+      margin-top: 20px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 767px) {
+      .input-boxes {
+        margin-top: 10px;
+      }
+
+      .table th, .table td {
+        font-size: 0.9rem; /* Smaller font size on mobile */
+      }
+
+      .btn-primary {
+        width: 100%; /* Make the button full-width on small screens */
+      }
+
+      .table-container {
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container-fluid">
+    <h2 class="text-center mt-4">Dynamic Frozen Ordering Sheet</h2>
+
+    <!-- Input Boxes for Average Sales and Sales Forecast -->
+    <div class="input-boxes">
+      <div class="row">
+        <div class="col-md-6">
+          <label for="averageSales">Average Sales:</label>
+          <input type="number" class="form-control" id="averageSales" placeholder="Enter Average Sales" onchange="saveSalesData()">
+        </div>
+        <div class="col-md-6">
+          <label for="salesForecast">Sales Forecast (e.g., 4000 for 3 days):</label>
+          <input type="number" class="form-control" id="salesForecast" placeholder="Enter Sales Forecast" onchange="calculateValues()">
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="table table-bordered table-striped table-responsive">
+        <thead>
+          <tr>
+            <th>Item Name</th>
+            <th>Per Box</th>
+            <th>Average Daily Usage</th>
+            <th>On Hand</th>
+            <th>Receiving</th>
+            <th>Buffer Selector</th>
+            <th>C/1000</th>
+            <th>3 Days</th>
+            <th>4 Days</th>
+          </tr>
+        </thead>
+        <tbody id="inventoryTableBody">
+          <!-- Dynamic rows will be inserted here -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <button class="btn btn-primary" onclick="addNewRow()">Add New Row</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Save Data to LocalStorage
+    function saveData(itemId, rowIndex) {
+      const value = document.getElementById(itemId + "_" + rowIndex).value;
+      let rowsData = JSON.parse(localStorage.getItem("rowsData")) || [];
+      if (!rowsData[rowIndex]) rowsData[rowIndex] = {};
+      rowsData[rowIndex][itemId] = value;
+      localStorage.setItem("rowsData", JSON.stringify(rowsData));
+      calculateValues(rowIndex); // Recalculate after saving
+    }
+
+    // Save Average Sales and Sales Forecast
+    function saveSalesData() {
+      const averageSales = document.getElementById("averageSales").value;
+      const salesForecast = document.getElementById("salesForecast").value;
+
+      // Save values in localStorage
+      localStorage.setItem("averageSales", averageSales);
+      localStorage.setItem("salesForecast", salesForecast);
+    }
+
+    // Load Data from LocalStorage
+    window.onload = function() {
+      // Load sales data
+      const averageSales = localStorage.getItem("averageSales");
+      const salesForecast = localStorage.getItem("salesForecast");
+
+      if (averageSales !== null) {
+        document.getElementById("averageSales").value = averageSales;
+      }
+      if (salesForecast !== null) {
+        document.getElementById("salesForecast").value = salesForecast;
+      }
+
+      // Load stored rows
+      const rowsData = JSON.parse(localStorage.getItem("rowsData")) || [];
+      rowsData.forEach((rowData, index) => {
+        addRow(rowData, index);
+      });
+
+      calculateValues(); // Recalculate on page load
+    };
+
+    // Add new row
+    function addNewRow() {
+      const rowsData = JSON.parse(localStorage.getItem("rowsData")) || [];
+      const newRowIndex = rowsData.length;
+
+      // Add empty row data to localStorage
+      rowsData.push({});
+      localStorage.setItem("rowsData", JSON.stringify(rowsData));
+
+      // Create new row
+      addRow({}, newRowIndex);
+    }
+
+    // Add row to the table
+    function addRow(rowData, index) {
+      const tbody = document.getElementById("inventoryTableBody");
+
+      const row = document.createElement("tr");
+
+      // Add inputs for item name, per box, etc., with the unique index
+      row.innerHTML = `
+        <td><input type="text" class="form-control" id="itemName_Phill_${index}" value="${rowData.itemName_Phill || 'PHILLY BEEF'}" onchange="saveData('itemName_Phill', ${index})"></td>
+        <td><input type="number" class="form-control" id="perBox_Phill_${index}" value="${rowData.perBox_Phill || 40}" onchange="saveData('perBox_Phill', ${index})"></td>
+        <td><input type="number" class="form-control" id="avgDailyUsage_Phill_${index}" value="${rowData.avgDailyUsage_Phill || ''}" onchange="saveData('avgDailyUsage_Phill', ${index})"></td>
+        <td><input type="number" class="form-control" id="onHand_${index}" value="${rowData.onHand || ''}" onchange="calculateValues(${index})"></td>
+        <td><input type="number" class="form-control" id="receiving_${index}" value="${rowData.receiving || ''}" onchange="calculateValues(${index})"></td>
+        <td>
+          <select class="form-select" id="bufferSelector_${index}" onchange="calculateValues(${index})">
+            <option value="0.25" ${rowData.bufferSelector === "0.25" ? "selected" : ""}>25%</option>
+            <option value="0.50" ${rowData.bufferSelector === "0.50" ? "selected" : ""}>50%</option>
+            <option value="0.75" ${rowData.bufferSelector === "0.75" ? "selected" : ""}>75%</option>
+            <option value="1.00" ${rowData.bufferSelector === "1.00" ? "selected" : ""}>100%</option>
+          </select>
+        </td>
+        <td><input type="number" class="form-control" id="c1000_${index}" value="${rowData.c1000 || ''}" readonly></td>
+        <td><input type="number" class="form-control" id="threeDays_${index}" value="${rowData.threeDays || ''}" readonly></td>
+        <td><input type="number" class="form-control" id="fourDays_${index}" value="${rowData.fourDays || ''}" readonly></td>
+      `;
+
+      // Append the row to the table
+      tbody.appendChild(row);
+
+      // Recalculate values for the new row
+      calculateValues(index);
+    }
+
+    // Calculate Values (C/1000, 3 Days, 4 Days, etc.)
+    function calculateValues(rowIndex = 0) {
+      const averageSales = parseFloat(document.getElementById("averageSales").value) || 0;
+      const salesForecast = parseFloat(document.getElementById("salesForecast").value) || 0;
+      const avgDailyUsage = parseFloat(document.getElementById("avgDailyUsage_Phill_" + rowIndex).value) || 0;
+      const bufferPercent = parseFloat(document.getElementById("bufferSelector_" + rowIndex).value) || 0;
+      const onHand = parseFloat(document.getElementById("onHand_" + rowIndex).value) || 0;
+      const receiving = parseFloat(document.getElementById("receiving_" + rowIndex).value) || 0;
+
+      // C/1000 Calculation
+      let c1000 = 0;
+      if (averageSales > 0 && avgDailyUsage > 0) {
+        c1000 = (avgDailyUsage / averageSales) * 1000;
+        document.getElementById("c1000_" + rowIndex).value = c1000.toFixed(2);
+      }
+
+      // Calculate Sales Forecast for 3 and 4 Days
+      const salesForecast3Days = salesForecast * 3;
+      const salesForecast4Days = salesForecast * 4;
+
+      // Calculate Orders for 3 and 4 Days
+      const orderFor3Days = ((c1000 * salesForecast3Days) / 1000) * (1 + bufferPercent) - onHand - receiving;
+      const orderFor4Days = ((c1000 * salesForecast4Days) / 1000) * (1 + bufferPercent) - onHand - receiving;
+
+      // Display the results
+      document.getElementById("threeDays_" + rowIndex).value = orderFor3Days.toFixed(2);
+      document.getElementById("fourDays_" + rowIndex).value = orderFor4Days.toFixed(2);
+    }
+  </script>
+
+</body>
+</html>

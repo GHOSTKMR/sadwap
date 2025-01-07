@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yearly Sales Tracker</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <!-- AutoTable Plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin-top: 30px;
+        }
+        h2 {
+            color: #343a40;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .sales-input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+        }
+        .result-cell {
+            width: 120px;
+            text-align: center;
+            padding: 10px;
+        }
+        #chart-container {
+            margin-top: 30px;
+            width: 100%;
+            height: 400px;
+        }
+        .btn-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .btn-container .btn {
+            width: 48%;
+            margin: 5px 0;
+        }
+        .month-selector {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 768px) {
+            #chart-container {
+                height: 250px;
+            }
+            .btn-container .btn {
+                width: 100%;
+            }
+            .sales-input {
+                width: 100%;
+            }
+        }
+        .table th, .table td {
+            text-align: center;
+        }
+        .table-responsive {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Yearly Sales Tracker</h2>
+        <div class="month-selector">
+            <label for="month-select">Select Month:</label>
+            <select id="month-select" class="form-select w-auto d-inline">
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+            </select>
+        </div>
+        <div id="chart-container">
+            <canvas id="growth-achieved-chart"></canvas>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <h5>Enter Sales, Target, and Last Year Sales</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>Sales</th>
+                                <th>Target</th>
+                                <th>Last Year Sales</th>
+                                <th>Achieved (%)</th>
+                                <th>Growth (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sales-table-body"></tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" class="text-right">Average</td>
+                                <td id="total-achieved">0%</td>
+                                <td id="total-growth">0%</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="btn-container">
+                    <button class="btn btn-success" id="exportPdf">Export to PDF</button>
+                    <button class="btn btn-danger" id="clearAll">Clear All Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    <script>
+        const months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        let currentMonth = "January";
+        const salesData = {};
+        const targetData = {};
+        const lastYearData = {};
+        const achievedData = [];
+        const growthData = [];
+
+        // Load data for the selected month
+        function loadMonthData() {
+            currentMonth = $("#month-select").val();
+
+            salesData[currentMonth] = JSON.parse(localStorage.getItem(`salesData_${currentMonth}`)) || [];
+            targetData[currentMonth] = JSON.parse(localStorage.getItem(`targetData_${currentMonth}`)) || [];
+            lastYearData[currentMonth] = JSON.parse(localStorage.getItem(`lastYearData_${currentMonth}`)) || [];
+
+            generateTable();
+            updateResults();
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem(`salesData_${currentMonth}`, JSON.stringify(salesData[currentMonth]));
+            localStorage.setItem(`targetData_${currentMonth}`, JSON.stringify(targetData[currentMonth]));
+            localStorage.setItem(`lastYearData_${currentMonth}`, JSON.stringify(lastYearData[currentMonth]));
+        }
+
+        // Generate the table rows for 30 days
+        function generateTable() {
+            const tableBody = $("#sales-table-body");
+            tableBody.empty();
+
+            for (let i = 1; i <= 30; i++) {
+                const sales = salesData[currentMonth][i - 1] || '';
+                const target = targetData[currentMonth][i - 1] || '';
+                const lastYear = lastYearData[currentMonth][i - 1] || '';
+
+                const row = `
+                    <tr>
+                        <td>${i}</td>
+                        <td><input type="number" class="sales-input" id="sales-${i}" value="${sales}" placeholder="Sales"></td>
+                        <td><input type="number" class="sales-input" id="target-${i}" value="${target}" placeholder="Target"></td>
+                        <td><input type="number" class="sales-input" id="lastYear-${i}" value="${lastYear}" placeholder="Last Year Sales"></td>
+                        <td class="result-cell" id="achieved-${i}">0%</td>
+                        <td class="result-cell" id="growth-${i}">0%</td>
+                    </tr>
+                `;
+                tableBody.append(row);
+            }
+        }
+
+        // Update the chart and percentages dynamically
+        function updateResults() {
+            let totalAchieved = 0;
+            let totalGrowth = 0;
+
+            for (let i = 1; i <= 30; i++) {
+                const sales = parseFloat($(`#sales-${i}`).val()) || 0;
+                const target = parseFloat($(`#target-${i}`).val()) || 0;
+                const lastYear = parseFloat($(`#lastYear-${i}`).val()) || 0;
+
+                const achieved = target > 0 ? (sales / target) * 100 : 0;
+                const growth = lastYear > 0 ? ((sales - lastYear) / lastYear) * 100 : 0;
+
+                $(`#achieved-${i}`).text(achieved.toFixed(2) + '%');
+                $(`#growth-${i}`).text(growth.toFixed(2) + '%');
+
+                achievedData[i - 1] = achieved;
+                growthData[i - 1] = growth;
+
+                salesData[currentMonth][i - 1] = sales;
+                targetData[currentMonth][i - 1] = target;
+                lastYearData[currentMonth][i - 1] = lastYear;
+
+                totalAchieved += achieved;
+                totalGrowth += growth;
+            }
+
+            $("#total-achieved").text((totalAchieved / 30).toFixed(2) + '%');
+            $("#total-growth").text((totalGrowth / 30).toFixed(2) + '%');
+
+            saveData();
+            updateChart();
+        }
+
+        // Update the chart
+        function updateChart() {
+            const ctx = document.getElementById("growth-achieved-chart").getContext("2d");
+            if (window.chart) {
+                window.chart.destroy();
+            }
+            window.chart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: Array.from({ length: 30 }, (_, i) => `Day ${i + 1}`),
+                    datasets: [
+                        {
+                            label: "Achieved (%)",
+                            data: achievedData,
+                            borderColor: "#28a745",
+                            fill: false,
+                        },
+                        {
+                            label: "Growth (%)",
+                            data: growthData,
+                            borderColor: "#007bff",
+                            fill: false,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value) {
+                                    return value + "%";
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+        }
+
+        // Export table data to PDF
+        async function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+
+            const pdf = new jsPDF();
+            const table = document.querySelector(".table");
+
+            // Use jsPDF AutoTable to extract data and export as PDF
+            pdf.autoTable({
+                html: table,
+                headStyles: { fillColor: [41, 128, 185] },
+                margin: { top: 10 },
+            });
+
+            pdf.save(`${currentMonth}_SalesData.pdf`);
+        }
+
+        // Event Listeners
+        $("#month-select").on("change", loadMonthData);
+        $(document).on("input", ".sales-input", updateResults);
+        $("#clearAll").on("click", () => {
+            salesData[currentMonth] = [];
+            targetData[currentMonth] = [];
+            lastYearData[currentMonth] = [];
+            saveData();
+            generateTable();
+            updateResults();
+        });
+        $("#exportPdf").on("click", exportToPDF);
+
+        // Initialize
+        $(document).ready(() => {
+            loadMonthData();
+        });
+    </script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View PDF Files</title>
+    <!-- Link to Bootstrap CSS (Bootstrap 4 or 5) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Optional: Styling to hide download buttons in browsers (not foolproof) */
+        iframe {
+            width: 100%;
+            height: 60vh;
+            border: none;
+        }
+
+        /* Styling the links to make them look like buttons */
+        .pdf-link {
+            display: block;
+            margin: 10px 0;
+            font-size: 18px;
+            color: #fff;
+            text-decoration: none;
+            background-color: #007bff;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .pdf-link:hover {
+            background-color: #0056b3;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h1 class="display-4">Choose a PDF to View</h1>
+            <p class="lead">Click on any link below to view the PDF document.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-md-4">
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf1.pdf')">View PDF 1</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf2.pdf')">View PDF 2</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf3.pdf')">View PDF 3</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf4.pdf')">View PDF 4</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf5.pdf')">View PDF 5</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf6.pdf')">View PDF 6</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf7.pdf')">View PDF 7</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf8.pdf')">View PDF 8</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf9.pdf')">View PDF 9</a>
+            <a href="javascript:void(0);" class="pdf-link" onclick="loadPDF('pdf10.pdf')">View PDF 10</a>
+        </div>
+
+        <!-- PDF Viewer -->
+        <div class="col-12 col-md-8">
+            <iframe id="pdfViewer" src="" type="application/pdf"></iframe>
+        </div>
+    </div>
+</div>
+
+<!-- Link to Bootstrap JS (Optional, for Bootstrap components like modals, tooltips, etc.) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Function to change the PDF source in the iframe
+    function loadPDF(pdfFile) {
+        document.getElementById('pdfViewer').src = pdfFile;
+    }
+</script>
+
+</body>
+</html>

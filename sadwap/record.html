@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Data</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f8fb;
+    }
+    h1, h2 {
+      color: #2d3e50;
+    }
+    .form-container {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+    .employee-card {
+      background-color: #e9f7fc;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .remove-btn {
+      background-color: #f44336;
+      color: white;
+    }
+    .remove-btn:hover {
+      background-color: #d32f2f;
+    }
+    .camera-container {
+      position: relative;
+      max-width: 100%;
+    }
+    #videoElement {
+      width: 100%;
+      border-radius: 8px;
+      background: #000;
+    }
+    .capture-btn {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+    }
+    .capture-btn:hover {
+      background-color: #218838;
+    }
+    .camera-btns {
+      margin-top: 10px;
+    }
+    #photo {
+      margin-top: 10px;
+      max-width: 100%;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="text-center mb-4">Employee Data</h1>
+
+    <div class="form-container">
+      <!-- Employee Data Form -->
+      <h2>Enter Employee Data</h2>
+      <form id="employeeForm">
+        <div class="form-group">
+          <label for="name">Employee Name</label>
+          <input type="text" class="form-control" id="name" placeholder="Enter name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="position">Position</label>
+          <input type="text" class="form-control" id="position" placeholder="Enter position" required>
+        </div>
+
+        <div class="form-group">
+          <label for="department">Department</label>
+          <input type="text" class="form-control" id="department" placeholder="Enter department" required>
+        </div>
+
+        <div class="form-group">
+          <label for="dateJoined">Date Joined</label>
+          <input type="date" class="form-control" id="dateJoined" required>
+        </div>
+
+        <div class="form-group">
+          <label for="storeNumber">Store Number</label>
+          <input type="text" class="form-control" id="storeNumber" placeholder="Enter store number" required>
+        </div>
+
+        <div class="form-group">
+          <label for="mobileNumber">Mobile Number</label>
+          <input type="tel" class="form-control" id="mobileNumber" placeholder="Enter mobile number" required>
+        </div>
+
+        <div class="form-group">
+          <label for="iqamaNumber">Iqama Number</label>
+          <input type="text" class="form-control" id="iqamaNumber" placeholder="Enter iqama number" required>
+        </div>
+
+        <div class="form-group">
+          <label for="previousStore">Previous Store</label>
+          <input type="text" class="form-control" id="previousStore" placeholder="Enter previous store" required>
+        </div>
+
+        <div class="form-group">
+          <label for="previousManagerName">Previous Manager Name</label>
+          <input type="text" class="form-control" id="previousManagerName" placeholder="Enter previous manager name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="managerMobileNumber">Manager Mobile Number</label>
+          <input type="tel" class="form-control" id="managerMobileNumber" placeholder="Enter manager mobile number" required>
+        </div>
+
+        <div class="form-group">
+          <label for="photo">Employee Photo</label>
+          <div class="camera-container">
+            <video id="videoElement" autoplay></video>
+            <button type="button" class="capture-btn" id="captureBtn">Capture Photo</button>
+          </div>
+          <canvas id="canvas" style="display: none;"></canvas>
+          <img id="photo" src="" alt="Captured photo" />
+        </div>
+
+        <div class="camera-btns">
+          <button type="button" class="btn btn-info" id="startCameraBtn">Start Camera</button>
+          <button type="button" class="btn btn-danger" id="stopCameraBtn" disabled>Stop Camera</button>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Save Employee Data</button>
+      </form>
+    </div>
+
+    <!-- Display Stored Employee Data -->
+    <h2>Stored Employee Data</h2>
+    <div id="employeeDataList"></div>
+  </div>
+
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <script>
+    let currentStream = null;
+
+    // Access the camera and start the video stream
+    const videoElement = document.getElementById('videoElement');
+    const captureBtn = document.getElementById('captureBtn');
+    const photo = document.getElementById('photo');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+
+    const startCameraBtn = document.getElementById('startCameraBtn');
+    const stopCameraBtn = document.getElementById('stopCameraBtn');
+
+    // Function to start the camera
+    function startCamera() {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: true })
+          .then(function(stream) {
+            currentStream = stream;
+            videoElement.srcObject = stream;
+            startCameraBtn.disabled = true;
+            stopCameraBtn.disabled = false;
+          })
+          .catch(function(error) {
+            console.log('Error accessing camera: ', error);
+          });
+      }
+    }
+
+    // Function to stop the camera
+    function stopCamera() {
+      if (currentStream) {
+        const tracks = currentStream.getTracks();
+        tracks.forEach(track => track.stop());
+        videoElement.srcObject = null;
+        startCameraBtn.disabled = false;
+        stopCameraBtn.disabled = true;
+      }
+    }
+
+    // Start camera when "Start Camera" button is clicked
+    startCameraBtn.addEventListener('click', startCamera);
+
+    // Stop camera when "Stop Camera" button is clicked
+    stopCameraBtn.addEventListener('click', stopCamera);
+
+    // Capture photo from the video
+    captureBtn.addEventListener('click', function() {
+      canvas.width = videoElement.videoWidth;
+      canvas.height = videoElement.videoHeight;
+      context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/png');
+      photo.src = dataUrl;
+
+      // Save photo to localStorage
+      localStorage.setItem('employeePhoto', dataUrl);
+    });
+
+    // Function to store employee data in localStorage
+    function saveEmployeeData(employee) {
+      let employees = JSON.parse(localStorage.getItem('employees')) || [];
+      employees.push(employee);
+      localStorage.setItem('employees', JSON.stringify(employees));
+      displayEmployeeData();
+    }
+
+    // Function to remove employee data from localStorage
+    function removeEmployeeData(index) {
+      let employees = JSON.parse(localStorage.getItem('employees')) || [];
+      employees.splice(index, 1);
+      localStorage.setItem('employees', JSON.stringify(employees));
+      displayEmployeeData();
+    }
+
+    // Function to display stored employee data
+    function displayEmployeeData() {
+      const employeeDataList = document.getElementById('employeeDataList');
+      employeeDataList.innerHTML = ''; // Clear existing list
+      const employees = JSON.parse(localStorage.getItem('employees')) || [];
+      employees.forEach((employee, index) => {
+        const employeeDiv = document.createElement('div');
+        employeeDiv.classList.add('employee-card');
+        employeeDiv.innerHTML = `
+          <strong>Name:</strong> ${employee.name}<br>
+          <strong>Position:</strong> ${employee.position}<br>
+          <strong>Department:</strong> ${employee.department}<br>
+          <strong>Date Joined:</strong> ${employee.dateJoined}<br>
+          <strong>Store Number:</strong> ${employee.storeNumber}<br>
+          <strong>Mobile Number:</strong> ${employee.mobileNumber}<br>
+          <strong>Iqama Number:</strong> ${employee.iqamaNumber}<br>
+          <strong>Previous Store:</strong> ${employee.previousStore}<br>
+          <strong>Previous Manager Name:</strong> ${employee.previousManagerName}<br>
+          <strong>Manager Mobile Number:</strong> ${employee.managerMobileNumber}<br>
+          <strong>Photo:</strong><br><img src="${employee.photo}" alt="Employee Photo" style="max-width: 150px; border-radius: 8px;"><br>
+          <button class="btn btn-danger remove-btn" onclick="removeEmployeeData(${index})">Remove</button>
+        `;
+        employeeDataList.appendChild(employeeDiv);
+      });
+    }
+
+    // Form submit event to save employee data
+    document.getElementById('employeeForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const employee = {
+        name: document.getElementById('name').value,
+        position: document.getElementById('position').value,
+        department: document.getElementById('department').value,
+        dateJoined: document.getElementById('dateJoined').value,
+        storeNumber: document.getElementById('storeNumber').value,
+        mobileNumber: document.getElementById('mobileNumber').value,
+        iqamaNumber: document.getElementById('iqamaNumber').value,
+        previousStore: document.getElementById('previousStore').value,
+        previousManagerName: document.getElementById('previousManagerName').value,
+        managerMobileNumber: document.getElementById('managerMobileNumber').value,
+        photo: localStorage.getItem('employeePhoto') || '',
+      };
+
+      saveEmployeeData(employee);
+
+      // Clear the form after saving
+      document.getElementById('employeeForm').reset();
+      photo.src = '';
+    });
+
+    // Load stored employee data on page load
+    displayEmployeeData();
+  </script>
+</body>
+</html>
