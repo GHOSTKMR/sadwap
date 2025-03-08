@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hacker Chat Bot</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 10px;
+        }
+        #chat-container {
+            width: 90%;
+            max-width: 400px;
+            height: 90vh;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.8);
+        }
+        #chat-messages {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+            border-bottom: 2px solid #00ff00;
+            scrollbar-width: thin;
+            scrollbar-color: #00ff00 black;
+        }
+        .message {
+            padding: 8px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            width: 100%;
+        }
+        .user-message {
+            color: red;
+        }
+        .bot-message {
+            color: #00ff00;
+        }
+        .timestamp {
+            font-size: 10px;
+            color: gray;
+            margin-top: 3px;
+        }
+        #input-container {
+            padding: 8px;
+            display: flex;
+            gap: 5px;
+        }
+        #user-input {
+            flex-grow: 1;
+            background: black;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 8px;
+            font-size: 14px;
+            border-radius: 5px;
+        }
+        #send-button {
+            background: #00ff00;
+            border: none;
+            color: black;
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #send-button:hover {
+            background: #00cc00;
+        }
+
+ /* Scroll Buttons */
+        #scroll-buttons {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        #scroll-buttons button {
+            width: 30px;
+            height: 30px;
+            font-size: 16px;
+            border: none;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #scroll-buttons button:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+    
+
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-messages"></div>
+        <div id="input-container">
+            <input type="text" id="user-input" placeholder="Type..." autocomplete="off">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+
+
+        <!-- Scroll Buttons -->
+        <div id="scroll-buttons">
+            <button id="scroll-up">▲</button>
+            <button id="scroll-down">▼</button>
+        </div>
+    </div>
+
+
+    <script>
+        const qaPairs = [
+        
+
+
+   { questionGroup: ["hello", "hi", "hey", "greetings", "hola"], answer: "Hello, user. How can I assist you today?" },
+   { questionGroup: ["how are you", "whats up", "are you fine", " are u good", "how is every thing"], answer: "great, thanks for asking. How can I assist you today?" },
+   { questionGroup: ["what is your purpose", "what is your use", "your use", "your purpose", "what are you", "who are you"], answer: "I am designed to provide information and assistance." },
+  { questionGroup: ["good day", "good morning", "good evening", "good afternoon", "good night"], answer: "Have a wonderful time! user." },
+  { questionGroup: ["bye bye", "bye", "good bye", "see you", "see you soon "], answer: "roger! would try to be more reliable source of information." },
+
+
+
+
+
+ { questionGroup: ["who made you", "who developed you", "where you come from", "what is your origin", "who programmed you","who coded you"], answer: "Hello, user. i am designed and programmed by @ Ghost I.D copyrighted productions " },
+{ questionGroup: ["who is ghost", "who ghost is", "what is ghost", "ghost?", "explain ghost"], answer: "Developer likes to Stay in shadows!" },
+
+
+
+
+
+ { questionGroup: ["kudu", "what is kudu", "kudu brand", "what id kudu brand", "what is kudu company","kudu founded","kudu history"], answer: "Kudu (Arabic: كودو Kūdū) is a fast food chain in Saudi Arabia. It was established in 1988, and has 316 locations in Saudi Arabia and Bahrain with more than 5,000 employees. The first branch opened in Riyadh on 16 April 1988 on 30th street. Kudu serves burgers and sandwiches, which are popular with Saudis, but its specialty is sandwiches. It serves breakfast as well, with some Western-style menu items including waffles.<br>KUDU is the name of an animal which was imported in English dictionary in the 18th century which mean it is a young African deer. The first KUDU restaurant opened in Riyadh, on April 16th1988. During the following 4 years, 7 more locations were added in Riyadh. In 1992, first restaurant outside of Riyadh opened in Jeddah. In 1993, expansion continued in the Eastern province of KSA. During the following years, KUDU has expanded its outlet to cover Abha, Tabuk, Taif, Madinah, and the central province.  In 2004, KUDU has ventured the franchise system and opened franchise outlets inside and outside the kingdom.  In 2005, KUDU signed a franchise agreement to open its second outlet in Sudan.  In 2008, KUDU franchise had opened 2 branches in Jordan. Expansion occurred outside of the Kingdom of Saudi Arabia into other countries in the Gulf region.  In April 2015, Abraaj completed a buyout of KUDU Company for Food and Catering (‘KUDU’) through one of its Funds and in a partnership with TPG Capital (TPG)." },
+
+
+
+
+
+{ questionGroup: ["core values of kudu","core values kudu","what are core values of kudu","core values"], answer: "teamwork,integrity,excellence and customer first" },
+
+{ questionGroup: ["brand message","what is the brand messange","what is the message of the brand"], answer: "taste you can see,bridge the gap between what kudu stands for and young generation." },
+
+{ questionGroup: ["kudu vision","vision of kudu","what is the visison of kudu","vision of the brand"], answer: "to be saudi's leading restaurant company, food everyone loves to eat." },
+
+{ questionGroup: ["kudu mission","mission of kudu", "what is the mission of kudu", "kudu mission", "what's kudu's mission", "kudu's mission statement"], answer: "A people-focused company serving great food and providing a unique guest experience through flawless execution." },
+
+{ questionGroup: ["operations mission of kudu", " the operations mission of kudu", "operations mission", "what's kudu's operations mission", "kudu's operations mission statement"], answer: "run great restaurantsthrough unparalleled operational excellence by providing an exceptional guest experience through ispired well trained, motivated people functiioning at their optimum potential ." },
+
+{ questionGroup: ["pppppp", "what is 6p", "what is pppppp", "do you know pppppp?", "explain ghost"], answer: "prior proper planning prevent poor performance" },
+
+
+{
+  "questionGroup": [
+    "engage",
+    "what is engage",
+    "what is the full form of engage",
+    "what does engage stand for"
+  ],
+  "answer": "Embrace - Act of accepting and supporting new operations platforms & directions.<br>" +
+            "No Nonsense - Don’t accept excuses for low performance, if you accept it, you will fail before you even start!<br>" +
+            "Get Ready - Setup yourself & your team for success, spending 1 minute in planning, will save 4 minutes at execution.<br>" +
+            "Align Your Team - Organize your team and share the goals, plans & purpose with them. You can't do it alone!<br>" +
+            "Get It Done - Determination to win is the key for perfect execution. Don’t accept the good, only EXCELLENT!<br>" +
+            "Evolve - Monitor achieved results, and anticipate for tomorrow, keep sharpening your team and EVOLVE! Today's goals & plans, are not enough for tomorrow."
+},
+{
+  "questionGroup": [
+    "Front counter service steps",
+    "fc service steps",
+    "service steps for front counter",
+    "fc 5 steps of service"
+  ],
+  "answer": "1) Promptly Welcome the Guest - Smile, Eye Contact, Greet, Ask the guest if they wish to have it eat in: 'Will you be dining with us today, sir/madam?'<br>" +
+            "2) Clearly Take the Order - Pay attention and listen carefully, If needed, clarify the order, tell guest about any extra cost, Apply suggestive selling when appropriate by asking one best question, Repeat the order, Total the order.<br>" +
+            "3) Collect Payment Accurately - Politely inform the guest of the total of the order, Count back the change and hand over the receipt, Thank the guest.<br>" +
+            "4) Assemble the Order Correctly - Fill the order quickly and get it right, If there is a delay in production, inform guests about it.<br>" +
+            "5) Deliver the Order Politely - Check the order is correct and complete, If the guest is seating at dining, deliver the food to them politely, As appropriate, offer condiments, napkins, and straws, Smile, thank the guest, and invite the guest to return."
+},
+
+{
+  "questionGroup": [
+    "kudu abbreviations",
+    "kudu terminology",
+    "abbreviations used in Kudu",
+    "terms to know",
+    "kudu abbreviations and terminology"
+  ],
+  "answer": "AC - Average Check (average money guests spend in each transaction in restaurant)<br>" +
+            "ADS - Average Daily Sales (for each restaurant)<br>" +
+            "AFSM - Advanced Food Safety Management Course<br>" +
+            "AMDP - Area Manager Development Program<br>" +
+            "BOGO - Buy One Get One (Free)<br>" +
+            "BOH - Back of House<br>" +
+            "CCP - Critical Control Point<br>" +
+            "CCTV - Closed Circuit Television<br>" +
+            "CER - Cares Excellence Review<br>" +
+            "CFS - Critical Food Safety<br>" +
+            "Comp. Sales - Sales for a restaurant comparing the same period this year and last year<br>" +
+            "Daypart - A distinguishable period (i.e. breakfast, lunch or dinner)<br>" +
+            "DT - Drive Thru<br>" +
+            "E2E - Excellence To Experience (system coaching visit)<br>" +
+            "EBITDA - Earnings Before Interest, Tax, Depreciation and Amortization<br>" +
+            "ESM - Effective Shift Management Course<br>" +
+            "FC - Front Counter<br>" +
+            "FCR - Food Court Restaurant<br>" +
+            "FEFO - First Expired First Out<br>" +
+            "FIFO - First In First Out<br>" +
+            "FOH - Front Of House<br>" +
+            "FS - Free Stand (refers to restaurant type)<br>" +
+            "FS&PQ - Food Safety & Product Quality Course<br>" +
+            "FS/DT - Free Stand/Drive Thru (refers to restaurant type)<br>" +
+            "G&A - General and Administrative Expenses<br>" +
+            "GP - Gross Profit<br>" +
+            "HACCP - Hazard Analysis Critical Control Point<br>" +
+            "HVAC - Heating, Ventilation & Air Conditioning System<br>" +
+            "IL - In-Line Restaurant (refers to restaurant type)<br>" +
+            "IL/DT - In-Line Restaurant/Drive Thru (refers to restaurant type)<br>" +
+            "ISP - In Store Process<br>" +
+            "KDS - Kitchen Display System<br>" +
+            "KPI - Key Performance Indicator<br>" +
+            "KRBP - KUDU Restaurant Business Plan<br>" +
+            "LFL - Like For Like (sales comparison)<br>" +
+            "LSM - Local Store Marketing<br>" +
+            "LTO - Limited Time Offer<br>" +
+            "MBO - Management by Objectives<br>" +
+            "MSDS - Material Safety Data Sheet (describes each chemical type)<br>" +
+            "MTD - Month To Date sales accumulation<br>" +
+            "OCU - Order Confirmation Unit<br>" +
+            "Oz. - Ounce<br>" +
+            "P&L - Profit and Loss Statement<br>" +
+            "PA - Performance Appraisal<br>" +
+            "PD - Pull – Discard<br>" +
+            "PEM - Promotion Execution Manual<br>" +
+            "PHF - Potentially Hazardous Food<br>" +
+            "PHU - Product Holding Unit<br>" +
+            "PLS - Product Level System<br>" +
+            "POP - Point Of Purchase (merchandising tools)<br>" +
+            "POS - Point Of Sale<br>" +
+            "PPE - Personal Protective Equipment<br>" +
+            "PPM - Part Per Million<br>" +
+            "PTD - Pull - Temper/Thaw - Discard<br>" +
+            "QA - Quality Assurance<br>" +
+            "QSC - Quality, Service & Cleanliness<br>" +
+            "QSR - Quick Service Restaurants<br>" +
+            "R&D - Research & Development<br>" +
+            "R&M - Repair & Maintenance<br>" +
+            "RCP - Restaurant Controllable Profit<br>" +
+            "ROI - Return on Investment<br>" +
+            "S2S - Shoulder To Shoulder (personal coaching visit)<br>" +
+            "SOC - Standard Observation Checklist<br>" +
+            "SOP - Standard Operation Procedure<br>" +
+            "SOS - Speed Of Service<br>" +
+            "SWOT - Strengths, Weaknesses, Opportunities, Threats<br>" +
+            "TC - Number of transactions in your restaurant<br>" +
+            "TE - Training Evaluation Visit<br>" +
+            "TNA - Training Needs Analysis<br>" +
+            "U/1000 - Unit per 1000 sales (for order calculations formula)<br>" +
+            "UOM - Unit Of Measure<br>" +
+            "WRG - Work Right Guide Chart (training tool)<br>" +
+            "WRS - Wash - Rinse - Sanitize<br>" +
+            "YTD - Year To Date sales accumulation"
+},
+
+{
+  "questionGroup": [
+    "how to control the shift",
+    "shift controlling",
+    "shift control and execution",
+    "what is shift controlling",
+    "shift control"
+  ],
+  "answer": " Brief your team about the shift plan<br>" +
+            " Ensure enough stocks (Food, wrap, Prep, etc.)<br>" +
+            " Travel path (FOH & BOH)<br>" +
+            " Communicate sides/promo targets to cashiers<br>" +
+            " Assign staff<br>" +
+            " Check Equipment temp. and functioning<br>" +
+            " Enough supplies<br>" +
+            " Enough change<br>" +
+            " WRS and handwashing before the peak (all Staff)<br>" +
+            " Praise & Energize your team<br>" +
+            " Interact with your guests<br>" +
+            " Coach your team<br>" +
+            " Quick travel path (Din-in, CR, etc.)<br>" +
+            " Monitor SOS<br>" +
+            " Pick a KUDU Chicken sandwich for conformance check<br>" +
+            " Give a quick, specific feedback to your team<br>" +
+            " Appreciate your team efforts<br>" +
+            " Ask your team to re-stock the workstations<br>" +
+            " Check the supplies<br>" +
+            " Check shift plan output<br>" +
+            " Travel path (FOH & BOF)<br>" +
+            " Follow up the WRS and hand washing<br>" +
+            " Brief your team, explain what went right and what could be better next peak"
+},
+
+
+
+
+{
+  "questionGroup": [
+    "what is food safety?",
+    "food safety",
+    "what do you know about food safety?",
+    "what are the types of food safety contamination?",
+    "explain food safety contaminants"
+  ],
+  "answer": "Food Safety is making food safe to eat and free of disease-causing agents, such as:<br>" +
+            "<ul>" +
+            "<li><strong>Micro-organisms:</strong><br>Very small, not visible to the naked eye. Examples include Bacteria, viruses, fungi, etc.</li>" +
+            "<li><strong>Chemical:</strong><br>Occurs when food comes into contact with chemicals that can cause chemical food poisoning. Common causes of chemical contamination include:</li>" +
+            "<ul>" +
+            "<li>Cleaning agents</li>" +
+            "<li>Unwashed vegetables & fruits</li>" +
+            "<li>Food containers made from non-safe plastics</li>" +
+            "<li>Pest control items such as fly spray or rat poison</li>" +
+            "<li>Chemicals used in food processing</li>" +
+            "</ul>" +
+            "<li><strong>Physical:</strong><br>Physical contamination refers to food being contaminated by physical objects. Common causes of physical contamination include:</li>" +
+            "<ul>" +
+            "<li>Hair</li>" +
+            "<li>Glass or metals</li>" +
+            "<li>Jewelry</li>" +
+            "<li>Dirt</li>" +
+            "<li>Pests (flies, cockroaches)</li>" +
+            "<li>Fake nails</li>" +
+            "<li>Paper, clips, pencils</li>" +
+            "</ul>" +
+            "</ul>"
+},
+
+
+{
+  "questionGroup": [
+    "wow service",
+    "what is wow service",
+    "explain wow service",
+    "kudu wow",
+    "kudu wow service",
+    "what is wow in kudu",
+    "what does wow mean"
+  ],
+  "answer": "At KUDU, our primary goal is… Make Guests SMILE<br>" +
+            "KUDU WOW Service is…<br>" +
+            "✔ Connect<br>" +
+            "✔ Care<br>" +
+            "✔ Close<br><br>" +
+            
+            "<strong>Connect – Enthusiastic interaction with each guest</strong><br>" +
+            "• Greet the guests with a genuine smile and warm parting phrase.<br>" +
+            "• Say: “Welcome to KUDU, how can I serve you today?”<br>" +
+            "• Suggest new menu items and offers.<br>" +
+            "• Give kids an inflated KUDU balloon.<br>" +
+            "• Table visit to check on meal satisfaction.<br>" +
+            "• Offer a treat using Dessert Cards.<br>" +
+            "• Every touchpoint matters!<br><br>" +
+
+            "<strong>Care – Do every little job with maximum care</strong><br>" +
+            "• Clean dining windows, tables.<br>" +
+            "• Prepare food on grills in front of guests.<br>" +
+            "• Listen carefully to understand guest needs.<br>" +
+            "• Ensure:<br>" +
+            "  - Curb appeal<br>" +
+            "  - Organized & clean dining area<br>" +
+            "  - Neat & tidy uniforms<br>" +
+            "  - Fresh & excellent food<br>" +
+            "  - Clean toilets<br>" +
+            "• Remember guest names and usual orders.<br>" +
+            "• Display a YES attitude all the time.<br>" +
+            "• Anticipate guest needs.<br><br>" +
+
+            "<strong>Close – Seal the deal by making them say 'I‘ll be back!'</strong><br>" +
+            "• Refer to weekly value offers.<br>" +
+            "• Give guests an HD menu & invite them to order via call center.<br>" +
+            "• Invite guests to upcoming KUDU events.<br>" +
+            "• Thank guests and invite them to return:<br>" +
+            "  - 'Thank you, see you again!'<br>" +
+            "  - 'It was a pleasure serving you today!'<br>" +
+            "  - 'Hope to see you soon!'<br>" +
+            "• Ensure food is served in less than 5 minutes.<br>" +
+            "• Offer support to carry meals to the car.<br>" +
+            "• Say: 'Enjoy your meal!'<br>"
+},
+
+{
+  "questionGroup": [
+    "what is guest order taking script",
+    "order taking script",
+    "what you know about order taking",
+    "what is script for order taking",
+    "guest order taking script"
+  ],
+  "answer": "Welcome to KUDU! ….. 'Will you be dining with us today?'<br><br>" +
+            "• Suggest a meal by saying 'Would you like a drink and fries with your sandwich?'<br>" +
+            "• Upsizing: 'Will that be Medium or Large?'<br>" +
+            "• Upgrading fries only if the guest has ordered a meal: 'Would you like cheese on your fries?'<br>" +
+            "• Parting Phrase: 'KUDU cares about your business ….. Thanks for coming!'<br><br>" +
+
+            "<strong>Be Friendly</strong><br>" +
+            "✔ Use the Five Steps as a guide<br>" +
+            "✔ SMILE!!!!!<br>" +
+            "✔ Have Fun<br>" +
+            "✔ Make Your Guests SMILE 😊<br><br>" +
+
+            "<strong>Work Smarter, Not Harder</strong><br>" +
+            "✔ Stock up the front counter<br>" +
+            "✔ Lay out tools, e.g., equipment<br>" +
+            "✔ Ensure you have enough change<br>" +
+            "✔ Show urgency<br>" +
+            "✔ Work quickly but accurately<br>" +
+            "✔ Aim to improve the speed of service each day by just 1 second<br>" +
+            "✔ Aim for WOW service<br><br>" +
+
+            "<strong>Work as a TEAM</strong><br>" +
+            "✔ Use the buddy system<br>" +
+            "✔ Know your target on each shift (e.g., Gourmet Fries, Cake, Salad, etc.)<br>" +
+            "✔ Know the layout of tills<br>"
+},
+
+{
+  "questionGroup": [
+    "what are 10 critical control points?",
+    "haccp",
+    "what is haccp?",
+    "explain haccp",
+    "critical control points",
+    "what is ccp?",
+    "critical control points in food safety",
+    "10 critical control points",
+    "what are ccps in food safety?"
+  ],
+  "answer": "Hazard Analysis Critical Control Point (HACCP) is a systematic approach to food safety that identifies, evaluates, and controls hazards to ensure food is safe to consume. Here are the 10 critical control points (CCPs) in food safety:<br><br>" +
+
+  "<strong>1. Cross-Contamination:</strong><br>" +
+  "• Prevent transfer of contaminants by using clean utensils and following safe food handling procedures.<br>" +
+  "• Ensure food containers and cutting boards are free from cracks and scratches.<br>" +
+  "• Cooked and raw foods must be stored separately to avoid contamination.<br><br>" +
+
+  "<strong>2. Hot Water:</strong><br>" +
+  "• Handwashing sinks must maintain a temperature above 100°F.<br>" +
+  "• Other sinks should maintain a temperature above 120°F.<br><br>" +
+
+  "<strong>3. Time Control:</strong><br>" +
+  "• All condiments and garnishes must have proper holding times and be discarded when expired.<br>" +
+  "• Follow correct product cooking and holding times.<br><br>" +
+
+  "<strong>4. Temperature Control:</strong><br>" +
+  "• Walk-in freezers, chillers, and upright freezers should maintain correct temperatures.<br>" +
+  "• Refrigerated and frozen products must not be left out or re-frozen once thawed.<br>" +
+  "• Only approved thermometers (insertion, air, surface) should be used.<br><br>" +
+
+  "<strong>5. Sanitizing and Handling of Chemicals:</strong><br>" +
+  "• Sanitizer solutions should be between 50-100 ppm.<br>" +
+  "• Spray bottles and sinks must be correctly labeled.<br>" +
+  "• Sanitizer test strips should be available for verification.<br>" +
+  "• Chemicals must be stored at least 30 cm away from food and never above food products.<br><br>" +
+
+  "<strong>6. Hand Washing (Setup, Procedures, Frequency):</strong><br>" +
+  "• Handwashing sinks must be free from obstructions.<br>" +
+  "• Follow proper handwashing techniques: apply antibacterial soap, lather for 20 seconds, rinse, and dry with a disposable towel.<br>" +
+  "• Wash hands at least once per hour or after any interruption in food preparation.<br><br>" +
+
+  "<strong>7. Manager In-Charge Food Safety Compliance:</strong><br>" +
+  "• The manager ensures food safety procedures are followed.<br>" +
+  "• Routine temperature checklists must be maintained.<br>" +
+  "• The manager and team members must have valid food safety certifications.<br><br>" +
+
+  "<strong>8. Rodent/Insect/Pest Control:</strong><br>" +
+  "• No evidence of infestation, rodent droppings, or nesting birds should be present.<br>" +
+  "• A pest control company must conduct monthly inspections or as needed.<br><br>" +
+
+  "<strong>9. Cookout:</strong><br>" +
+  "• Proper cookout procedures must be followed.<br>" +
+  "• Record logs should be maintained for compliance.<br><br>" +
+
+  "<strong>10. Other Critical Safety Measures:</strong><br>" +
+  "• Staff must have up-to-date Health Department cards.<br>" +
+  "• The facility must comply with all safety regulations.<br>" +
+  "• Damaged cans (dented, rusted, swollen) should not be used.<br>" +
+  "• Grease trap pipes and kitchen floor drains must be functional with no backups.<br>"
+},
+
+{
+  "questionGroup": [
+    "parts of thermometer",
+    "what are the parts of a thermometer",
+    "how to use thermometer",
+    "thermometer"
+  ],
+  "answer": "Thermometers are essential tools for ensuring food safety and proper temperature control in food handling. Here are the main parts of a thermometer and how to use them:<br><br>" +
+
+  "<strong>1. Air Probe:</strong><br>" +
+  "• This probe is used to measure the air temperature.<br>" +
+  "• Clip the probe to the environment (e.g., chiller, freezer, room temperature) without touching any surface.<br><br>" +
+
+  "<strong>2. Insertion Probe:</strong><br>" +
+  "• Used for measuring the temperature of food and liquid products.<br>" +
+  "• Insert the probe into the food or liquid (e.g., chicken, beef, vegetables, oil).<br><br>" +
+
+  "<strong>3. Surface Probe:</strong><br>" +
+  "• Used for measuring the temperature of surfaces.<br>" +
+  "• Place the probe fully adjacent to the surface (e.g., char grill, flat grill, PHU).<br><br>" +
+
+  "<strong>Note:</strong><br>" +
+  "• All probes (air, insertion, and surface) must be calibrated every morning before use to ensure accurate readings.<br><br>" +
+
+  "<strong>Thermometer Calibration Procedure:</strong><br>" +
+  "1. Fill a cup with ice to the rim.<br>" +
+  "2. Add 1/3 cup of tap water on top of the ice.<br>" +
+  "3. Stir the mixture of ice and water.<br>" +
+  "4. Immerse the thermometer probe in the icy water.<br>" +
+  "5. Wait until the temperature stabilizes.<br>" +
+  "6. The thermometer reading should be 32°F (0°C)."
+},
+
+{
+  "questionGroup": [
+    "training process",
+    "training",
+    "training procedures",
+    "how to do training"
+  ],
+  "answer": "Training is a crucial process for ensuring new employees are fully equipped to succeed in their roles. Here's an overview of the training process for new joiners:<br><br>" +
+
+  "<strong>1. Prepare:</strong><br>" +
+  "• Set up the workstation for training.<br>" +
+  "• Ensure training tools are ready, such as Academy App, SOPs (Standard Operating Procedures), Excellence Guidebook, Maintenance Manual, and SOCs (Standard Operating Checklists).<br><br>" +
+
+  "<strong>2. Present:</strong><br>" +
+  "• Use Academy videos and the Excellence Guidebook to build interest and introduce key concepts.<br>" +
+  "• Share your personal experiences related to the skills and knowledge being covered.<br>" +
+  "• Describe a situation that highlights the importance of the knowledge or skill being taught.<br>" +
+  "• Conduct a short demonstration to show how tasks should be performed.<br><br>" +
+
+  "<strong>3. Execute:</strong><br>" +
+  "• Observe the service crew as they perform the procedures.<br>" +
+  "• Have the service crew explain the procedures as they go.<br>" +
+  "• Provide support, praise, and coaching to help them improve.<br><br>" +
+
+  "<strong>4. Evaluate:</strong><br>" +
+  "• Check in with employees regularly to assess their understanding and progress.<br>" +
+  "• Ask questions to ensure they comprehend the material.<br>" +
+  "• Certify the service crew if they meet all the requirements and are ready to perform independently."
+},
+{
+  "questionGroup": [
+    "cares",
+    "what is cares",
+    "explain cares",
+    "what do you know about cares"
+  ],
+  "answer": "CARES stands for Consistently Clean, Always Fresh, Restore & Revive, Excellent Food, and Super Service. It is a set of principles designed to ensure high-quality service and safety standards in restaurants. Here's a breakdown of each element of CARES:<br><br>" +
+  
+  "<strong>1. Consistently Clean:</strong><br>" +
+  "• What is it and why is it important?<br>" +
+  "• The Cleaning Management System ensures all areas of the restaurant are maintained with routine procedures, effective cleaning products, and appropriate cleaning equipment.<br>" +
+  "• It helps maintain a clean and safe environment for both guests and the restaurant team, keeping the restaurant attractive, safe, and communicating a sense of pride.<br><br>" +
+  
+  "<strong>2. Always Fresh:</strong><br>" +
+  "• The system ensures that all products, especially sandwiches, are made fresh to maintain quality.<br>" +
+  "• Ensuring safe products are served and maintaining food quality is essential to guest satisfaction.<br><br>" +
+  
+  "<strong>3. Restore & Revive:</strong><br>" +
+  "• Correct thawing procedures are vital for maintaining the safety and quality of food.<br>" +
+  "• Serve hot and fresh products at all times.<br>" +
+  "• Condiments and sauces must be kept at the proper quality.<br>" +
+  "• Ensure that the exterior and dining areas, as well as the kitchen, are safe and well-maintained.<br>" +
+  "• Keep sales aids and equipment maintained and utilized properly.<br><br>" +
+  
+  "<strong>4. Excellent Food:</strong><br>" +
+  "• A calibrated thermometer must be available to check surface temperatures for food safety (FS-Critical).<br>" +
+  "• Ensure that sandwiches and meals are delivered correctly.<br>" +
+  "• Potentially hazardous products should be within food safety temperature standards.<br>" +
+  "• The product cook-out procedure must be followed, and records should be maintained.<br><br>" +
+  
+  "<strong>5. Super Service:</strong><br>" +
+  "• Discover problems before they become complaints.<br>" +
+  "• Look for signs of potential issues, such as negative comments or body language.<br>" +
+  "• Understanding the types of problems guests experience helps you better solve them.<br>" +
+  "• Prevent further complaints by taking corrective actions immediately.<br>" +
+  "• Train service crew on KUDU WOW Service and empower them to resolve guest complaints quickly and hassle-free."
+},
+{
+  "questionGroup": [
+    "allergens in Kudu",
+    "allergens",
+    "kudu allergens"
+  ],
+  "answer": "Kudu serves food that may contain the following allergens:<br><br>" +
+  "<strong>1. Wheat (القمح)</strong><br>" +
+  "2. Celery (الكرفس)<br>" +
+  "3. Lupinus (الترمس)<br>" +
+  "4. Fish (السمك)<br>" +
+  "5. Molluscs (الرخويات)<br>" +
+  "6. Nuts (الجوز)<br>" +
+  "7. Peanuts (الفول السودانى)<br>" +
+  "8. Sesame (السمسم)<br>" +
+  "9. Shellfish (الصدفيات)<br>" +
+  "10. Soya Beans (فول الصويا)<br>" +
+  "11. Sulphites (الكبريت)<br>" +
+  "12. Dairy (الألبان)<br>" +
+  "13. Egg (البيض)<br>" +
+  "14. Mustard (الخردل)"
+},
+{
+  "questionGroup": [
+    "what are safety and security tips",
+    "safety and security tips",
+    "safety tips",
+    "security tips"
+  ],
+  "answer": "Here are some important safety and security tips for the workplace:<br><br>" +
+  
+  "<strong>1. Slips, Trips, and Falls:</strong><br>" +
+  "• Avoid wet floors during busy periods.<br>" +
+  "• ALWAYS use a caution sign when the floor is wet.<br>" +
+  "• Wear shoes with no more than 30 mm heel height.<br><br>" +
+  
+  "<strong>2. Cuts:</strong><br>" +
+  "• Use only a can opener to open cans.<br>" +
+  "• Avoid touching sharp edges.<br>" +
+  "• Report any hazards to your manager.<br><br>" +
+  
+  "<strong>3. Electricity:</strong><br>" +
+  "• Never touch electrical equipment with wet hands.<br>" +
+  "• Never attempt to repair any electrical item.<br><br>" +
+  
+  "<strong>4. Burning:</strong><br>" +
+  "• Never put wet fry baskets into oil.<br>" +
+  "• Always wear protective clothing when handling hot surfaces.<br><br>" +
+  
+  "<strong>5. Heavy Load:</strong><br>" +
+  "• Keep heavy loads close to your body.<br>" +
+  "• To change direction, move your feet. Do not twist your body.<br>" +
+  "• Always make sure you can see clearly over the top of what you're carrying.<br><br>" +
+  
+  "<strong>6. Fire (Fire Extinguisher Use):</strong><br>" +
+  "• Bend your knees while positioning yourself between the fire and the exit.<br>" +
+  "• Pull the safety pin from the fire extinguisher.<br>" +
+  "• Aim at the fire's base (not the smoke).<br>" +
+  "• Squeeze the extinguisher hose until the end.<br><br>" +
+  
+  "<strong>7. To Avoid Robberies:</strong><br>" +
+  "• Do not flaunt or count cash, tips, or bank deposit bags in front of customers.<br>" +
+  "• Don't keep a lot of cash at the POS, skim cash every 2 hours.<br>" +
+  "• Make sure the back door is always closed.<br>" +
+  "• Close DT windows immediately after making transactions.<br>" +
+  "• In case of a robbery, listen and follow the robber's demands. Don’t be a hero."
+},
+{
+  "questionGroup": [
+    "what is managers pathing",
+    "managers pathing",
+    "what do you know about managers pathing",
+    "explain managers pathing",
+    "managers travel path",
+    "what is managers travel path",
+    "travel path"
+  ],
+  "answer": "Manager's Pathing, or Travel Path, is a proactive approach that helps managers stay engaged with their team and restaurant operations. It ensures that issues are identified and resolved before guests notice them. The Travel Path empowers managers to make positive things happen during their shift and maintain high standards throughout the restaurant.<br><br>" +
+
+  "<strong>Key Components of Manager's Travel Path:</strong><br>" +
+  "<strong>1. Exterior Appearance Clean and Inviting:</strong><br>" +
+  "• Ensure the parking lot and landscaping are clean.<br>" +
+  "• Check the Reader Board, POP, and DT Lane (order taker’s tone).<br>" +
+  "• Make sure the restaurant exterior is welcoming and comfortable.<br>" +
+  "• Monitor trash receptacles and dumpster areas.<br><br>" +
+
+  "<strong>2. Dining Room and Front Counter (FC) Guest Experience:</strong><br>" +
+  "• Ensure the dining area is clean and inviting.<br>" +
+  "• Service crew should greet guests promptly and politely.<br>" +
+  "• Monitor team behavior: Service Crew should be attentive and move with urgency.<br>" +
+  "• Make sure sales counters and dining areas are clean and organized.<br><br>" +
+
+  "<strong>3. Restrooms:</strong><br>" +
+  "• Many guests judge the cleanliness of the kitchen by the restrooms.<br>" +
+  "• Ensure restrooms are odor-free, and fixtures are clean.<br>" +
+  "• Keep floors clean, restock soap, toilet tissue, and paper towels.<br>" +
+  "• Make sure mirrors are clean and shining.<br><br>" +
+
+  "<strong>4. Product Quality:</strong><br>" +
+  "• Monitor kitchen stations: ice cream machine, char grill, toasters, fryer station, etc.<br>" +
+  "• Ensure food safety procedures are being followed.<br>" +
+  "• Perform station checks for quality control.<br><br>" +
+
+  "<strong>5. Interactions with Service Crew and Guests:</strong><br>" +
+  "• Interact with service crew and guests to ensure a superior experience.<br>" +
+  "• Provide training, feedback, and praise to the service crew.<br>" +
+  "• Follow up on assigned tasks and duties.<br>" +
+  "• Ensure all safety and operational procedures are followed.<br><br>" +
+
+  "<strong>6. Manager's Role in Guest Experience:</strong><br>" +
+  "• Guests judge the restaurant from the moment they arrive. First impressions matter.<br>" +
+  "• Make sure the curb appeal and restaurant atmosphere make guests feel comfortable and welcomed.<br>" +
+  "• Ensure all aspects of service, from the greeting to the meal presentation, are in line with high standards."
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+];
+
+        function findBestAnswer(question) {
+            const found = qaPairs.find(pair => pair.questionGroup.includes(question.toLowerCase()));
+            return found ? found.answer : "Response not found. Please rephrase your question.";
+        }
+
+        function addMessage(message, isUser = true) {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            const timestamp = new Date().toLocaleTimeString();
+
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            messageDiv.innerHTML = `<span>> ${message}</span><span class="timestamp">${timestamp}</span>`;
+
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function handleUserInput() {
+            const userInput = document.getElementById('user-input');
+            const message = userInput.value.trim();
+            
+            if (message) {
+                addMessage(message, true);
+                setTimeout(() => addMessage(findBestAnswer(message), false), 500);
+                userInput.value = '';
+            }
+        }
+
+        document.getElementById('send-button').addEventListener('click', handleUserInput);
+        document.getElementById('user-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleUserInput();
+        });
+
+        setTimeout(() => addMessage("System initialized... Ready for queries", false), 1000);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+ <script>
+        document.getElementById("scroll-up").addEventListener("click", function () {
+            document.getElementById("chat-messages").scrollBy({ top: -100, behavior: "smooth" });
+        });
+
+        document.getElementById("scroll-down").addEventListener("click", function () {
+            document.getElementById("chat-messages").scrollBy({ top: 100, behavior: "smooth" });
+        });
+    </script>
+</body>
+</html>
