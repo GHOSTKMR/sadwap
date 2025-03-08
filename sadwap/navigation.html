@@ -75,6 +75,36 @@
         .footer a:hover {
             text-decoration: underline;
         }
+
+        /* Chat button popup */
+        .chat-popup {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            display: none;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+        }
+
+        .chat-popup img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+
+        .chat-popup a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .chat-popup a:hover {
+            color: #ffdd57;
+        }
     </style>
 </head>
 
@@ -107,7 +137,7 @@
                         </ul>
                     </li>
 
-  <li class="nav-item dropdown">
+                    <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="orderingDropdown" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
                             Ks-29
@@ -119,18 +149,12 @@
                             <li><a class="dropdown-item" href="#">soon</a></li>
                         </ul>
                     </li>
-
-
-
-                    
-                   
-                        <a class="nav-link" href="https://ghostkmr.github.io/sadwap/sadwap/newsalestracker.html">sales Tracker</a>
-                         <a class="nav-link" href="https://ghostkmr.github.io/sadwap/sadwap/sos.html">speed Of Service</a>
-                         <a class="nav-link" href="https://ghostkmr.github.io/sadwap/sadwap/record.html">Emp. Records</a>
-                         <a class="nav-link" href="https://ghostkmr.github.io/sadwap/sadwap/sopviewer.html">S.O.P</a>
-                        <a class="nav-link" href="https://ghostkmr.github.io/sadwap/sadwap/expirationtracker.html">Expiery Tracker </a>
-                         <a class="nav-link" href="https://ghostkmr.github.io/sadwap/sadwap/dailyclosing.html">Daily Inventory</a>
-                    
+                    <a class="nav-link" href="https://ghostkmr.github.io/sadwap/sadwap/newsalestracker.html">sales Tracker</a>
+                    <a class="nav-link" href="https://ghostkmr.github.io/sadwap/sadwap/sos.html">speed Of Service</a>
+                    <a class="nav-link" href="https://ghostkmr.github.io/sadwap/sadwap/record.html">Emp. Records</a>
+                    <a class="nav-link" href="https://ghostkmr.github.io/sadwap/sadwap/sopviewer.html">S.O.P</a>
+                    <a class="nav-link" href="https://ghostkmr.github.io/sadwap/sadwap/expirationtracker.html">Expiery Tracker </a>
+                    <a class="nav-link" href="https://ghostkmr.github.io/sadwap/sadwap/dailyclosing.html">Daily Inventory</a>
                 </ul>
             </div>
         </div>
@@ -144,10 +168,22 @@
         </div>
     </section>
 
-  
+    <!-- Chat Popup -->
+    <div id="chat-popup" class="chat-popup">
+        <a href="chatbot.html">
+            <img src="chat-icon.png" alt="Chat Icon"> You can have a chat with your professional assistant
+        </a>
+    </div>
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript to show the chat popup on page load -->
+    <script>
+        window.onload = function() {
+            document.getElementById("chat-popup").style.display = "block";
+        };
+    </script>
 </body>
 
 </html>
