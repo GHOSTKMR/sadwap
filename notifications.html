@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Notification Clock</title>
+    <!-- Bootstrap CSS (latest version) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #111;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .clock-container {
+            background-color: #222;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .clock {
+            font-size: 3.5rem;
+            letter-spacing: 1.5px;
+            color: #00d1b2;
+        }
+
+        #notification {
+            font-size: 1.2rem;
+            margin-top: 20px;
+            color: #f39c12;
+            text-align: center;
+        }
+
+        .badge {
+            background-color: #ff4757;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 576px) {
+            .clock {
+                font-size: 2.5rem;
+            }
+            #notification {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="clock-container">
+            <h1 class="text-white">Digital Notification Clock</h1>
+            <div id="time" class="clock"></div>
+            <div id="notification">
+                <span class="badge">No Orders Today</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (latest version) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Get the current date
+        const today = new Date();
+        const dayOfWeek = today.getDay(); // 0-6, Sunday-Saturday
+
+        // Set notification message based on the day of the week
+        function updateNotification() {
+            let notificationMessage = "";
+            let badgeClass = "badge"; // Default "no orders" badge class
+
+            // Order and delivery information based on days
+            if (dayOfWeek === 0) { // Sunday
+                notificationMessage = "Today is your accessories and bread ordering! You will receive them on Tuesday and Wednesday.";
+            } else if (dayOfWeek === 1) { // Monday
+                notificationMessage = "Today is your vegetable ordering! You will receive it on Thursday.";
+            } else if (dayOfWeek === 2) { // Tuesday
+                notificationMessage = "Today is your accessories ordering! You will receive it on Thursday.";
+            } else if (dayOfWeek === 3) { // Wednesday
+                notificationMessage = "Today is your vegetable ordering! You will receive it on Sunday. Also, your frozen items ordering today will arrive on Saturday.";
+            } else if (dayOfWeek === 4) { // Thursday
+                notificationMessage = "Today is your vegetable ordering! You will receive it on Sunday.";
+            } else if (dayOfWeek === 5) { // Friday
+                notificationMessage = "No orders today!";
+                badgeClass += " bg-secondary"; // For "No orders today"
+            } else if (dayOfWeek === 6) { // Saturday
+                notificationMessage = "Today is your frozen items and vegetable ordering! You will receive them on Monday and Tuesday.";
+            }
+
+            // Update the notification text and apply the appropriate badge class
+            document.getElementById("notification").innerHTML = `<span class="${badgeClass}">${notificationMessage}</span>`;
+        }
+
+        // Update the current time every second
+        function updateClock() {
+            const currentTime = new Date();
+            const hours = currentTime.getHours().toString().padStart(2, '0');
+            const minutes = currentTime.getMinutes().toString().padStart(2, '0');
+            const seconds = currentTime.getSeconds().toString().padStart(2, '0');
+
+            const timeString = `${hours}:${minutes}:${seconds}`;
+
+            document.getElementById("time").innerText = timeString;
+        }
+
+        // Initialize
+        updateNotification();
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+
+</body>
+</html>
