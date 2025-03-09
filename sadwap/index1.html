@@ -14,8 +14,8 @@
     <style>
         /* Background color */
         body {
-            background-color: black; /* Set background to black */
-            color: white; /* Text color to white for better visibility */
+            background-color: black;
+            color: white;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -38,7 +38,7 @@
         }
 
         .login-container:hover {
-            transform: perspective(800px) rotateX(0deg); /* Hover effect for a smooth 3D pop */
+            transform: perspective(800px) rotateX(0deg);
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
         }
 
@@ -165,26 +165,26 @@
         <div class="text-center mt-3">
             <p>Contact the developer:</p>
             <div class="social-icons d-flex justify-content-center gap-3 mt-3">
-               <!-- WhatsApp Icon -->
+                <!-- WhatsApp Icon -->
                 <a href="https://wa.me/+916006476187" target="_blank" class="text-success">
                     <i class="bi bi-whatsapp fs-3"></i>
                 </a>
 
                 <!-- Developer Icon -->
                 <a href="https://ghostkmr.github.io/sadwap/sadwap/aboutdeveloper.html" target="_blank" class="text-primary">
-                    <i class="fas fa-user-gear fs-3"></i> <!-- Developer Icon -->
+                    <i class="fas fa-user-gear fs-3"></i>
                 </a>
 
                 <!-- Video Icon -->
                 <a href="#" data-bs-toggle="modal" data-bs-target="#videoModal" class="text-danger">
-                    <i class="fas fa-video fs-3"></i> <!-- Video Icon -->
+                    <i class="fas fa-video fs-3"></i>
                 </a>
             </div>
         </div>
     </div>
 
     <!-- Notification Icon (acting as a hyperlink) -->
-    <a href="href="https://ghostkmr.github.io/sadwap/notifications.html" class="notif-icon" title="Notifications">
+    <a href="https://ghostkmr.github.io/sadwap/notifications.html" class="notif-icon" title="Notifications">
         <i class="fas fa-bell"></i>
     </a>
 
@@ -214,26 +214,19 @@
             const passwordInput = document.getElementById('password');
             const errorMessage = document.getElementById('error-message');
 
-            // Load saved password (if any) when the page is reloaded
             passwordInput.value = localStorage.getItem('savedPassword') || '';
 
-            // Predefined correct password (for demonstration purposes)
-            const correctPassword = "ghost123"; // Change this to your desired password
+            const correctPassword = "ghost123";
 
-            // Save credentials on form submit
             document.getElementById('loginForm').addEventListener('submit', (event) => {
-                event.preventDefault(); // Prevent page reload
+                event.preventDefault();
                 const password = passwordInput.value;
 
-                // Check if the entered password matches the correct password
                 if (password === correctPassword) {
-                    // Save password to localStorage
                     localStorage.setItem('savedPassword', password);
-
-                    // Redirect to the next page (for example, dashboard.html)
                     window.location.href = 'https://ghostkmr.github.io/sadwap/sadwap/navigation.html';
                 } else {
-                    errorMessage.style.display = 'block'; // Show error message
+                    errorMessage.style.display = 'block';
                 }
             });
         });
