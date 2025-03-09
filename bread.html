@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bun Ordering Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #fff;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffcc00; /* Highlighted title color */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        label {
+            font-size: 14px;
+            color: yellow; /* Yellow color for labels */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Subtle shadow for labels */
+        }
+        .form-control {
+            background-color: #444;
+            color: #fff;
+            border: 1px solid #666;
+            border-radius: 4px;
+        }
+        .form-control:focus {
+            background-color: #555;
+            color: #fff;
+            box-shadow: 0 0 5px #ffcc00;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+        td {
+            background-color: #222;
+            border: 1px solid #444;
+        }
+        button {
+            background-color: #ffcc00;
+            color: #121212;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Bun Ordering kS-29</h1>
+
+<div class="card bg-dark text-light p-3">
+    <div class="row g-3">
+        <div class="col-12 col-md-6">
+            <label for="avgSales">Average Daily Sales</label>
+            <input 
+                type="number" 
+                id="avgSales" 
+                class="form-control form-control-sm" 
+                value="1000" 
+                oninput="calculateOrders()" 
+                step="any"
+            >
+        </div>
+        <div class="col-12 col-md-6">
+            <label for="salesForecast">Sales Forecast</label>
+            <input 
+                type="number" 
+                id="salesForecast" 
+                class="form-control form-control-sm" 
+                value="10000" 
+                oninput="calculateOrders()" 
+                step="any"
+            >
+        </div>
+    </div>
+</div>
+
+<table class="table table-dark table-striped table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>Item Code</th>
+            <th>Item Name</th>
+            <th>Avg Daily</th>
+            <th>On Hand</th>
+            <th>Receiving</th>
+            <th>Buffer</th>
+            <th>Total</th>
+            <th>Order (Pcs)</th>
+            <th>Order (Pkts)</th>
+            <th>C/1K</th>
+        </tr>
+    </thead>
+    <tbody id="itemsTable">
+        <!-- Rows will be added dynamically -->
+    </tbody>
+</table>
+
+<button onclick="exportToExcel()">Export to Excel</button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const items = [
+        { code: '110021', name: 'Steak Bread Normal', avg: 160, piecesPerPacket: 4 },
+        { code: '110022', name: 'Steak Bread Brown', avg: 20, piecesPerPacket: 4 },
+        { code: '110023', name: 'Big Bun', avg: 42, piecesPerPacket: 6 },
+        { code: '110024', name: 'Small Bun', avg: 30, piecesPerPacket: 6 },
+        { code: '110027', name: 'Kiddie Bread', avg: 60, piecesPerPacket: 4 },
+        { code: '110028', name: 'Crouton Bread', avg: 30, piecesPerPacket: 15 },
+        { code: '110087', name: 'Kudu Small Bun', avg: 6, piecesPerPacket: 1 },
+        { code: '110088', name: 'Riyadh White Bread', avg: 216, piecesPerPacket: 18 },
+        { code: '110133', name: 'Kudu Potato Bun', avg: 48, piecesPerPacket: 6 },
+        { code: '110141', name: 'Multicereal', avg: 144, piecesPerPacket: 18 },
+        { code: '110146', name: 'Potato Steak Bread', avg: 20, piecesPerPacket: 4 }
+    ];
+
+    const tableBody = document.getElementById('itemsTable');
+
+    // Generate table rows
+    items.forEach((item, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${item.code}</td>
+            <td>${item.name}</td>
+            <td><input type="number" id="avg${index}" class="form-control form-control-sm" value="${item.avg}" oninput="calculateOrders()"></td>
+            <td><input type="number" id="onHand${index}" class="form-control form-control-sm" oninput="calculateOrders()"></td>
+            <td><input type="number" id="receiving${index}" class="form-control form-control-sm" oninput="calculateOrders()"></td>
+            <td>
+                <select id="buffer${index}" class="form-control form-control-sm" oninput="calculateOrders()">
+                    <option value="0">0%</option>
+                    <option value="0.25">25%</option>
+                    <option value="0.5">50%</option>
+                    <option value="0.75">75%</option>
+                    <option value="1">100%</option>
+                </select>
+            </td>
+            <td id="totalOnHand${index}">0</td>
+            <td id="toOrder${index}">0</td>
+            <td id="toOrderPackets${index}">0</td>
+            <td id="c1k${index}">0</td>
+        `;
+        tableBody.appendChild(row);
+    });
+
+    function calculateOrders() {
+        const avgSales = parseFloat(document.getElementById('avgSales').value) || 1000;
+        const salesForecast = parseFloat(document.getElementById('salesForecast').value) || 10000;
+
+        items.forEach((item, index) => {
+            const avg = parseFloat(document.getElementById(`avg${index}`).value) || item.avg;
+            const onHand = parseFloat(document.getElementById(`onHand${index}`).value) || 0;
+            const receiving = parseFloat(document.getElementById(`receiving${index}`).value) || 0;
+            const buffer = parseFloat(document.getElementById(`buffer${index}`).value) || 0;
+
+            const totalOnHand = onHand + receiving;
+            const c1k = (avg / avgSales) * 1000;
+            const forecastOrder = c1k * (salesForecast / 1000);
+            const bufferQty = forecastOrder * buffer;
+            const toOrder = Math.max(0, forecastOrder - totalOnHand + bufferQty);
+            const packets = Math.ceil(toOrder / item.piecesPerPacket);
+
+            document.getElementById(`totalOnHand${index}`).innerText = totalOnHand.toFixed(2);
+            document.getElementById(`c1k${index}`).innerText = c1k.toFixed(2);
+            document.getElementById(`toOrder${index}`).innerText = toOrder.toFixed(2);
+            document.getElementById(`toOrderPackets${index}`).innerText = packets;
+        });
+    }
+
+    function exportToExcel() {
+        let csvContent = "data:text/csv;charset=utf-8,Item Code,Item Name,Pcs to Order\n";
+        items.forEach((item, index) => {
+            const toOrder = document.getElementById(`toOrder${index}`).innerText;
+            csvContent += `${item.code},${item.name},${toOrder}\n`;
+        });
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "bun_order.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    calculateOrders();
+</script>
+</body>
+</html>
