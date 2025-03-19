@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Location Distance Chart - Kudu KS 29 Jazan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script> <!-- SheetJS for Excel Export -->
+    <style>
+        body { background-color: #f8f9fa; }
+        .container { margin-top: 20px; }
+        #chart-container { width: 100%; max-width: 900px; margin: auto; }
+        h2 { text-align: center; font-weight: bold; margin-bottom: 20px; }
+        .btn-container { text-align: right; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="btn-container">
+        <button class="btn btn-primary" onclick="toggleLanguage()">🌍 Translate</button>
+        <button class="btn btn-success" onclick="exportToExcel()">📥 Export to Excel</button>
+    </div>
+
+    <h2 id="heading">Location Distance Chart from the Store Kudu KS 29 Jazan</h2>
+
+    <div id="chart-container">
+        <canvas id="distanceChart"></canvas>
+    </div>
+
+    <input type="text" id="searchInput" class="form-control mt-4 mb-3" placeholder="Search for a location..." onkeyup="filterTable()">
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th id="locationHeader">Location</th>
+                    <th id="distanceHeader">Distance (km)</th>
+                </tr>
+            </thead>
+            <tbody id="locationsTable">
+                <!-- Table Data will be added dynamically -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    let isArabic = false;
+
+    const locations = [
+        { name_en: "EL OMIS HOSPITAL", name_ar: "مستوصف الأوميس - لا يوجد توصيل", distance: 5.3 },
+        { name_en: "Mokhatat king fahad", name_ar: "مخطط الملك فهد - لا يوجد توصيل", distance: 18.8 },
+        { name_en: "Mokhatat Al Mohamadeia", name_ar: "مخطط المحمدية - لا يوجد توصيل", distance: 3.8 },
+        { name_en: "MokhtatIbn al-Haytham", name_ar: "مخطط الحسن بن الهيثم - لا يوجد توصيل", distance: 12.1 },
+        { name_en: "al maabooj", name_ar: "قرية المعبوج", distance: 9.6 },
+        { name_en: "al kwamlah", name_ar: "قرية الكواملة", distance: 18.4 },
+        { name_en: "al karbos", name_ar: "قرية الكربوس", distance: 11.2 },
+        { name_en: "dhamad", name_ar: "قرية ظمد", distance: 41.9 },
+        { name_en: "sebiah", name_ar: "قرية صبيا - لا يوجد توصيل", distance: 39.9 },
+        { name_en: "dawar altawhed", name_ar: "دوار التوحيد - لا يوجد توصيل", distance: 2.5 },
+        { name_en: "Dehayka", name_ar: "دحيقة - لا يوجد توصيل", distance: 11.7 },
+        { name_en: "mokhatat 8", name_ar: "حي مخطط 8", distance: 7.6 },
+        { name_en: "mokhatat 7", name_ar: "حي مخطط 7", distance: 9.4 },
+        { name_en: "mokhatat 6", name_ar: "حي مخطط 6", distance: 5.8 },
+        { name_en: "mokhatat 5", name_ar: "حي مخطط 5", distance: 4 },
+        { name_en: "al naseem", name_ar: "حي النسيم", distance: 13 },
+        { name_en: "al mataar", name_ar: "حي المطار جازان", distance: 7.6 },
+        { name_en: "safa", name_ar: "حي الصفا", distance: 7 },
+        { name_en: "al shamia", name_ar: "حي الشامية", distance: 2.3 },
+        { name_en: "al swees", name_ar: "حي السويس", distance: 6 },
+        { name_en: "al sooq al dakhely", name_ar: "حي السوق الداخلي", distance: 2.4 },
+        { name_en: "al - rawdah", name_ar: "حي الروضة", distance: 2.6 },
+        { name_en: "al defaa", name_ar: "حي الدفاع - لا يوجد توصيل", distance: 2.3 },
+        { name_en: "GIZAN", name_ar: "جيزان - لا يوجد توصيل", distance: 2.8 },
+        { name_en: "Balad", name_ar: "بلد - لا يوجد توصيل", distance: 3.6 },
+        { name_en: "INDUSTRIAL AREA", name_ar: "المنطقة الصناعية - لا يوجد توصيل", distance: 13.4 },
+        { name_en: "king fahad", name_ar: "الملك فهد - لا يوجد توصيل", distance: 38.2 },
+        { name_en: "AL SHATI", name_ar: "الشاطئ - لا يوجد توصيل", distance: 6.8 },
+        { name_en: "al rawabi", name_ar: "الروابي", distance: 12.4 },
+        { name_en: "abo areesh", name_ar: "ابو عريش", distance: 35.7 },
+        { name_en: "Al Qalaa", name_ar: "حي القلعة", distance: 3.5 },
+        { name_en: "Al Jabal", name_ar: "حي الجبل", distance: 2.5 },
+        { name_en: "al mahliah", name_ar: "قرية المحلية", distance: 13.4 }
+    ];
+
+    function populateTable() {
+        const tableBody = document.getElementById("locationsTable");
+        tableBody.innerHTML = "";
+        locations.forEach(location => {
+            let name = isArabic ? location.name_ar : location.name_en;
+            let distance = isArabic ? convertToArabicNumbers(location.distance) : location.distance;
+            tableBody.innerHTML += `<tr><td>${name}</td><td>${distance}</td></tr>`;
+        });
+    }
+
+    function convertToArabicNumbers(number) {
+        return number.toString().replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+    }
+
+    function toggleLanguage() {
+        isArabic = !isArabic;
+        document.getElementById("heading").innerText = isArabic ? "مخطط المسافات من متجر كودو KS 29 جازان" : "Location Distance Chart from the Store Kudu KS 29 Jazan";
+        populateTable();
+        drawChart();
+    }
+
+    function drawChart() {
+        new Chart(document.getElementById("distanceChart"), {
+            type: "bar",
+            data: {
+                labels: locations.map(l => isArabic ? l.name_ar : l.name_en),
+                datasets: [{ label: "Distance (km)", data: locations.map(l => l.distance), backgroundColor: "blue" }]
+            }
+        });
+    }
+
+    function exportToExcel() {
+        let data = [["Location", "Distance (km)"]];
+        locations.forEach(location => {
+            let name = isArabic ? location.name_ar : location.name_en;
+            let distance = isArabic ? convertToArabicNumbers(location.distance) : location.distance;
+            data.push([name, distance]);
+        });
+
+        let ws = XLSX.utils.aoa_to_sheet(data);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Locations");
+        XLSX.writeFile(wb, "locations.xlsx");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => { populateTable(); drawChart(); });
+</script>
+
+</body>
+</html>
