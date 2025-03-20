@@ -122,6 +122,12 @@
         .btn-sm {
             padding: 5px 10px;
         }
+
+        .countdown {
+            font-size: 0.9rem;
+            color: #adb5bd;
+            margin-top: 5px;
+        }
     </style>
 </head>
 
@@ -183,7 +189,8 @@
             const product = {
                 name: productName,
                 date: expiryDate.toLocaleDateString(),
-                daysRemaining: calculateDaysRemaining(expiryDate),
+                expiryDate: expiryDate.toISOString(), // Store expiry date in ISO format for accurate calculation
+                daysRemaining: calculateTimeRemaining(expiryDate),
                 dayOfWeek: expiryDate.toLocaleDateString('en-US', { weekday: 'long' })
             };
             addProductToList(product);
@@ -212,9 +219,18 @@
 
         function addProductToList(product) {
             const productListItem = document.createElement('li');
-            productListItem.textContent = `Product: "${product.name}", Expiry Date: ${product.date} (${product.dayOfWeek}), Days Remaining: ${product.daysRemaining}`;
+            productListItem.innerHTML = `
+                <div>
+                    <strong>Product:</strong> ${product.name}<br>
+                    <strong>Expiry Date:</strong> ${product.date} (${product.dayOfWeek})<br>
+                    <div class="countdown" id="countdown-${product.name.replace(/\s+/g, '-')}"></div>
+                </div>
+            `;
             productListItem.classList.add(product.daysRemaining < 5 ? 'red' : product.daysRemaining <= 10 ? 'orange' : 'green');
             document.getElementById('productList').appendChild(productListItem);
+
+            // Start the countdown timer for this product
+            startCountdown(product.expiryDate, `countdown-${product.name.replace(/\s+/g, '-')}`);
         }
 
         function saveProductToLocalStorage(product) {
@@ -225,11 +241,41 @@
 
         function loadProductsFromLocalStorage() {
             const products = JSON.parse(localStorage.getItem('products')) || [];
-            products.forEach(addProductToList);
+            products.forEach(product => {
+                // Recalculate days remaining based on the current system date
+                product.daysRemaining = calculateTimeRemaining(new Date(product.expiryDate));
+                addProductToList(product);
+            });
+            updateNotificationCount();
         }
 
-        function calculateDaysRemaining(expiryDate) {
-            return Math.ceil((expiryDate - new Date()) / (1000 * 3600 * 24));
+        function calculateTimeRemaining(expiryDate) {
+            const timeDiff = expiryDate - new Date();
+            return Math.ceil(timeDiff / (1000 * 3600 * 24));
+        }
+
+        function startCountdown(expiryDate, countdownId) {
+            const countdownElement = document.getElementById(countdownId);
+
+            function updateCountdown() {
+                const now = new Date();
+                const timeDiff = new Date(expiryDate) - now;
+
+                if (timeDiff <= 0) {
+                    countdownElement.innerHTML = "Expired!";
+                    return;
+                }
+
+                const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                countdownElement.innerHTML = `Time Remaining: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
         }
 
         function exportToExcel() {
@@ -255,10 +301,7 @@
             productList.innerHTML = ''; // Clear the list before displaying the filtered results
 
             filteredProducts.forEach(product => {
-                const productListItem = document.createElement('li');
-                productListItem.textContent = `Product: "${product.name}", Expiry Date: ${product.date} (${product.dayOfWeek}), Days Remaining: ${product.daysRemaining}`;
-                productListItem.classList.add(product.daysRemaining < 5 ? 'red' : product.daysRemaining <= 10 ? 'orange' : 'green');
-                productList.appendChild(productListItem);
+                addProductToList(product);
             });
         }
 
