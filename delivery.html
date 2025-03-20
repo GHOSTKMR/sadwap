@@ -1,138 +1,217 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Location Distance Chart - Kudu KS 29 Jazan</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Store Delivery Time and Distance Comparison</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script> <!-- SheetJS for Excel Export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <style>
-        body { background-color: #f8f9fa; }
-        .container { margin-top: 20px; }
-        #chart-container { width: 100%; max-width: 900px; margin: auto; }
-        h2 { text-align: center; font-weight: bold; margin-bottom: 20px; }
-        .btn-container { text-align: right; margin-bottom: 10px; }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .better { background-color: #e6ffe6; }
+        .worse { background-color: #ffe6e6; }
+        button { margin: 10px 0; padding: 10px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #45a049; }
     </style>
 </head>
 <body>
+    <h2>Delivery Time and Distance Comparison (Store 29 vs Store 28)</h2>
+    
+    <button onclick="exportToExcel()">Export to Excel</button>
+    
+    <table id="comparisonTable">
+        <thead>
+            <tr>
+                <th>District</th>
+                <th>Store 29 Time</th>
+                <th>Store 28 Time</th>
+                <th>Store 29 Distance (km)</th>
+                <th>Store 28 Distance (km)</th>
+                <th>Recommended Store</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be populated by JavaScript -->
+        </tbody>
+    </table>
 
-<div class="container">
-    <div class="btn-container">
-        <button class="btn btn-primary" onclick="toggleLanguage()">🌍 Translate</button>
-        <button class="btn btn-success" onclick="exportToExcel()">📥 Export to Excel</button>
+    <div style="width: 80%; margin: auto;">
+        <canvas id="timeChart"></canvas>
     </div>
 
-    <h2 id="heading">Location Distance Chart from the Store Kudu KS 29 Jazan</h2>
-
-    <div id="chart-container">
+    <div style="width: 80%; margin: auto;">
         <canvas id="distanceChart"></canvas>
     </div>
 
-    <input type="text" id="searchInput" class="form-control mt-4 mb-3" placeholder="updating soon..." onkeyup="filterTable()">
+    <script>
+        // Complete data from the provided table
+        const deliveryData = [
+            { district: "EL OMIS HOSPITAL", time1: 7, time2: 5, km1: 5.3, km2: 3.4 },
+            { district: "Mokhatat king fahad", time1: 9, time2: 9, km1: 5, km2: 5.3 },
+            { district: "Mokhatat Al Mohamadeia", time1: 6, time2: 7, km1: 3.8, km2: 4.1 },
+            { district: "MokhtatIbn al-Haytham", time1: 15, time2: 13, km1: 12.1, km2: 10.1 },
+            { district: "al maabooj", time1: 14, time2: 12, km1: 9.6, km2: 7.6 },
+            { district: "al kwamlah", time1: 23, time2: 22, km1: 18.4, km2: 18.2 },
+            { district: "al karbos", time1: 14, time2: 12, km1: 11.2, km2: 9.3 },
+            { district: "dhamad", time1: 42, time2: 42, km1: 41.9, km2: 41.7 },
+            { district: "sebiah", time1: 39, time2: 38, km1: 39.9, km2: 39.6 },
+            { district: "dawar altawhed", time1: 4, time2: 5, km1: 2.5, km2: 2.9 },
+            { district: "Dehayka", time1: 15, time2: 15, km1: 11.7, km2: 11.5 },
+            { district: "mokhatat 8", time1: 11, time2: 13, km1: 7.6, km2: 7.9 },
+            { district: "mokhatat 7", time1: 15, time2: 15, km1: 9.4, km2: 9.9 },
+            { district: "mokhatat 6", time1: 10, time2: 11, km1: 5.8, km2: 6 },
+            { district: "mokhatat 5", time1: 7, time2: 8, km1: 4, km2: 4.3 },
+            { district: "al naseem", time1: 15, time2: 14, km1: 13, km2: 8.4 },
+            { district: "al mataar", time1: 10, time2: 6, km1: 7.6, km2: 4.2 },
+            { district: "safa", time1: 6, time2: 4, km1: 3.9, km2: 1.9 },
+            { district: "al shamia", time1: 5, time2: 5, km1: 2.3, km2: 2.6 },
+            { district: "al swees", time1: 9, time2: 6, km1: 5.9, km2: 3.9 },
+            { district: "al sooq al dakhely", time1: 5, time2: 8, km1: 2.4, km2: 3.3 },
+            { district: "al - rawdah", time1: 5, time2: 1.1, km1: 2.6, km2: 3 },
+            { district: "al defaa", time1: 5, time2: 5, km1: 2.3, km2: 2.4 },
+            { district: "GIZAN", time1: 5, time2: 10, km1: 2.8, km2: 5.7 },
+            { district: "Balad", time1: 6, time2: 3, km1: 3.6, km2: 1.9 },
+            { district: "INDUSTRIAL AREA", time1: 16, time2: 14, km1: 13.4, km2: 11.7 },
+            { district: "king fahad", time1: 37, time2: 35, km1: 38.2, km2: 38 },
+            { district: "AL SHATI", time1: 10, time2: 11, km1: 6.8, km2: 7.1 },
+            { district: "AL ZUHUR", time1: 14, time2: 12, km1: 11, km2: 9.1 },
+            { district: "al rawabi", time1: 17, time2: 16, km1: 12.4, km2: 11.2 },
+            { district: "al bashayer", time1: 15, time2: 13, km1: 12.7, km2: 10.7 },
+            { district: "abo areesh", time1: 35, time2: null, km1: 35.7, km2: null },
+            { district: "al mahliah", time1: 19, time2: 18, km1: 13.4, km2: 13.2 },
+        ];
 
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th id="locationHeader">Location</th>
-                    <th id="distanceHeader">Distance (km)</th>
-                </tr>
-            </thead>
-            <tbody id="locationsTable">
-                <!-- Table Data will be added dynamically -->
-            </tbody>
-        </table>
-    </div>
-</div>
+        // Populate table
+        const tbody = document.querySelector('#comparisonTable tbody');
+        const labels = [];
+        const store29Times = [];
+        const store28Times = [];
+        const store29Distances = [];
+        const store28Distances = [];
 
-<script>
-    let isArabic = false;
+        deliveryData.forEach(item => {
+            const row = document.createElement('tr');
+            const timeDiff = item.time1 - item.time2;
+            
+            row.innerHTML = `
+                <td>${item.district}</td>
+                <td>${item.time1}</td>
+                <td>${item.time2}</td>
+                <td>${item.km1}</td>
+                <td>${item.km2}</td>
+                <td>${timeDiff < 0 ? 'Store 29' : timeDiff > 0 ? 'Store 28' : 'Equal'}</td>
+            `;
+            
+            if (timeDiff < 0) row.classList.add('better');
+            if (timeDiff > 0) row.classList.add('worse');
+            
+            tbody.appendChild(row);
 
-    const locations = [
-        { name_en: "EL OMIS HOSPITAL", name_ar: "مستوصف الأوميس - لا يوجد توصيل", distance: 5.3 },
-        { name_en: "Mokhatat king fahad", name_ar: "مخطط الملك فهد - لا يوجد توصيل", distance: 18.8 },
-        { name_en: "Mokhatat Al Mohamadeia", name_ar: "مخطط المحمدية - لا يوجد توصيل", distance: 3.8 },
-        { name_en: "MokhtatIbn al-Haytham", name_ar: "مخطط الحسن بن الهيثم - لا يوجد توصيل", distance: 12.1 },
-        { name_en: "al maabooj", name_ar: "قرية المعبوج", distance: 9.6 },
-        { name_en: "al kwamlah", name_ar: "قرية الكواملة", distance: 18.4 },
-        { name_en: "al karbos", name_ar: "قرية الكربوس", distance: 11.2 },
-        { name_en: "dhamad", name_ar: "قرية ظمد", distance: 41.9 },
-        { name_en: "sebiah", name_ar: "قرية صبيا - لا يوجد توصيل", distance: 39.9 },
-        { name_en: "dawar altawhed", name_ar: "دوار التوحيد - لا يوجد توصيل", distance: 2.5 },
-        { name_en: "Dehayka", name_ar: "دحيقة - لا يوجد توصيل", distance: 11.7 },
-        { name_en: "mokhatat 8", name_ar: "حي مخطط 8", distance: 7.6 },
-        { name_en: "mokhatat 7", name_ar: "حي مخطط 7", distance: 9.4 },
-        { name_en: "mokhatat 6", name_ar: "حي مخطط 6", distance: 5.8 },
-        { name_en: "mokhatat 5", name_ar: "حي مخطط 5", distance: 4 },
-        { name_en: "al naseem", name_ar: "حي النسيم", distance: 13 },
-        { name_en: "al mataar", name_ar: "حي المطار جازان", distance: 7.6 },
-        { name_en: "safa", name_ar: "حي الصفا", distance: 7 },
-        { name_en: "al shamia", name_ar: "حي الشامية", distance: 2.3 },
-        { name_en: "al swees", name_ar: "حي السويس", distance: 6 },
-        { name_en: "al sooq al dakhely", name_ar: "حي السوق الداخلي", distance: 2.4 },
-        { name_en: "al - rawdah", name_ar: "حي الروضة", distance: 2.6 },
-        { name_en: "al defaa", name_ar: "حي الدفاع - لا يوجد توصيل", distance: 2.3 },
-        { name_en: "GIZAN", name_ar: "جيزان - لا يوجد توصيل", distance: 2.8 },
-        { name_en: "Balad", name_ar: "بلد - لا يوجد توصيل", distance: 3.6 },
-        { name_en: "INDUSTRIAL AREA", name_ar: "المنطقة الصناعية - لا يوجد توصيل", distance: 13.4 },
-        { name_en: "king fahad", name_ar: "الملك فهد - لا يوجد توصيل", distance: 38.2 },
-        { name_en: "AL SHATI", name_ar: "الشاطئ - لا يوجد توصيل", distance: 6.8 },
-        { name_en: "al rawabi", name_ar: "الروابي", distance: 12.4 },
-        { name_en: "abo areesh", name_ar: "ابو عريش", distance: 35.7 },
-        { name_en: "Al Qalaa", name_ar: "حي القلعة", distance: 3.5 },
-        { name_en: "Al Jabal", name_ar: "حي الجبل", distance: 2.5 },
-        { name_en: "al mahliah", name_ar: "قرية المحلية", distance: 13.4 }
-    ];
-
-    function populateTable() {
-        const tableBody = document.getElementById("locationsTable");
-        tableBody.innerHTML = "";
-        locations.forEach(location => {
-            let name = isArabic ? location.name_ar : location.name_en;
-            let distance = isArabic ? convertToArabicNumbers(location.distance) : location.distance;
-            tableBody.innerHTML += `<tr><td>${name}</td><td>${distance}</td></tr>`;
+            // Chart data
+            labels.push(item.district);
+            store29Times.push(item.time1);
+            store28Times.push(item.time2);
+            store29Distances.push(item.km1);
+            store28Distances.push(item.km2);
         });
-    }
 
-    function convertToArabicNumbers(number) {
-        return number.toString().replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
-    }
-
-    function toggleLanguage() {
-        isArabic = !isArabic;
-        document.getElementById("heading").innerText = isArabic ? "مخطط المسافات من متجر كودو KS 29 جازان" : "Location Distance Chart from the Store Kudu KS 29 Jazan";
-        populateTable();
-        drawChart();
-    }
-
-    function drawChart() {
-        new Chart(document.getElementById("distanceChart"), {
-            type: "bar",
+        // Create time chart
+        const timeCtx = document.getElementById('timeChart').getContext('2d');
+        new Chart(timeCtx, {
+            type: 'bar',
             data: {
-                labels: locations.map(l => isArabic ? l.name_ar : l.name_en),
-                datasets: [{ label: "Distance (km)", data: locations.map(l => l.distance), backgroundColor: "blue" }]
+                labels: labels,
+                datasets: [{
+                    label: 'Store 29 Time',
+                    data: store29Times,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Store 28 Time',
+                    data: store28Times,
+                    backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Delivery Time (minutes)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Delivery Time Comparison by District'
+                    }
+                }
             }
         });
-    }
 
-    function exportToExcel() {
-        let data = [["Location", "Distance (km)"]];
-        locations.forEach(location => {
-            let name = isArabic ? location.name_ar : location.name_en;
-            let distance = isArabic ? convertToArabicNumbers(location.distance) : location.distance;
-            data.push([name, distance]);
+        // Create distance chart
+        const distanceCtx = document.getElementById('distanceChart').getContext('2d');
+        new Chart(distanceCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Store 29 Distance',
+                    data: store29Distances,
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Store 28 Distance',
+                    data: store28Distances,
+                    backgroundColor: 'rgba(153, 102, 255, 0.5)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Distance (km)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Delivery Distance Comparison by District'
+                    }
+                }
+            }
         });
 
-        let ws = XLSX.utils.aoa_to_sheet(data);
-        let wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Locations");
-        XLSX.writeFile(wb, "locations.xlsx");
-    }
-
-    document.addEventListener("DOMContentLoaded", () => { populateTable(); drawChart(); });
-</script>
-
+        // Export to Excel function
+        function exportToExcel() {
+            const table = document.getElementById('comparisonTable');
+            const ws = XLSX.utils.table_to_sheet(table);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Delivery Comparison");
+            XLSX.writeFile(wb, 'Delivery_Comparison.xlsx');
+        }
+    </script>
 </body>
 </html>
