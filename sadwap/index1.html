@@ -68,7 +68,7 @@
         .login-container {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px); /* For Safari */
+            -webkit-backdrop-filter: blur(10px);
             padding: 2.5rem;
             border-radius: 15px;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
@@ -85,7 +85,6 @@
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
         }
 
-        /* Rest of your existing styles... */
         .login-header {
             text-align: center;
             margin-bottom: 1.5rem;
@@ -152,7 +151,19 @@
             color: #ddd;
         }
 
-        /* Enhanced responsive design */
+        /* Notification badge */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+        }
+
+        /* Responsive design */
         @media (max-width: 768px) {
             .login-container {
                 padding: 2rem;
@@ -161,14 +172,14 @@
             }
             
             .video-background video {
-                opacity: 0.5; /* Slightly more transparent on mobile */
+                opacity: 0.5;
             }
         }
 
         @media (max-width: 576px) {
             .login-container {
                 padding: 1.5rem;
-                transform: none; /* Remove 3D effect on very small screens */
+                transform: none;
             }
             
             body {
@@ -176,7 +187,6 @@
             }
         }
 
-        /* Form Inputs */
         .form-control {
             background-color: rgba(51, 51, 51, 0.7);
             border: 2px solid #444;
@@ -191,22 +201,14 @@
             border-color: #007bff;
             box-shadow: 0 0 8px rgba(0, 123, 255, 0.7);
         }
-
-        /* Video Modal */
-        #videoModal iframe {
-            width: 100%;
-            height: 400px; /* Fixed height for modal */
-        }
     </style>
 </head>
 
 <body>
-    <!-- Background Video - Improved Implementation -->
+    <!-- Background Video -->
     <div class="video-background">
-        <video autoplay muted loop playsinline> <!-- playsinline for mobile -->
-            <!-- Use relative path or web URL for better compatibility -->
+        <video autoplay muted loop playsinline>
             <source src="promo.mp4" type="video/mp4">
-            <!-- Fallback image if video doesn't load -->
             <img src="https://via.placeholder.com/1920x1080" alt="Background">
         </video>
     </div>
@@ -231,19 +233,19 @@
         </form>
         <div class="text-center mt-3">
             <p>Contact the developer:</p>
-            <div class="social-icons d-flex justify-content-center gap-3 mt-3">
-                <!-- WhatsApp Icon with proper favicon -->
-                <a href="https://web.whatsapp.com" target="_blank" class="text-success">
+            <div class="social-icons d-flex justify-content-center gap-3 mt-3 position-relative">
+                <!-- WhatsApp Icon - connects to specific number -->
+                <a href="https://wa.me/966567341924" target="_blank" class="text-success">
                     <i class="fab fa-whatsapp fs-3"></i>
                 </a>
 
-                <!-- Developer Icon (user with gear) -->
-                <a href="https://github.com/yourusername" target="_blank" class="text-primary">
+                <!-- Developer Icon - connects to external page -->
+                <a href="C:\Users\moinr\Desktop\kudu\aboutdeveloper.html" target="_blank" class="text-primary">
                     <i class="fas fa-user-cog fs-3"></i>
                 </a>
 
-                <!-- Notification Icon (replaced video icon) -->
-                <a href="#" class="text-warning" id="notificationBtn">
+                <!-- Notification Icon -->
+                <a href="#" class="text-warning position-relative" id="notificationBtn">
                     <i class="fas fa-bell fs-3"></i>
                     <span class="notification-badge">3</span>
                 </a>
@@ -286,7 +288,7 @@
                 </div>
                 <div class="modal-footer border-secondary">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Mark all as read</button>
+                    <button type="button" class="btn btn-primary" id="markAsRead">Mark all as read</button>
                 </div>
             </div>
         </div>
@@ -296,37 +298,49 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Icons CDN -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const passwordInput = document.getElementById('password');
             const errorMessage = document.getElementById('error-message');
             const notificationBtn = document.getElementById('notificationBtn');
+            const markAsReadBtn = document.getElementById('markAsRead');
+            const notificationBadge = document.querySelector('.notification-badge');
 
-            // Load saved password (if any) when the page is reloaded
-            passwordInput.value = localStorage.getItem('savedPassword') || '';
+            // Correct password (change this to your desired password)
+            const correctPassword = "ghost123";
 
-            // Predefined correct password (for demonstration purposes)
-            const correctPassword = "ghost123"; // Change this to your desired password
-
-            // Save credentials on form submit
+            // Login form submission
             document.getElementById('loginForm').addEventListener('submit', (event) => {
-                event.preventDefault(); // Prevent page reload
+                event.preventDefault();
                 const password = passwordInput.value;
 
-                // Check if the entered password matches the correct password
                 if (password === correctPassword) {
-                    // Save password to localStorage
-                    localStorage.setItem('savedPassword', password);
-
-                    // Redirect to the next page (for example, dashboard.html)
-                    window.location.href = 'dashboard.html';
+                    // Redirect to dashboard page on successful login
+                    window.location.href = 'https://ghostkmr.github.io/sadwap/sadwap/navigation.html';
                 } else {
-                    errorMessage.style.display = 'block'; // Show error message
+                    errorMessage.style.display = 'block';
+                    // Hide error message after 3 seconds
+                    setTimeout(() => {
+                        errorMessage.style.display = 'none';
+                    }, 3000);
                 }
             });
-            
+
+            // Initialize notification modal
+            notificationBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'));
+                notificationModal.show();
+            });
+
+            // Mark all notifications as read
+            markAsReadBtn.addEventListener('click', function() {
+                notificationBadge.style.display = 'none';
+                const notificationModal = bootstrap.Modal.getInstance(document.getElementById('notificationModal'));
+                notificationModal.hide();
+            });
+
             // For mobile devices - ensure video plays
             const video = document.querySelector('.video-background video');
             if (video) {
@@ -335,18 +349,10 @@
                 video.setAttribute('autoplay', '');
                 video.setAttribute('loop', '');
                 
-                // iOS requires this to play videos
                 video.addEventListener('loadedmetadata', function() {
                     video.play().catch(e => console.log("Video play error:", e));
                 });
             }
-
-            // Initialize notification modal
-            notificationBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'));
-                notificationModal.show();
-            });
         });
     </script>
 
