@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mueen ul Islam - Hospitality Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #e74c3c;
+            --accent-color: #3498db;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --text-color: #333;
+            --text-light: #f5f5f5;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        #video-bg {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            object-fit: cover;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            background-color: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 0;
+            border-bottom: 2px solid var(--secondary-color);
+            margin-bottom: 30px;
+        }
+        
+        .header-text {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+        
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .contact-item i {
+            color: var(--accent-color);
+            width: 20px;
+            text-align: center;
+        }
+        
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--accent-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        section {
+            margin-bottom: 40px;
+        }
+        
+        h3 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
+        }
+        
+        .summary p {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .skill {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .experience-item, .education-item, .certification-item {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .experience-item:last-child, .education-item:last-child, .certification-item:last-child {
+            border-bottom: none;
+        }
+        
+        .job-header, .edu-header {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        
+        .job-title, .edu-degree {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+        
+        .company, .edu-institution {
+            font-style: italic;
+            color: var(--secondary-color);
+        }
+        
+        .job-duration, .edu-duration {
+            color: #666;
+        }
+        
+        ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .accomplishments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .accomplishment-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .accomplishment-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .languages-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .language {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .language h4 {
+            margin-bottom: 5px;
+        }
+        
+        .language-level {
+            height: 8px;
+            background-color: #ddd;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+        
+        .language-progress {
+            height: 100%;
+            background-color: var(--accent-color);
+            border-radius: 4px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            color: var(--text-light);
+            background-color: var(--primary-color);
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-img {
+                margin-top: 20px;
+            }
+            
+            .header-text {
+                order: 1;
+            }
+            
+            .job-header, .edu-header {
+                flex-direction: column;
+            }
+            
+            .job-duration, .edu-duration {
+                margin-top: 5px;
+            }
+            
+            .accomplishments-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        section {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        section:nth-child(2) { animation-delay: 0.1s; }
+        section:nth-child(3) { animation-delay: 0.2s; }
+        section:nth-child(4) { animation-delay: 0.3s; }
+        section:nth-child(5) { animation-delay: 0.4s; }
+        section:nth-child(6) { animation-delay: 0.5s; }
+        section:nth-child(7) { animation-delay: 0.6s; }
+        section:nth-child(8) { animation-delay: 0.7s; }
+    </style>
+</head>
+<body>
+  <button onclick="playVideo()">click me!</button>
+
+<video id="video-bg" loop>
+  <source src="leli.mp4" type="video/mp4">
+  Your browser does not support HTML5 video.
+</video>
+
+<script>
+  window.addEventListener('click', function () {
+    const video = document.getElementById('video-bg');
+    video.play();
+  }, { once: true }); // Only runs once
+</script>
+
+<script>
+function playVideo() {
+    const video = document.getElementById('video-bg');
+    video.play();
+}
+</script>
+
+
+    
+    <div class="container">
+        <header>
+            <div class="header-text">
+                <h1>Mueen ul Islam</h1>
+                <h2>Hospitality Manager</h2>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>+919622841731</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>moinranzao2@gmail.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Baramulla, Jammu and Kashmir 193101</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Placeholder for profile image - replace with actual image -->
+            <img src="C:\Users\moinr\Desktop\kudu\markhor.jpg" alt="Mueen ul Islam" class="profile-img">
+        </header>
+        
+        <section class="summary">
+            <h3>SUMMARY</h3>
+            <p>Results-driven hospitality manager with 8 years of experience in the industry, combining operational expertise with a strong IT background to streamline daily operations and enhance guest experiences. Adept at overseeing business functions, optimizing workflows, and implementing technology-driven solutions to improve efficiency and service quality.</p>
+            <p>Skilled in team leadership, problem-solving, and customer satisfaction, ensuring smooth and seamless hospitality operations. Proven ability to manage high-pressure environments while maintaining a commitment to excellence and guest satisfaction.</p>
+        </section>
+        
+        <section class="skills">
+            <h3>SKILLS</h3>
+            <div class="skills-container">
+                <span class="skill">Operational management</span>
+                <span class="skill">Customer feedback improvements</span>
+                <span class="skill">Customer Service</span>
+                <span class="skill">Service excellence</span>
+                <span class="skill">Service-orientated</span>
+                <span class="skill">Employee management</span>
+                <span class="skill">Health and Safety regulations</span>
+                <span class="skill">Staff development</span>
+                <span class="skill">Marketing and advertising</span>
+                <span class="skill">Strong leadership</span>
+                <span class="skill">Sanitation guidelines</span>
+                <span class="skill">Cost-controls</span>
+                <span class="skill">Health and Safety Compliance</span>
+                <span class="skill">Staff scheduling</span>
+            </div>
+        </section>
+        
+        <section class="experience">
+            <h3>EXPERIENCE</h3>
+            
+            <div class="experience-item">
+                <div class="job-header">
+                    <div>
+                        <span class="job-title">Assistant Restaurant Manager</span>
+                        <span class="company">Kudu | Riyadh, KSA</span>
+                    </div>
+                    <span class="job-duration">07/2024 - Current</span>
+                </div>
+                <ul>
+                    <li>Managed daily operations of the restaurant, overseeing food quality and customer service standards.</li>
+                    <li>Handled inventory management, including ordering supplies and conducting regular stock takes.</li>
+                    <li>Resolved customer complaints with professionalism, offering solutions to ensure satisfaction.</li>
+                    <li>Performed restaurant walk-through to gauge timeliness and excellent service quality.</li>
+                    <li>Optimised profits by controlling food, beverage and labour costs daily.</li>
+                    <li>Participated in local community events to raise the restaurant's profile and attract new customers.</li>
+                    <li>Determined root cause of performance trends, developing process improvement plans to target assurance in safety, quality and customer satisfaction.</li>
+                    <li>Implemented effective stock control procedures, reducing waste by 15% and improving profit margins through careful inventory management.</li>
+                    <li>Drove revenue by coaching team members on customer service and up-selling techniques.</li>
+                </ul>
+            </div>
+            
+            <div class="experience-item">
+                <div class="job-header">
+                    <div>
+                        <span class="job-title">Restaurant Supervisor</span>
+                        <span class="company">Americana | Jeddah, KSA</span>
+                    </div>
+                    <span class="job-duration">04/2022 - 04/2024</span>
+                </div>
+                <ul>
+                    <li>Trained workers in every position, including food preparation, money handling and cleaning roles.</li>
+                    <li>Addressed customer complaints, resolving issues promptly to uphold customer satisfaction.</li>
+                    <li>Supervised cash handling and reconciliation, ensuring accuracy in financial transactions.</li>
+                    <li>Handled escalated customer complaints to provide full resolutions and promote loyalty.</li>
+                    <li>Trained Front of House (FOH) staff on restaurant policies and procedures, guest service techniques and communication skills to ensure positive experience.</li>
+                    <li>Managed conflict resolution among staff and with customers, diplomatically addressing issues to maintain a positive atmosphere.</li>
+                    <li>Directed staff in daily work assignments to help each achieve goals and uphold restaurant reputation.</li>
+                    <li>Ran operations successfully according to industry best practices and owner standards.</li>
+                    <li>Oversaw use of ingredients to plan for costs and minimise food waste.</li>
+                </ul>
+            </div>
+            
+            <div class="experience-item">
+                <div class="job-header">
+                    <div>
+                        <span class="job-title">Assistant Manager</span>
+                        <span class="company">Grand MAMTA | Srinagar, Jammu and Kashmir</span>
+                    </div>
+                    <span class="job-duration">11/2018 - 11/2022</span>
+                </div>
+                <ul>
+                    <li>Coordinated with senior management to implement strategic plans for revenue growth.</li>
+                    <li>Oversaw daily operations, including opening and closing procedures, to maintain store standards.</li>
+                    <li>Facilitated communication between staff and senior management, acting as a point of contact.</li>
+                    <li>Prepared detailed reports on weekly sales, expenses, and staff productivity for management review.</li>
+                    <li>Monitored inventory levels, placing orders for stock replenishment to prevent shortages.</li>
+                    <li>Supervised supply purchases, management and tracking in line with budgetary requirements.</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section class="education">
+            <h3>EDUCATION</h3>
+            <div class="education-item">
+                <div class="edu-header">
+                    <div>
+                        <span class="edu-degree">Bachelor of Science: Computer Applications</span>
+                        <span class="edu-institution">Kashmir University | Srinagar</span>
+                    </div>
+                    <span class="edu-duration">2013</span>
+                </div>
+                <ul>
+                    <li>Programming & Development: C, C++, HTML, CSS, JavaScript, PHP, WordPress</li>
+                    <li>Artificial Intelligence & Databases: AI fundamentals, DBMS (Database Management Systems)</li>
+                    <li>Digital & Applied Sciences: Digital Electronics, Applied Mathematics, Mathematics & Science Essentials</li>
+                    <li>Software & Tools: MS Office Suite (Excel, Word, PowerPoint)</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section class="certifications">
+            <h3>CERTIFICATIONS</h3>
+            <div class="skills-container">
+                <span class="skill">food safety certified</span>
+                <span class="skill">cpr, first aid</span>
+                <span class="skill">effective shift management</span>
+                <span class="skill">time management</span>
+                <span class="skill">effective communication</span>
+                <span class="skill">Leadership Skills And Management</span>
+                <span class="skill">Restaurant certified trainer</span>
+                <span class="skill">diploma in hospitality management</span>
+                <span class="skill">HACCP certification course</span>
+            </div>
+        </section>
+        
+        <section class="accomplishments">
+            <h3>ACCOMPLISHMENTS</h3>
+            <div class="accomplishments-grid">
+                <div class="accomplishment-card">
+                    <h4>Awards & Recognitions</h4>
+                    <ul>
+                        <li>Awarded Double Platinum for outstanding performance in OA (Operational Audit) and QA (Quality Audit) audits.</li>
+                        <li>Recognized with Kudu's "Good" and "Excellent" ratings in C.E.R. audits related to food safety and customer service.</li>
+                        <li>Achieved Top Score in internal audits for Cash Handling and Inventory Management, demonstrating attention to detail and efficiency.</li>
+                    </ul>
+                </div>
+                
+                <div class="accomplishment-card">
+                    <h4>Projects & Technical Achievements</h4>
+                    <ul>
+                        <li>Developed Sadwap Application for Kudu's managerial use, streamlining operations and enhancing task management.</li>
+                        <li>Created the STM system for Americana to assist management in tracking and improving operational performance.</li>
+                        <li>Developed a MoviePlus replica of Netflix and Amazon Prime, providing a similar user experience for streaming content.</li>
+                        <li>Currently working on an AI-powered chatbot, aimed at improving user engagement and automating customer queries.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section class="languages">
+            <h3>LANGUAGES</h3>
+            <div class="languages-container">
+                <div class="language">
+                    <h4>English</h4>
+                    <div class="language-level">
+                        <div class="language-progress" style="width: 90%;"></div>
+                    </div>
+                    <span>C1 Advanced</span>
+                </div>
+                
+                <div class="language">
+                    <h4>Arabic</h4>
+                    <div class="language-level">
+                        <div class="language-progress" style="width: 40%;"></div>
+                    </div>
+                    <span>A2 Elementary</span>
+                </div>
+                
+                <div class="language">
+                    <h4>Hindi</h4>
+                    <div class="language-level">
+                        <div class="language-progress" style="width: 75%;"></div>
+                    </div>
+                    <span>B2 Upper Intermediate</span>
+                </div>
+                
+                <div class="language">
+                    <h4>Urdu</h4>
+                    <div class="language-level">
+                        <div class="language-progress" style="width: 60%;"></div>
+                    </div>
+                    <span>B1 Intermediate</span>
+                </div>
+            </div>
+        </section>
+        
+        <section class="hobbies">
+            <h3>HOBBIES AND INTERESTS</h3>
+            <ul>
+                <li><strong>Web & Application Development:</strong> Building websites and applications using HTML, CSS, and JavaScript.</li>
+                <li><strong>Backend Development:</strong> Currently expanding expertise by learning Python and Django for web applications.</li>
+                <li><strong>Passionate about exploring A.I</strong></li>
+            </ul>
+        </section>
+        
+        <section class="driving">
+            <h3>DRIVING LICENCE</h3>
+            <ul>
+                <li>Indian driving license</li>
+            </ul>
+        </section>
+    </div>
+    
+    <footer>
+        &copy; 2024 Mueen ul Islam - All Rights Reserved
+    </footer>
+    
+    <script>
+        // Unmute video on click (for browsers that require user interaction)
+        document.addEventListener('DOMContentLoaded', function() {
+            const video = document.getElementById('video-bg');
+            
+            // Add click event to unmute video
+            document.addEventListener('click', function() {
+                if (video.muted) {
+                    video.muted = false;
+                }
+            });
+            
+            // Try to autoplay with sound (may not work in all browsers due to restrictions)
+            video.play().then(() => {
+                video.muted = false;
+            }).catch(error => {
+                // If autoplay with sound fails, keep it muted and let user unmute
+                video.muted = true;
+            });
+        });
+    </script>
+</body>
+</html>
