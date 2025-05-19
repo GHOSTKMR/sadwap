@@ -7,34 +7,77 @@
     <title>Login Page</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Favicon for the page -->
+    <!-- Favicon -->
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/847/847969.png" type="image/x-icon">
-    <!-- Favicon for notifications -->
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/847/847969.png" type="image/x-icon" id="notifFavicon">
     <style>
-        /* Background color */
+        /* Background video container - improved for all devices */
+        .video-background {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            transform: translateX(-50%) translateY(-50%);
+            background: #000 no-repeat;
+            background-size: cover;
+            transition: 1s opacity;
+            overflow: hidden;
+        }
+        
+        .video-background video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: cover;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+        }
+        
+        /* Enhanced overlay for better readability */
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+        }
+
+        /* Main content styling */
         body {
-            background-color: black;
             color: white;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: 'Arial', sans-serif;
             margin: 0;
-            overflow: hidden;
-            background: radial-gradient(circle, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7)); /* Dark gradient background */
+            padding: 20px;
+            overflow-x: hidden;
         }
 
         .login-container {
-            background: rgba(255, 255, 255, 0.1); /* Slight opacity for background */
-            padding: 3rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px); /* For Safari */
+            padding: 2.5rem;
             border-radius: 15px;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
             width: 100%;
             max-width: 400px;
             transform: perspective(800px) rotateX(10deg);
-            transition: transform 0.3s ease-out;
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 20px 0;
         }
 
         .login-container:hover {
@@ -42,6 +85,7 @@
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
         }
 
+        /* Rest of your existing styles... */
         .login-header {
             text-align: center;
             margin-bottom: 1.5rem;
@@ -52,12 +96,12 @@
             color: #6c757d;
             text-decoration: none;
             font-size: 1.5rem;
-            transition: color 0.3s ease;
+            transition: color 0.3s ease, transform 0.3s ease;
         }
 
         .social-icons a:hover {
             color: #007bff;
-            transform: translateY(-3px); /* Hover effect for icons */
+            transform: translateY(-3px);
         }
 
         .btn-primary {
@@ -108,16 +152,33 @@
             color: #ddd;
         }
 
-        /* Responsive Design */
-        @media (max-width: 576px) {
+        /* Enhanced responsive design */
+        @media (max-width: 768px) {
             .login-container {
-                padding: 1.5rem;
+                padding: 2rem;
+                transform: perspective(800px) rotateX(5deg);
+                max-width: 90%;
+            }
+            
+            .video-background video {
+                opacity: 0.5; /* Slightly more transparent on mobile */
             }
         }
 
-        /* 3D Shadow Effect for Form Inputs */
+        @media (max-width: 576px) {
+            .login-container {
+                padding: 1.5rem;
+                transform: none; /* Remove 3D effect on very small screens */
+            }
+            
+            body {
+                padding: 10px;
+            }
+        }
+
+        /* Form Inputs */
         .form-control {
-            background-color: #333;
+            background-color: rgba(51, 51, 51, 0.7);
             border: 2px solid #444;
             border-radius: 10px;
             color: white;
@@ -126,24 +187,30 @@
         }
 
         .form-control:focus {
-            background-color: #444;
+            background-color: rgba(68, 68, 68, 0.7);
             border-color: #007bff;
             box-shadow: 0 0 8px rgba(0, 123, 255, 0.7);
         }
 
-        /* Notification icon */
-        .notif-icon {
-            font-size: 2rem;
-            color: red;
-            cursor: pointer;
-            position: absolute;
-            top: 10px;
-            right: 10px;
+        /* Video Modal */
+        #videoModal iframe {
+            width: 100%;
+            height: 400px; /* Fixed height for modal */
         }
     </style>
 </head>
 
 <body>
+    <!-- Background Video - Improved Implementation -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline> <!-- playsinline for mobile -->
+            <!-- Use relative path or web URL for better compatibility -->
+            <source src="promo.mp4" type="video/mp4">
+            <!-- Fallback image if video doesn't load -->
+            <img src="https://via.placeholder.com/1920x1080" alt="Background">
+        </video>
+    </div>
+    <div class="video-overlay"></div>
 
     <div class="login-container">
         <div class="login-header">
@@ -165,39 +232,61 @@
         <div class="text-center mt-3">
             <p>Contact the developer:</p>
             <div class="social-icons d-flex justify-content-center gap-3 mt-3">
-                <!-- WhatsApp Icon -->
-                <a href="https://wa.me/+916006476187" target="_blank" class="text-success">
-                    <i class="bi bi-whatsapp fs-3"></i>
+                <!-- WhatsApp Icon with proper favicon -->
+                <a href="https://web.whatsapp.com" target="_blank" class="text-success">
+                    <i class="fab fa-whatsapp fs-3"></i>
                 </a>
 
-                <!-- Developer Icon -->
-                <a href="https://ghostkmr.github.io/sadwap/sadwap/aboutdeveloper.html" target="_blank" class="text-primary">
-                    <i class="fas fa-user-gear fs-3"></i>
+                <!-- Developer Icon (user with gear) -->
+                <a href="https://github.com/yourusername" target="_blank" class="text-primary">
+                    <i class="fas fa-user-cog fs-3"></i>
                 </a>
 
-                <!-- Video Icon -->
-                <a href="#" data-bs-toggle="modal" data-bs-target="#videoModal" class="text-danger">
-                    <i class="fas fa-video fs-3"></i>
+                <!-- Notification Icon (replaced video icon) -->
+                <a href="#" class="text-warning" id="notificationBtn">
+                    <i class="fas fa-bell fs-3"></i>
+                    <span class="notification-badge">3</span>
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Notification Icon (acting as a hyperlink) -->
-    <a href="https://ghostkmr.github.io/sadwap/notifications.html" class="notif-icon" title="Notifications">
-        <i class="fas fa-bell"></i>
-    </a>
-
-    <!-- Video Modal -->
-    <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="videoModalLabel">Video</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Notification Modal -->
+    <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-white" id="notificationModalLabel">Notifications</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <iframe src="https://ghostkmr.github.io/sadwap/sadwap/r.mp4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">System Update</h6>
+                                <small>3 mins ago</small>
+                            </div>
+                            <p class="mb-1">New security features added</p>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Maintenance</h6>
+                                <small>1 hour ago</small>
+                            </div>
+                            <p class="mb-1">Scheduled maintenance tonight</p>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action bg-dark text-white border-secondary">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Welcome</h6>
+                                <small>1 day ago</small>
+                            </div>
+                            <p class="mb-1">Welcome to SADWAP system</p>
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Mark all as read</button>
                 </div>
             </div>
         </div>
@@ -213,21 +302,50 @@
         document.addEventListener('DOMContentLoaded', () => {
             const passwordInput = document.getElementById('password');
             const errorMessage = document.getElementById('error-message');
+            const notificationBtn = document.getElementById('notificationBtn');
 
+            // Load saved password (if any) when the page is reloaded
             passwordInput.value = localStorage.getItem('savedPassword') || '';
 
-            const correctPassword = "ghost123";
+            // Predefined correct password (for demonstration purposes)
+            const correctPassword = "ghost123"; // Change this to your desired password
 
+            // Save credentials on form submit
             document.getElementById('loginForm').addEventListener('submit', (event) => {
-                event.preventDefault();
+                event.preventDefault(); // Prevent page reload
                 const password = passwordInput.value;
 
+                // Check if the entered password matches the correct password
                 if (password === correctPassword) {
+                    // Save password to localStorage
                     localStorage.setItem('savedPassword', password);
-                    window.location.href = 'https://ghostkmr.github.io/sadwap/sadwap/navigation.html';
+
+                    // Redirect to the next page (for example, dashboard.html)
+                    window.location.href = 'dashboard.html';
                 } else {
-                    errorMessage.style.display = 'block';
+                    errorMessage.style.display = 'block'; // Show error message
                 }
+            });
+            
+            // For mobile devices - ensure video plays
+            const video = document.querySelector('.video-background video');
+            if (video) {
+                video.setAttribute('playsinline', '');
+                video.setAttribute('muted', '');
+                video.setAttribute('autoplay', '');
+                video.setAttribute('loop', '');
+                
+                // iOS requires this to play videos
+                video.addEventListener('loadedmetadata', function() {
+                    video.play().catch(e => console.log("Video play error:", e));
+                });
+            }
+
+            // Initialize notification modal
+            notificationBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'));
+                notificationModal.show();
             });
         });
     </script>
