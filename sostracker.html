@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>// ORDER TRACKER v2.3.7 //</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --matrix-green: #00ff41;
+            --dark-matrix: #003b00;
+            --terminal-bg: #0a0a0a;
+            --terminal-text: #00ff41;
+            --terminal-border: #008f11;
+            --input-bg: #001a00;
+            --highlight: #00ff41;
+            --error-red: #ff0033;
+            --warning-yellow: #ffcc00;
+            --info-blue: #00aaff;
+        }
+        
+        body {
+            background-color: var(--terminal-bg);
+            background-image: 
+                linear-gradient(rgba(0, 20, 0, 0.85), rgba(0, 10, 0, 0.95)), 
+                url('https://ghostkmr.github.io/kuduplatform/s1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--terminal-text);
+            font-family: 'Courier New', monospace;
+            padding: 15px;
+            line-height: 1.4;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 5px var(--matrix-green);
+            letter-spacing: 1px;
+        }
+        
+        .header {
+            border-bottom: 1px solid var(--terminal-border);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .header::after {
+            content: "_";
+            position: absolute;
+            bottom: -5px;
+            right: 0;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        .container {
+            background-color: rgba(10, 20, 10, 0.8);
+            border: 1px solid var(--terminal-border);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            border-radius: 0;
+            padding: 20px;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        
+        .form-control {
+            background-color: var(--input-bg);
+            color: var(--terminal-text);
+            border: 1px solid var(--terminal-border);
+            border-radius: 0;
+            font-family: 'Courier New', monospace;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .form-control:focus {
+            background-color: var(--input-bg);
+            color: var(--highlight);
+            border-color: var(--highlight);
+            box-shadow: 0 0 0 0.2rem rgba(0, 255, 65, 0.25);
+            outline: none;
+        }
+        
+        .btn {
+            border-radius: 0;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            letter-spacing: 1px;
+            padding: 10px 20px;
+            border: 1px solid var(--terminal-border);
+            transition: all 0.3s;
+            margin: 5px;
+            text-transform: uppercase;
+        }
+        
+        .btn-success {
+            background-color: var(--dark-matrix);
+            color: var(--highlight);
+        }
+        
+        .btn-success:hover {
+            background-color: var(--highlight);
+            color: var(--terminal-bg);
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+        }
+        
+        .btn-danger {
+            background-color: #1a0000;
+            color: var(--error-red);
+            border-color: var(--error-red);
+        }
+        
+        .btn-danger:hover {
+            background-color: var(--error-red);
+            color: #000;
+            box-shadow: 0 0 10px rgba(255, 0, 51, 0.5);
+        }
+        
+        .btn-primary {
+            background-color: var(--dark-matrix);
+            color: var(--info-blue);
+            border-color: var(--info-blue);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--info-blue);
+            color: #000;
+            box-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
+        }
+        
+        .btn-warning {
+            background-color: #332600;
+            color: var(--warning-yellow);
+            border-color: var(--warning-yellow);
+        }
+        
+        .btn-warning:hover {
+            background-color: var(--warning-yellow);
+            color: #000;
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+        }
+        
+        .order-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background-color: rgba(0, 30, 0, 0.3);
+            border: 1px solid var(--terminal-border);
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .order-item:hover {
+            background-color: rgba(0, 60, 0, 0.3);
+            box-shadow: 0 0 8px rgba(0, 255, 65, 0.3);
+        }
+        
+        .order-info {
+            flex: 1;
+            text-align: left;
+            padding-right: 10px;
+        }
+        
+        .order-timer {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+            min-width: 80px;
+            text-align: center;
+            margin: 0 10px;
+        }
+        
+        .status-symbol {
+            font-size: 1.3rem;
+            min-width: 30px;
+            text-align: center;
+            margin: 0 10px;
+        }
+        
+        .success {
+            color: var(--highlight);
+        }
+        
+        .warning {
+            color: var(--warning-yellow);
+        }
+        
+        .error {
+            color: var(--error-red);
+        }
+        
+        .order-type {
+            color: var(--info-blue);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-left: 8px;
+        }
+        
+        .radio-group {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .radio-group label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        
+        .radio-group input[type="radio"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 1px solid var(--terminal-border);
+            border-radius: 50%;
+            margin-right: 8px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .radio-group input[type="radio"]:checked {
+            background-color: var(--terminal-bg);
+            border-color: var(--highlight);
+        }
+        
+        .radio-group input[type="radio"]:checked::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: var(--highlight);
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(0, 255, 65, 0.03) 0%,
+                rgba(0, 0, 0, 0) 8%
+            );
+            background-size: 100% 6px;
+            pointer-events: none;
+            z-index: 1000;
+            animation: scanline 6s linear infinite;
+        }
+        
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #008f11;
+            font-style: italic;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .container {
+                padding: 15px;
+                margin: 10px auto;
+            }
+            
+            .btn {
+                padding: 8px 15px;
+                font-size: 0.85rem;
+                margin: 3px;
+            }
+            
+            .order-item {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 15px;
+            }
+            
+            .order-controls {
+                display: flex;
+                width: 100%;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 10px;
+            }
+            
+            .order-timer, .status-symbol {
+                margin: 5px 0;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+        
+        /* Tiny screens */
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px;
+            }
+            
+            .form-control {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+            
+            .btn {
+                width: 100%;
+                margin: 3px 0;
+            }
+            
+            .order-timer {
+                font-size: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                background-color: white !important;
+                color: black !important;
+            }
+            
+            .container {
+                background-color: white !important;
+                border: 1px solid #ddd !important;
+                box-shadow: none !important;
+            }
+            
+            .scanline, .btn {
+                display: none !important;
+            }
+            
+            .order-item {
+                background-color: white !important;
+                border: 1px solid #ddd !important;
+                color: black !important;
+                break-inside: avoid;
+            }
+            
+            .success { color: green !important; }
+            .error { color: red !important; }
+            .order-type { color: blue !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanline"></div>
+    <div class="container">
+        <div class="header">
+            <h1 class="glow-text">// ORDER TRACKER v2.3.7 //</h1>
+        </div>
+
+        <input type="text" id="orderName" class="form-control" placeholder="ENTER ORDER ID" autocomplete="off" />
+
+        <div class="radio-group">
+            <label>
+                <input type="radio" name="orderType" value="frontCounter" checked /> FRONT COUNTER
+            </label>
+            <label>
+                <input type="radio" name="orderType" value="driveThru" /> DRIVE THRU
+            </label>
+        </div>
+
+        <div class="button-group">
+            <button id="addOrderBtn" class="btn btn-success">
+                <i class="fas fa-plus-circle me-2"></i>ADD ORDER
+            </button>
+            <button id="clearAllBtn" class="btn btn-danger">
+                <i class="fas fa-trash-alt me-2"></i>CLEAR ALL
+            </button>
+            <button id="exportBtn" class="btn btn-primary">
+                <i class="fas fa-file-export me-2"></i>EXPORT DATA
+            </button>
+        </div>
+
+        <div id="orderList">
+            <!-- Orders will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script>
+        // System configuration
+        const TIME_LIMITS = {
+            frontCounter: 420,  // 7 minutes in seconds
+            driveThru: 300     // 5 minutes in seconds
+        };
+        
+        const WARNING_THRESHOLD = 0.8; // 80% of time limit
+        
+        // System state
+        let orders = JSON.parse(localStorage.getItem('orders')) || [];
+        const orderList = document.getElementById('orderList');
+        let audioContext;
+        let beepSound;
+        
+        // Initialize audio context for system beeps
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            } catch (e) {
+                console.error('Audio initialization failed:', e);
+            }
+        }
+        
+        // Play system beep sound
+        function playBeep(type) {
+            if (!audioContext) initAudio();
+            if (!audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.type = 'square';
+            oscillator.frequency.value = type === 'warning' ? 800 : 1200;
+            gainNode.gain.value = 0.1;
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.1);
+        }
+        
+        // Start tracking an order
+        function startOrderTimer(order) {
+            if (!order.stopped) {
+                order.timer = setInterval(() => {
+                    order.seconds++;
+                    updateOrderDisplay(order);
+                    checkOrderDeadline(order);
+                    saveOrders();
+                    
+                    // Play warning beep when approaching deadline
+                    const timeLeft = TIME_LIMITS[order.type] - order.seconds;
+                    if (timeLeft === Math.floor(TIME_LIMITS[order.type] * WARNING_THRESHOLD)) {
+                        playBeep('warning');
+                    }
+                    
+                    // Play alert when time limit reached
+                    if (timeLeft === 0) {
+                        playBeep('alert');
+                    }
+                }, 1000);
+            }
+        }
+        
+        // Add new order to the system
+        function addOrder() {
+            const orderName = document.getElementById('orderName').value.trim();
+            const orderType = document.querySelector('input[name="orderType"]:checked').value;
+            
+            if (!orderName) {
+                alert("SYSTEM ALERT: ORDER ID REQUIRED");
+                return;
+            }
+            
+            const order = {
+                id: Date.now(),
+                name: orderName.toUpperCase(),
+                type: orderType,
+                seconds: 0,
+                timer: null,
+                stopped: false,
+                completed: true // Starts as true, changes when time limit exceeded
+            };
+            
+            orders.push(order);
+            saveOrders();
+            displayOrders();
+            startOrderTimer(order);
+            
+            // Visual feedback
+            const addBtn = document.getElementById('addOrderBtn');
+            addBtn.innerHTML = '<i class="fas fa-check me-2"></i>ORDER ADDED';
+            setTimeout(() => {
+                addBtn.innerHTML = '<i class="fas fa-plus-circle me-2"></i>ADD ORDER';
+            }, 1500);
+            
+            document.getElementById('orderName').value = '';
+            document.getElementById('orderName').focus();
+        }
+        
+        // Update order display in UI
+        function updateOrderDisplay(order) {
+            const minutes = Math.floor(order.seconds / 60);
+            const displaySeconds = order.seconds % 60;
+            const timerElement = document.getElementById(`timer-${order.id}`);
+            
+            if (timerElement) {
+                timerElement.textContent = `${pad(minutes)}:${pad(displaySeconds)}`;
+            }
+        }
+        
+        // Check if order is within time limits
+        function checkOrderDeadline(order) {
+            const timerElement = document.getElementById(`timer-${order.id}`);
+            const statusElement = document.getElementById(`status-${order.id}`);
+            
+            if (order.seconds < TIME_LIMITS[order.type]) {
+                timerElement.className = 'order-timer success';
+                order.completed = true;
+            } else {
+                timerElement.className = 'order-timer error';
+                order.completed = false;
+            }
+            
+            if (statusElement) {
+                statusElement.textContent = order.completed ? '✔️' : '❌';
+                statusElement.className = `status-symbol ${order.completed ? 'success' : 'error'}`;
+            }
+        }
+        
+        // Format numbers with leading zero
+        function pad(number) {
+            return number < 10 ? '0' + number : number;
+        }
+        
+        // Display all orders in UI
+        function displayOrders() {
+            if (orders.length === 0) {
+                orderList.innerHTML = '<div class="empty-state">NO ACTIVE ORDERS<br>SYSTEM READY</div>';
+                return;
+            }
+            
+            orderList.innerHTML = '';
+            orders.forEach(order => {
+                const minutes = Math.floor(order.seconds / 60);
+                const displaySeconds = order.seconds % 60;
+                const statusSymbol = order.completed ? '✔️' : '❌';
+                const statusClass = order.completed ? 'success' : 'error';
+                
+                const orderItem = document.createElement('div');
+                orderItem.className = 'order-item';
+                orderItem.innerHTML = `
+                    <div class="order-info">
+                        <strong>${order.name}</strong>
+                        <span class="order-type">${order.type.toUpperCase()}</span>
+                    </div>
+                    <div class="order-controls">
+                        <span id="timer-${order.id}" class="order-timer ${statusClass}">
+                            ${pad(minutes)}:${pad(displaySeconds)}
+                        </span>
+                        <span id="status-${order.id}" class="status-symbol ${statusClass}">
+                            ${statusSymbol}
+                        </span>
+                        <button class="btn btn-warning btn-sm" onclick="stopOrder(${order.id})">
+                            <i class="fas fa-stop"></i> STOP
+                        </button>
+                    </div>
+                `;
+                orderList.appendChild(orderItem);
+            });
+        }
+        
+        // Stop tracking an order
+        function stopOrder(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                clearInterval(order.timer);
+                order.stopped = true;
+                saveOrders();
+                displayOrders();
+                
+                // Visual feedback
+                const stopBtn = event.target.closest('button');
+                stopBtn.innerHTML = '<i class="fas fa-check"></i> STOPPED';
+                stopBtn.className = 'btn btn-success btn-sm';
+            }
+        }
+        
+        // Save orders to local storage
+        function saveOrders() {
+            localStorage.setItem('orders', JSON.stringify(orders));
+        }
+        
+        // Clear all orders with confirmation
+        function clearAllOrders() {
+            if (orders.length > 0 && confirm('SYSTEM ALERT: CONFIRM PURGE ALL ORDERS?')) {
+                orders.forEach(order => clearInterval(order.timer));
+                orders = [];
+                saveOrders();
+                displayOrders();
+                
+                // Visual feedback
+                const clearBtn = document.getElementById('clearAllBtn');
+                clearBtn.innerHTML = '<i class="fas fa-check me-2"></i>SYSTEM PURGED';
+                setTimeout(() => {
+                    clearBtn.innerHTML = '<i class="fas fa-trash-alt me-2"></i>CLEAR ALL';
+                }, 1500);
+            }
+        }
+        
+        // Export orders to CSV file
+        function exportToExcel() {
+            if (orders.length === 0) {
+                alert("SYSTEM ALERT: NO ORDERS TO EXPORT");
+                return;
+            }
+            
+            let csvContent = "data:text/csv;charset=utf-8,ORDER ID,ORDER TYPE,TIME ELAPSED,STATUS\n";
+            orders.forEach(order => {
+                const minutes = Math.floor(order.seconds / 60);
+                const seconds = order.seconds % 60;
+                const status = order.completed ? 'WITHIN LIMIT' : 'OVER LIMIT';
+                csvContent += `"${order.name}",${order.type.toUpperCase()},${pad(minutes)}:${pad(seconds)},${status}\n`;
+            });
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', `order_tracker_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Visual feedback
+            const exportBtn = document.getElementById('exportBtn');
+            exportBtn.innerHTML = '<i class="fas fa-check me-2"></i>DATA EXPORTED';
+            setTimeout(() => {
+                exportBtn.innerHTML = '<i class="fas fa-file-export me-2"></i>EXPORT DATA';
+            }, 1500);
+        }
+        
+        // Initialize the system
+        document.getElementById('addOrderBtn').addEventListener('click', addOrder);
+        document.getElementById('clearAllBtn').addEventListener('click', clearAllOrders);
+        document.getElementById('exportBtn').addEventListener('click', exportToExcel);
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+Enter to add order
+            if (e.ctrlKey && e.key === 'Enter') {
+                addOrder();
+                e.preventDefault();
+            }
+            
+            // Focus on input when typing starts
+            if (e.key !== 'Control' && e.target.id !== 'orderName') {
+                document.getElementById('orderName').focus();
+            }
+        });
+        
+        // Load and display orders on startup
+        window.onload = function() {
+            initAudio();
+            displayOrders();
+            orders.forEach(order => {
+                if (!order.stopped) {
+                    startOrderTimer(order);
+                }
+            });
+        };
+    </script>
+</body>
+</html>

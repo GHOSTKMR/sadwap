@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Expiry Date Tracker</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+    <style>
+        :root {
+            --hacker-green: #00ff41;
+            --dark-bg: #0d0208;
+            --darker-bg: #0a0a0a;
+            --medium-bg: #003b00;
+            --light-bg: #008f11;
+            --text-color: #00ff41;
+            --warning-red: #ff0033;
+            --warning-orange: #ff6600;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            background-color: var(--darker-bg);
+            border: 1px solid var(--hacker-green);
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px auto;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+            max-width: 95%;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 700px;
+            }
+        }
+
+        h5 {
+            color: var(--hacker-green);
+            border-bottom: 1px solid var(--hacker-green);
+            padding-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn {
+            background-color: var(--medium-bg);
+            color: var(--hacker-green);
+            border: 1px solid var(--hacker-green);
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            background-color: var(--light-bg);
+            color: var(--dark-bg);
+            box-shadow: 0 0 10px var(--hacker-green);
+        }
+
+        .btn-primary {
+            background-color: var(--medium-bg);
+        }
+
+        .form-label {
+            color: var(--hacker-green);
+            letter-spacing: 1px;
+        }
+
+        .form-control {
+            background-color: var(--dark-bg);
+            color: var(--hacker-green);
+            border: 1px solid var(--hacker-green);
+            height: 38px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .form-control:focus {
+            background-color: var(--dark-bg);
+            color: var(--hacker-green);
+            border-color: var(--hacker-green);
+            box-shadow: 0 0 10px var(--hacker-green);
+        }
+
+        .result ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .result ul li {
+            padding: 12px;
+            border-bottom: 1px solid var(--medium-bg);
+            margin: 8px 0;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            background-color: rgba(0, 63, 0, 0.2);
+            position: relative;
+        }
+
+        .result ul li:hover {
+            background-color: rgba(0, 143, 17, 0.2);
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+        }
+
+        .critical {
+            color: var(--warning-red);
+            animation: pulse 2s infinite;
+            border-left: 3px solid var(--warning-red);
+        }
+
+        .warning {
+            color: var(--warning-orange);
+            border-left: 3px solid var(--warning-orange);
+        }
+
+        .safe {
+            color: var(--hacker-green);
+            border-left: 3px solid var(--hacker-green);
+        }
+
+        .notification-icon {
+            font-size: 24px;
+            color: var(--hacker-green);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .notification-icon:hover {
+            text-shadow: 0 0 10px var(--hacker-green);
+        }
+
+        .notification-count {
+            color: var(--dark-bg);
+            background-color: var(--warning-red);
+            border-radius: 50%;
+            font-size: 12px;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            padding: 2px 6px;
+            font-weight: bold;
+        }
+
+        .search-box {
+            background-color: var(--dark-bg);
+            color: var(--hacker-green);
+            border: 1px solid var(--hacker-green);
+            flex-grow: 1;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-left: 8px;
+        }
+
+        .icon-btn {
+            background-color: var(--medium-bg);
+            color: var(--hacker-green);
+            border: 1px solid var(--hacker-green);
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 5px;
+            padding: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .icon-btn:hover {
+            background-color: var(--light-bg);
+            box-shadow: 0 0 10px var(--hacker-green);
+        }
+
+        .icon-btn i {
+            font-size: 18px;
+        }
+
+        .countdown {
+            font-size: 0.85rem;
+            color: var(--hacker-green);
+            margin-top: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .product-name {
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .expiry-date {
+            opacity: 0.8;
+        }
+
+        .day-of-week {
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        .search-container {
+            display: flex;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        .glow {
+            text-shadow: 0 0 5px var(--hacker-green);
+        }
+
+        /* Terminal-like scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--hacker-green);
+            border-radius: 4px;
+        }
+
+        /* Typewriter effect for empty state */
+        .typewriter {
+            overflow: hidden;
+            border-right: 2px solid var(--hacker-green);
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: 2px;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--hacker-green); }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Notification Icon -->
+        <div class="d-flex justify-content-end mb-3">
+            <span class="notification-icon glow" id="notificationIcon" onclick="showNotifications()" title="View Expiring Soon">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span class="notification-count" id="notificationCount">0</span>
+            </span>
+        </div>
+
+        <!-- Form Section -->
+        <form id="expiryForm" class="mb-4">
+            <div class="mb-3">
+                <label for="productName" class="form-label">PRODUCT NAME</label>
+                <input type="text" class="form-control" id="productName" name="productName" required placeholder="Enter product name...">
+            </div>
+            <div class="mb-3">
+                <label for="expiryDate" class="form-label">EXPIRY DATE</label>
+                <input type="date" class="form-control" id="expiryDate" name="expiryDate" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 glow">
+                <i class="fas fa-plus-circle"></i> ADD PRODUCT
+            </button>
+        </form>
+
+        <!-- Search Box and Action Buttons -->
+        <div class="search-container">
+            <input type="search" class="form-control search-box" id="searchBox" placeholder="SEARCH PRODUCTS..." onkeyup="searchProducts()">
+            <div class="action-buttons">
+                <button class="icon-btn" id="clearData" title="Clear All Data">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+                <button class="icon-btn" id="exportData" title="Export to Excel">
+                    <i class="fas fa-file-excel"></i>
+                </button>
+                <button class="icon-btn" id="toggleData" title="Toggle Visibility">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Product List -->
+        <div class="result mt-4">
+            <h5 class="text-center glow">PRODUCT INVENTORY</h5>
+            <ul id="productList">
+                <!-- Products will be added here dynamically -->
+            </ul>
+            <div id="emptyState" class="text-center typewriter" style="display: none;">
+                NO PRODUCTS FOUND. ADD SOME TO BEGIN TRACKING...
+            </div>
+        </div>
+    </div>
+
+    <audio id="alertSound" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3" preload="auto"></audio>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the app
+            loadProductsFromLocalStorage();
+            updateNotificationCount();
+            
+            // Set up event listeners
+            document.getElementById('expiryForm').addEventListener('submit', handleFormSubmit);
+            document.getElementById('clearData').addEventListener('click', clearAllData);
+            document.getElementById('exportData').addEventListener('click', exportToExcel);
+            document.getElementById('toggleData').addEventListener('click', toggleProductList);
+            
+            // Check for expiring products every hour
+            setInterval(checkForExpiringProducts, 3600000);
+        });
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const productName = document.getElementById('productName').value.trim();
+            const expiryDateInput = document.getElementById('expiryDate').value;
+            
+            if (!productName || !expiryDateInput) {
+                showAlert('Please fill in all fields', 'warning');
+                return;
+            }
+            
+            const expiryDate = new Date(expiryDateInput);
+            if (isNaN(expiryDate.getTime())) {
+                showAlert('Invalid date format', 'warning');
+                return;
+            }
+            
+            const product = {
+                name: productName,
+                date: expiryDate.toLocaleDateString(),
+                expiryDate: expiryDate.toISOString(),
+                daysRemaining: calculateTimeRemaining(expiryDate),
+                dayOfWeek: expiryDate.toLocaleDateString('en-US', { weekday: 'long' })
+            };
+            
+            addProductToList(product);
+            saveProductToLocalStorage(product);
+            updateNotificationCount();
+            document.getElementById('expiryForm').reset();
+            
+            // Play a confirmation sound
+            const sound = document.getElementById('alertSound');
+            sound.currentTime = 0;
+            sound.play();
+            
+            showAlert('Product added successfully!', 'success');
+        }
+
+        function addProductToList(product) {
+            const productList = document.getElementById('productList');
+            const emptyState = document.getElementById('emptyState');
+            
+            // Hide empty state if it's visible
+            emptyState.style.display = 'none';
+            
+            const productId = `product-${Date.now()}`;
+            const productListItem = document.createElement('li');
+            
+            // Determine status class based on days remaining
+            let statusClass = '';
+            if (product.daysRemaining < 0) {
+                statusClass = 'critical';
+            } else if (product.daysRemaining <= 7) {
+                statusClass = 'warning';
+            } else {
+                statusClass = 'safe';
+            }
+            
+            productListItem.id = productId;
+            productListItem.className = statusClass;
+            productListItem.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="product-name">${product.name.toUpperCase()}</span><br>
+                        <span class="expiry-date">EXP: ${product.date}</span>
+                        <span class="day-of-week">(${product.dayOfWeek})</span><br>
+                        <div class="countdown" id="countdown-${productId}"></div>
+                    </div>
+                    <button class="icon-btn btn-sm delete-product" data-id="${productId}" title="Delete">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            productList.appendChild(productListItem);
+            
+            // Add event listener to delete button
+            productListItem.querySelector('.delete-product').addEventListener('click', function() {
+                deleteProduct(productId, product.name);
+            });
+            
+            // Start the countdown timer for this product
+            startCountdown(product.expiryDate, `countdown-${productId}`);
+        }
+
+        function deleteProduct(productId, productName) {
+            if (confirm(`Are you sure you want to delete "${productName}"?`)) {
+                // Remove from DOM
+                document.getElementById(productId).remove();
+                
+                // Remove from localStorage
+                const products = JSON.parse(localStorage.getItem('products')) || [];
+                const updatedProducts = products.filter(p => `product-${new Date(p.expiryDate).getTime()}` !== productId);
+                localStorage.setItem('products', JSON.stringify(updatedProducts));
+                
+                updateNotificationCount();
+                checkEmptyState();
+                showAlert('Product deleted successfully!', 'success');
+            }
+        }
+
+        function saveProductToLocalStorage(product) {
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            products.push(product);
+            localStorage.setItem('products', JSON.stringify(products));
+        }
+
+        function loadProductsFromLocalStorage() {
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '';
+            
+            if (products.length === 0) {
+                checkEmptyState();
+                return;
+            }
+            
+            // Sort products by expiry date (soonest first)
+            products.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
+            
+            products.forEach(product => {
+                // Recalculate days remaining based on current date
+                product.daysRemaining = calculateTimeRemaining(new Date(product.expiryDate));
+                addProductToList(product);
+            });
+            
+            checkEmptyState();
+        }
+
+        function calculateTimeRemaining(expiryDate) {
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            
+            const timeDiff = expiryDate - now;
+            return Math.ceil(timeDiff / (1000 * 3600 * 24));
+        }
+
+        function startCountdown(expiryDate, countdownId) {
+            const countdownElement = document.getElementById(countdownId);
+            
+            function updateCountdown() {
+                const now = new Date();
+                const timeDiff = new Date(expiryDate) - now;
+                
+                if (timeDiff <= 0) {
+                    countdownElement.innerHTML = "<strong>STATUS: EXPIRED!</strong>";
+                    return;
+                }
+                
+                const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+                
+                let statusText = '';
+                if (days < 0) {
+                    statusText = 'EXPIRED!';
+                } else if (days === 0) {
+                    statusText = `EXPIRES TODAY! (${hours}h ${minutes}m ${seconds}s)`;
+                } else if (days <= 7) {
+                    statusText = `EXPIRES IN: ${days}d ${hours}h (SOON!)`;
+                } else {
+                    statusText = `EXPIRES IN: ${days} days`;
+                }
+                
+                countdownElement.innerHTML = `<strong>STATUS:</strong> ${statusText}`;
+            }
+            
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+
+        function exportToExcel() {
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            if (products.length === 0) {
+                showAlert('No data to export', 'warning');
+                return;
+            }
+            
+            // Format data for export
+            const exportData = products.map(product => {
+                return {
+                    'Product Name': product.name,
+                    'Expiry Date': product.date,
+                    'Day of Week': product.dayOfWeek,
+                    'Days Remaining': calculateTimeRemaining(new Date(product.expiryDate)),
+                    'Status': calculateTimeRemaining(new Date(product.expiryDate)) <= 0 ? 'EXPIRED' : 
+                             calculateTimeRemaining(new Date(product.expiryDate)) <= 7 ? 'WARNING' : 'SAFE'
+                };
+            });
+            
+            const worksheet = XLSX.utils.json_to_sheet(exportData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Product Expiry");
+            XLSX.writeFile(workbook, 'Product_Expiry_Tracker.xlsx');
+            
+            showAlert('Data exported successfully!', 'success');
+        }
+
+        function searchProducts() {
+            const query = document.getElementById('searchBox').value.toLowerCase();
+            const productItems = document.getElementById('productList').children;
+            let foundItems = 0;
+            
+            for (let item of productItems) {
+                const productName = item.querySelector('.product-name').textContent.toLowerCase();
+                const expiryDate = item.querySelector('.expiry-date').textContent.toLowerCase();
+                
+                if (productName.includes(query) || expiryDate.includes(query)) {
+                    item.style.display = 'block';
+                    foundItems++;
+                } else {
+                    item.style.display = 'none';
+                }
+            }
+            
+            if (foundItems === 0 && query !== '') {
+                document.getElementById('emptyState').textContent = 'NO PRODUCTS MATCH YOUR SEARCH...';
+                document.getElementById('emptyState').style.display = 'block';
+            } else {
+                checkEmptyState();
+            }
+        }
+
+        function updateNotificationCount() {
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const criticalCount = products.filter(product => {
+                const daysRemaining = calculateTimeRemaining(new Date(product.expiryDate));
+                return daysRemaining <= 7;
+            }).length;
+            
+            document.getElementById('notificationCount').textContent = criticalCount;
+            
+            // Update document title if there are critical items
+            if (criticalCount > 0) {
+                document.title = `(${criticalCount}) Product Expiry Tracker`;
+            } else {
+                document.title = 'Product Expiry Tracker';
+            }
+        }
+
+        function showNotifications() {
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const criticalProducts = products.filter(product => {
+                const daysRemaining = calculateTimeRemaining(new Date(product.expiryDate));
+                return daysRemaining <= 7;
+            }).sort((a, b) => {
+                return calculateTimeRemaining(new Date(a.expiryDate)) - calculateTimeRemaining(new Date(b.expiryDate));
+            });
+            
+            if (criticalProducts.length === 0) {
+                showAlert('No expiring products found', 'success');
+                return;
+            }
+            
+            let notificationText = 'EXPIRING PRODUCTS:\n\n';
+            criticalProducts.forEach(product => {
+                const daysRemaining = calculateTimeRemaining(new Date(product.expiryDate));
+                if (daysRemaining < 0) {
+                    notificationText += `⚠️ EXPIRED: ${product.name} (${product.date})\n`;
+                } else if (daysRemaining === 0) {
+                    notificationText += `⚠️ TODAY: ${product.name} (${product.date})\n`;
+                } else {
+                    notificationText += `⚠️ ${daysRemaining} DAYS: ${product.name} (${product.date})\n`;
+                }
+            });
+            
+            alert(notificationText);
+            
+            // Play alert sound if there are critical items
+            if (criticalProducts.length > 0) {
+                const sound = document.getElementById('alertSound');
+                sound.currentTime = 0;
+                sound.play();
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to delete ALL product data? This cannot be undone.')) {
+                localStorage.removeItem('products');
+                document.getElementById('productList').innerHTML = '';
+                updateNotificationCount();
+                checkEmptyState();
+                showAlert('All data cleared successfully!', 'success');
+            }
+        }
+
+        function toggleProductList() {
+            const productList = document.getElementById('productList');
+            const isHidden = productList.style.display === 'none';
+            productList.style.display = isHidden ? 'block' : 'none';
+            checkEmptyState();
+        }
+
+        function checkEmptyState() {
+            const productList = document.getElementById('productList');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (productList.children.length === 0 && productList.style.display !== 'none') {
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+            }
+        }
+
+        function checkForExpiringProducts() {
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const expiringSoon = products.filter(product => {
+                const daysRemaining = calculateTimeRemaining(new Date(product.expiryDate));
+                return daysRemaining <= 7;
+            });
+            
+            if (expiringSoon.length > 0) {
+                updateNotificationCount();
+                
+                // Only show alert if the page isn't currently visible
+                if (document.hidden) {
+                    const notification = new Notification('Product Expiry Alert', {
+                        body: `${expiringSoon.length} product(s) expiring soon!`,
+                        icon: 'https://cdn-icons-png.flaticon.com/512/2232/2232688.png'
+                    });
+                    
+                    notification.onclick = function() {
+                        window.focus();
+                        showNotifications();
+                    };
+                }
+            }
+        }
+
+        function showAlert(message, type) {
+            // In a real app, you might want to implement a more sophisticated notification system
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        // Request notification permission
+        if (Notification.permission !== 'granted') {
+            Notification.requestPermission();
+        }
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
