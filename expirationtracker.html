@@ -15,88 +15,109 @@
 
     <style>
         :root {
-            --hacker-green: #00ff41;
-            --dark-bg: #0d0208;
+            --primary-color: #00ff88;
+            --dark-bg: #121212;
             --darker-bg: #0a0a0a;
-            --medium-bg: #003b00;
-            --light-bg: #008f11;
-            --text-color: #00ff41;
-            --warning-red: #ff0033;
-            --warning-orange: #ff6600;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-muted: #aaaaaa;
+            --warning-red: #ff5555;
+            --warning-orange: #ffaa00;
+            --success-green: #00cc66;
+            --info-blue: #3399ff;
         }
 
         body {
-            font-family: 'Courier New', monospace;
+            font-family: 'Roboto', 'Segoe UI', sans-serif;
             background-color: var(--dark-bg);
             color: var(--text-color);
             min-height: 100vh;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             line-height: 1.6;
         }
 
         .container {
-            background-color: var(--darker-bg);
-            border: 1px solid var(--hacker-green);
-            border-radius: 5px;
-            padding: 20px;
-            margin: 20px auto;
-            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
-            max-width: 95%;
-            width: 100%;
-        }
-
-        @media (min-width: 768px) {
-            .container {
-                max-width: 700px;
-            }
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 0 auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         h5 {
-            color: var(--hacker-green);
-            border-bottom: 1px solid var(--hacker-green);
+            color: var(--primary-color);
             padding-bottom: 10px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        h5::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 3px;
         }
 
         .btn {
-            background-color: var(--medium-bg);
-            color: var(--hacker-green);
-            border: 1px solid var(--hacker-green);
+            background-color: var(--primary-color);
+            color: var(--darker-bg);
+            border: none;
             margin-bottom: 10px;
             transition: all 0.3s ease;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 10px 20px;
         }
 
         .btn:hover {
-            background-color: var(--light-bg);
-            color: var(--dark-bg);
-            box-shadow: 0 0 10px var(--hacker-green);
+            background-color: #00cc70;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
         }
 
-        .btn-primary {
-            background-color: var(--medium-bg);
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(0, 255, 136, 0.1);
         }
 
         .form-label {
-            color: var(--hacker-green);
-            letter-spacing: 1px;
+            color: var(--text-color);
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
         }
 
         .form-control {
-            background-color: var(--dark-bg);
-            color: var(--hacker-green);
-            border: 1px solid var(--hacker-green);
-            height: 38px;
-            font-family: 'Courier New', monospace;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            height: 45px;
+            border-radius: 8px;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
         }
 
         .form-control:focus {
-            background-color: var(--dark-bg);
-            color: var(--hacker-green);
-            border-color: var(--hacker-green);
-            box-shadow: 0 0 10px var(--hacker-green);
+            background-color: rgba(255, 255, 255, 0.08);
+            color: var(--text-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.2);
         }
 
         .result ul {
@@ -106,89 +127,104 @@
         }
 
         .result ul li {
-            padding: 12px;
-            border-bottom: 1px solid var(--medium-bg);
-            margin: 8px 0;
-            border-radius: 5px;
+            padding: 16px;
+            margin: 10px 0;
+            border-radius: 8px;
             transition: all 0.3s ease;
-            background-color: rgba(0, 63, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.03);
             position: relative;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .result ul li:hover {
-            background-color: rgba(0, 143, 17, 0.2);
-            box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+            background-color: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .critical {
-            color: var(--warning-red);
-            animation: pulse 2s infinite;
-            border-left: 3px solid var(--warning-red);
+            border-left-color: var(--warning-red);
+            background-color: rgba(255, 85, 85, 0.08);
         }
 
         .warning {
-            color: var(--warning-orange);
-            border-left: 3px solid var(--warning-orange);
+            border-left-color: var(--warning-orange);
+            background-color: rgba(255, 170, 0, 0.08);
         }
 
         .safe {
-            color: var(--hacker-green);
-            border-left: 3px solid var(--hacker-green);
+            border-left-color: var(--success-green);
         }
 
         .notification-icon {
-            font-size: 24px;
-            color: var(--hacker-green);
+            font-size: 20px;
+            color: var(--primary-color);
             position: relative;
             cursor: pointer;
             transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: rgba(0, 255, 136, 0.1);
         }
 
         .notification-icon:hover {
-            text-shadow: 0 0 10px var(--hacker-green);
+            background-color: rgba(0, 255, 136, 0.2);
+            transform: scale(1.1);
         }
 
         .notification-count {
-            color: var(--dark-bg);
+            color: white;
             background-color: var(--warning-red);
             border-radius: 50%;
-            font-size: 12px;
+            font-size: 11px;
             position: absolute;
-            top: -5px;
-            right: -5px;
-            padding: 2px 6px;
+            top: -2px;
+            right: -2px;
+            padding: 3px 6px;
             font-weight: bold;
+            min-width: 20px;
+            text-align: center;
         }
 
         .search-box {
-            background-color: var(--dark-bg);
-            color: var(--hacker-green);
-            border: 1px solid var(--hacker-green);
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             flex-grow: 1;
+            border-radius: 8px 0 0 8px;
+            padding: 10px 15px;
         }
 
         .action-buttons {
             display: flex;
             gap: 8px;
-            margin-left: 8px;
         }
 
         .icon-btn {
-            background-color: var(--medium-bg);
-            color: var(--hacker-green);
-            border: 1px solid var(--hacker-green);
-            width: 40px;
-            height: 40px;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 45px;
+            height: 45px;
             text-align: center;
             cursor: pointer;
-            border-radius: 5px;
-            padding: 8px;
+            border-radius: 8px;
+            padding: 10px;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .icon-btn:hover {
-            background-color: var(--light-bg);
-            box-shadow: 0 0 10px var(--hacker-green);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--primary-color);
+            transform: translateY(-2px);
         }
 
         .icon-btn i {
@@ -197,43 +233,64 @@
 
         .countdown {
             font-size: 0.85rem;
-            color: var(--hacker-green);
-            margin-top: 5px;
-            font-family: 'Courier New', monospace;
+            color: var(--text-muted);
+            margin-top: 8px;
+            font-family: 'Roboto Mono', monospace;
         }
 
         .product-name {
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 4px;
         }
 
         .expiry-date {
-            opacity: 0.8;
+            color: var(--text-muted);
+            font-size: 0.9rem;
         }
 
         .day-of-week {
-            font-style: italic;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-left: 8px;
         }
 
         .search-container {
             display: flex;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             width: 100%;
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.6; }
-            100% { opacity: 1; }
+        .badge {
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .glow {
-            text-shadow: 0 0 5px var(--hacker-green);
+        .badge-critical {
+            background-color: var(--warning-red);
+            color: white;
         }
 
-        /* Terminal-like scrollbar */
+        .badge-warning {
+            background-color: var(--warning-orange);
+            color: black;
+        }
+
+        .badge-safe {
+            background-color: var(--success-green);
+            color: white;
+        }
+
+        .badge-info {
+            background-color: var(--info-blue);
+            color: white;
+        }
+
+        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -243,81 +300,172 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--hacker-green);
+            background: var(--primary-color);
             border-radius: 4px;
         }
 
-        /* Typewriter effect for empty state */
-        .typewriter {
-            overflow: hidden;
-            border-right: 2px solid var(--hacker-green);
-            white-space: nowrap;
-            margin: 0 auto;
-            letter-spacing: 2px;
-            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
         }
 
-        @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
+        .empty-state i {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            opacity: 0.5;
         }
 
-        @keyframes blink-caret {
-            from, to { border-color: transparent }
-            50% { border-color: var(--hacker-green); }
+        .empty-state h4 {
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        /* Animation for critical items */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Status indicator */
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-critical {
+            background-color: var(--warning-red);
+            box-shadow: 0 0 8px var(--warning-red);
+        }
+
+        .status-warning {
+            background-color: var(--warning-orange);
+            box-shadow: 0 0 8px var(--warning-orange);
+        }
+
+        .status-safe {
+            background-color: var(--success-green);
+            box-shadow: 0 0 8px var(--success-green);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                border-radius: 8px;
+                margin-bottom: 10px;
+            }
+            
+            .action-buttons {
+                justify-content: space-between;
+                width: 100%;
+            }
+            
+            .icon-btn {
+                flex-grow: 1;
+                width: auto;
+            }
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <!-- Notification Icon -->
-        <div class="d-flex justify-content-end mb-3">
-            <span class="notification-icon glow" id="notificationIcon" onclick="showNotifications()" title="View Expiring Soon">
-                <i class="fas fa-exclamation-triangle"></i>
+        <!-- Header with title and notification -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="m-0" style="color: var(--primary-color);">
+                <i class="fas fa-hourglass-half me-2"></i> Expiry Tracker
+            </h4>
+            <span class="notification-icon" id="notificationIcon" onclick="showNotifications()" title="View Expiring Soon">
+                <i class="fas fa-bell"></i>
                 <span class="notification-count" id="notificationCount">0</span>
             </span>
         </div>
 
         <!-- Form Section -->
         <form id="expiryForm" class="mb-4">
-            <div class="mb-3">
-                <label for="productName" class="form-label">PRODUCT NAME</label>
-                <input type="text" class="form-control" id="productName" name="productName" required placeholder="Enter product name...">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label for="productName" class="form-label">Product Name</label>
+                    <input type="text" class="form-control" id="productName" name="productName" required placeholder="e.g. Milk, Eggs, Medicine">
+                </div>
+                <div class="col-md-4">
+                    <label for="expiryDate" class="form-label">Expiry Date</label>
+                    <input type="date" class="form-control" id="expiryDate" name="expiryDate" required>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="expiryDate" class="form-label">EXPIRY DATE</label>
-                <input type="date" class="form-control" id="expiryDate" name="expiryDate" required>
-            </div>
-            <button type="submit" class="btn btn-primary w-100 glow">
-                <i class="fas fa-plus-circle"></i> ADD PRODUCT
+            <button type="submit" class="btn w-100 mt-3">
+                <i class="fas fa-plus-circle me-2"></i> Add Product
             </button>
         </form>
 
-        <!-- Search Box and Action Buttons -->
-        <div class="search-container">
-            <input type="search" class="form-control search-box" id="searchBox" placeholder="SEARCH PRODUCTS..." onkeyup="searchProducts()">
-            <div class="action-buttons">
+        <!-- Search and Actions -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="m-0">Your Products</h5>
+            <div class="d-flex">
+                <button class="icon-btn me-2" id="exportData" title="Export to Excel">
+                    <i class="fas fa-file-export"></i>
+                </button>
                 <button class="icon-btn" id="clearData" title="Clear All Data">
                     <i class="fas fa-trash-alt"></i>
                 </button>
-                <button class="icon-btn" id="exportData" title="Export to Excel">
-                    <i class="fas fa-file-excel"></i>
-                </button>
-                <button class="icon-btn" id="toggleData" title="Toggle Visibility">
-                    <i class="fas fa-eye"></i>
-                </button>
             </div>
+        </div>
+        
+        <div class="search-container mb-4">
+            <input type="search" class="form-control search-box" id="searchBox" placeholder="Search products...">
+            <button class="icon-btn ms-2" id="searchButton">
+                <i class="fas fa-search"></i>
+            </button>
         </div>
 
         <!-- Product List -->
-        <div class="result mt-4">
-            <h5 class="text-center glow">PRODUCT INVENTORY</h5>
+        <div class="result">
             <ul id="productList">
                 <!-- Products will be added here dynamically -->
             </ul>
-            <div id="emptyState" class="text-center typewriter" style="display: none;">
-                NO PRODUCTS FOUND. ADD SOME TO BEGIN TRACKING...
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-box-open"></i>
+                <h4>No Products Found</h4>
+                <p>Add some products to start tracking their expiry dates</p>
+                <button class="btn btn-sm mt-2" onclick="document.getElementById('productName').focus()">
+                    <i class="fas fa-plus me-2"></i>Add First Product
+                </button>
+            </div>
+        </div>
+        
+        <!-- Summary Card -->
+        <div class="mt-4 p-3 rounded" style="background-color: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.1);">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <small class="text-muted">TOTAL PRODUCTS</small>
+                    <h4 class="m-0" id="totalProducts">0</h4>
+                </div>
+                <div class="text-end">
+                    <small class="text-muted">EXPIRING SOON</small>
+                    <h4 class="m-0 text-warning" id="expiringSoonCount">0</h4>
+                </div>
+                <div class="text-end">
+                    <small class="text-muted">EXPIRED</small>
+                    <h4 class="m-0 text-danger" id="expiredCount">0</h4>
+                </div>
             </div>
         </div>
     </div>
@@ -330,15 +478,25 @@
             // Initialize the app
             loadProductsFromLocalStorage();
             updateNotificationCount();
+            updateSummary();
             
             // Set up event listeners
             document.getElementById('expiryForm').addEventListener('submit', handleFormSubmit);
             document.getElementById('clearData').addEventListener('click', clearAllData);
             document.getElementById('exportData').addEventListener('click', exportToExcel);
-            document.getElementById('toggleData').addEventListener('click', toggleProductList);
+            document.getElementById('searchBox').addEventListener('keyup', searchProducts);
+            document.getElementById('searchButton').addEventListener('click', searchProducts);
             
             // Check for expiring products every hour
             setInterval(checkForExpiringProducts, 3600000);
+            
+            // Request notification permission
+            if (Notification.permission !== 'granted') {
+                Notification.requestPermission();
+            }
+            
+            // Set focus to product name field
+            document.getElementById('productName').focus();
         });
 
         function handleFormSubmit(event) {
@@ -358,24 +516,33 @@
             }
             
             const product = {
+                id: Date.now().toString(),
                 name: productName,
-                date: expiryDate.toLocaleDateString(),
+                date: formatDate(expiryDate),
                 expiryDate: expiryDate.toISOString(),
                 daysRemaining: calculateTimeRemaining(expiryDate),
-                dayOfWeek: expiryDate.toLocaleDateString('en-US', { weekday: 'long' })
+                dayOfWeek: expiryDate.toLocaleDateString('en-US', { weekday: 'short' }),
+                addedDate: new Date().toISOString()
             };
             
             addProductToList(product);
             saveProductToLocalStorage(product);
             updateNotificationCount();
+            updateSummary();
             document.getElementById('expiryForm').reset();
+            document.getElementById('productName').focus();
             
             // Play a confirmation sound
-            const sound = document.getElementById('alertSound');
-            sound.currentTime = 0;
-            sound.play();
-            
+            playSound();
             showAlert('Product added successfully!', 'success');
+        }
+
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
         }
 
         function addProductToList(product) {
@@ -385,30 +552,51 @@
             // Hide empty state if it's visible
             emptyState.style.display = 'none';
             
-            const productId = `product-${Date.now()}`;
             const productListItem = document.createElement('li');
             
-            // Determine status class based on days remaining
-            let statusClass = '';
+            // Determine status based on days remaining
+            let statusClass, statusText, statusIndicator, badgeClass;
             if (product.daysRemaining < 0) {
                 statusClass = 'critical';
+                statusText = 'EXPIRED';
+                statusIndicator = 'status-critical';
+                badgeClass = 'badge-critical';
             } else if (product.daysRemaining <= 7) {
                 statusClass = 'warning';
+                statusText = 'SOON';
+                statusIndicator = 'status-warning';
+                badgeClass = 'badge-warning';
             } else {
                 statusClass = 'safe';
+                statusText = 'SAFE';
+                statusIndicator = 'status-safe';
+                badgeClass = 'badge-safe';
             }
             
-            productListItem.id = productId;
+            // Add pulse animation for critical items
+            if (product.daysRemaining <= 0) {
+                productListItem.classList.add('pulse');
+            }
+            
+            productListItem.id = `product-${product.id}`;
             productListItem.className = statusClass;
             productListItem.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-start">
                     <div>
-                        <span class="product-name">${product.name.toUpperCase()}</span><br>
-                        <span class="expiry-date">EXP: ${product.date}</span>
-                        <span class="day-of-week">(${product.dayOfWeek})</span><br>
-                        <div class="countdown" id="countdown-${productId}"></div>
+                        <div class="d-flex align-items-center mb-1">
+                            <span class="status-indicator ${statusIndicator}"></span>
+                            <span class="product-name">${product.name}</span>
+                            <span class="badge ${badgeClass} ms-2">${statusText}</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="expiry-date">
+                                <i class="far fa-calendar-alt me-1"></i>${product.date}
+                            </span>
+                            <span class="day-of-week">${product.dayOfWeek}</span>
+                        </div>
+                        <div class="countdown mt-2" id="countdown-${product.id}"></div>
                     </div>
-                    <button class="icon-btn btn-sm delete-product" data-id="${productId}" title="Delete">
+                    <button class="icon-btn btn-sm delete-product" data-id="${product.id}" title="Delete">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -418,37 +606,46 @@
             
             // Add event listener to delete button
             productListItem.querySelector('.delete-product').addEventListener('click', function() {
-                deleteProduct(productId, product.name);
+                deleteProduct(product.id, product.name);
             });
             
             // Start the countdown timer for this product
-            startCountdown(product.expiryDate, `countdown-${productId}`);
+            startCountdown(product.expiryDate, `countdown-${product.id}`);
         }
 
         function deleteProduct(productId, productName) {
-            if (confirm(`Are you sure you want to delete "${productName}"?`)) {
+            if (confirm(`Delete "${productName}"? This action cannot be undone.`)) {
                 // Remove from DOM
-                document.getElementById(productId).remove();
+                const element = document.getElementById(`product-${productId}`);
+                if (element) {
+                    element.classList.add('fade-out');
+                    setTimeout(() => element.remove(), 300);
+                }
                 
                 // Remove from localStorage
-                const products = JSON.parse(localStorage.getItem('products')) || [];
-                const updatedProducts = products.filter(p => `product-${new Date(p.expiryDate).getTime()}` !== productId);
+                const products = getProductsFromStorage();
+                const updatedProducts = products.filter(p => p.id !== productId);
                 localStorage.setItem('products', JSON.stringify(updatedProducts));
                 
                 updateNotificationCount();
+                updateSummary();
                 checkEmptyState();
-                showAlert('Product deleted successfully!', 'success');
+                showAlert('Product deleted', 'success');
             }
         }
 
+        function getProductsFromStorage() {
+            return JSON.parse(localStorage.getItem('products')) || [];
+        }
+
         function saveProductToLocalStorage(product) {
-            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const products = getProductsFromStorage();
             products.push(product);
             localStorage.setItem('products', JSON.stringify(products));
         }
 
         function loadProductsFromLocalStorage() {
-            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const products = getProductsFromStorage();
             const productList = document.getElementById('productList');
             productList.innerHTML = '';
             
@@ -485,58 +682,77 @@
                 const timeDiff = new Date(expiryDate) - now;
                 
                 if (timeDiff <= 0) {
-                    countdownElement.innerHTML = "<strong>STATUS: EXPIRED!</strong>";
+                    countdownElement.innerHTML = `
+                        <span class="text-danger">
+                            <i class="fas fa-exclamation-circle me-1"></i>Expired ${formatRelativeTime(new Date(expiryDate))}
+                        </span>
+                    `;
                     return;
                 }
                 
                 const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
                 
                 let statusText = '';
                 if (days < 0) {
-                    statusText = 'EXPIRED!';
+                    statusText = 'Expired';
                 } else if (days === 0) {
-                    statusText = `EXPIRES TODAY! (${hours}h ${minutes}m ${seconds}s)`;
+                    statusText = `Expires today in ${hours}h ${minutes}m`;
                 } else if (days <= 7) {
-                    statusText = `EXPIRES IN: ${days}d ${hours}h (SOON!)`;
+                    statusText = `${days} day${days !== 1 ? 's' : ''} remaining`;
                 } else {
-                    statusText = `EXPIRES IN: ${days} days`;
+                    statusText = `Expires in ${days} days`;
                 }
                 
-                countdownElement.innerHTML = `<strong>STATUS:</strong> ${statusText}`;
+                countdownElement.innerHTML = `
+                    <span class="text-muted">
+                        <i class="far fa-clock me-1"></i>${statusText}
+                    </span>
+                `;
             }
             
             updateCountdown();
-            setInterval(updateCountdown, 1000);
+            setInterval(updateCountdown, 60000); // Update every minute
+        }
+
+        function formatRelativeTime(date) {
+            const now = new Date();
+            const diffInDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+            
+            if (diffInDays === 0) return 'today';
+            if (diffInDays === 1) return 'yesterday';
+            return `${diffInDays} days ago`;
         }
 
         function exportToExcel() {
-            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const products = getProductsFromStorage();
             if (products.length === 0) {
-                showAlert('No data to export', 'warning');
+                showAlert('No products to export', 'warning');
                 return;
             }
             
             // Format data for export
             const exportData = products.map(product => {
+                const status = product.daysRemaining <= 0 ? 'Expired' : 
+                              product.daysRemaining <= 7 ? 'Expiring Soon' : 'Good';
+                
                 return {
                     'Product Name': product.name,
                     'Expiry Date': product.date,
                     'Day of Week': product.dayOfWeek,
-                    'Days Remaining': calculateTimeRemaining(new Date(product.expiryDate)),
-                    'Status': calculateTimeRemaining(new Date(product.expiryDate)) <= 0 ? 'EXPIRED' : 
-                             calculateTimeRemaining(new Date(product.expiryDate)) <= 7 ? 'WARNING' : 'SAFE'
+                    'Days Remaining': product.daysRemaining,
+                    'Status': status,
+                    'Added Date': formatDate(new Date(product.addedDate))
                 };
             });
             
             const worksheet = XLSX.utils.json_to_sheet(exportData);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Product Expiry");
-            XLSX.writeFile(workbook, 'Product_Expiry_Tracker.xlsx');
+            XLSX.writeFile(workbook, 'Product_Expiry_Report.xlsx');
             
-            showAlert('Data exported successfully!', 'success');
+            showAlert('Export completed successfully', 'success');
         }
 
         function searchProducts() {
@@ -549,7 +765,7 @@
                 const expiryDate = item.querySelector('.expiry-date').textContent.toLowerCase();
                 
                 if (productName.includes(query) || expiryDate.includes(query)) {
-                    item.style.display = 'block';
+                    item.style.display = 'flex';
                     foundItems++;
                 } else {
                     item.style.display = 'none';
@@ -557,7 +773,11 @@
             }
             
             if (foundItems === 0 && query !== '') {
-                document.getElementById('emptyState').textContent = 'NO PRODUCTS MATCH YOUR SEARCH...';
+                document.getElementById('emptyState').innerHTML = `
+                    <i class="fas fa-search"></i>
+                    <h4>No matching products</h4>
+                    <p>Try a different search term</p>
+                `;
                 document.getElementById('emptyState').style.display = 'block';
             } else {
                 checkEmptyState();
@@ -565,27 +785,38 @@
         }
 
         function updateNotificationCount() {
-            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const products = getProductsFromStorage();
             const criticalCount = products.filter(product => {
-                const daysRemaining = calculateTimeRemaining(new Date(product.expiryDate));
-                return daysRemaining <= 7;
+                return calculateTimeRemaining(new Date(product.expiryDate)) <= 7;
             }).length;
             
             document.getElementById('notificationCount').textContent = criticalCount;
             
             // Update document title if there are critical items
             if (criticalCount > 0) {
-                document.title = `(${criticalCount}) Product Expiry Tracker`;
+                document.title = `(${criticalCount}) Expiry Tracker`;
             } else {
-                document.title = 'Product Expiry Tracker';
+                document.title = 'Expiry Tracker';
             }
         }
 
+        function updateSummary() {
+            const products = getProductsFromStorage();
+            const criticalProducts = products.filter(p => calculateTimeRemaining(new Date(p.expiryDate)) <= 0);
+            const warningProducts = products.filter(p => {
+                const days = calculateTimeRemaining(new Date(p.expiryDate));
+                return days > 0 && days <= 7;
+            });
+            
+            document.getElementById('totalProducts').textContent = products.length;
+            document.getElementById('expiringSoonCount').textContent = warningProducts.length;
+            document.getElementById('expiredCount').textContent = criticalProducts.length;
+        }
+
         function showNotifications() {
-            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const products = getProductsFromStorage();
             const criticalProducts = products.filter(product => {
-                const daysRemaining = calculateTimeRemaining(new Date(product.expiryDate));
-                return daysRemaining <= 7;
+                return calculateTimeRemaining(new Date(product.expiryDate)) <= 7;
             }).sort((a, b) => {
                 return calculateTimeRemaining(new Date(a.expiryDate)) - calculateTimeRemaining(new Date(b.expiryDate));
             });
@@ -595,25 +826,101 @@
                 return;
             }
             
-            let notificationText = 'EXPIRING PRODUCTS:\n\n';
+            let notificationText = '<div class="notification-list">';
+            notificationText += '<h6 class="mb-3">Expiring Products</h6>';
+            
             criticalProducts.forEach(product => {
                 const daysRemaining = calculateTimeRemaining(new Date(product.expiryDate));
+                let icon, statusClass;
+                
                 if (daysRemaining < 0) {
-                    notificationText += `⚠️ EXPIRED: ${product.name} (${product.date})\n`;
+                    icon = '<i class="fas fa-skull-crossbones text-danger me-2"></i>';
+                    statusClass = 'text-danger';
                 } else if (daysRemaining === 0) {
-                    notificationText += `⚠️ TODAY: ${product.name} (${product.date})\n`;
+                    icon = '<i class="fas fa-exclamation-triangle text-warning me-2"></i>';
+                    statusClass = 'text-warning';
                 } else {
-                    notificationText += `⚠️ ${daysRemaining} DAYS: ${product.name} (${product.date})\n`;
+                    icon = '<i class="fas fa-clock text-warning me-2"></i>';
+                    statusClass = 'text-warning';
                 }
+                
+                notificationText += `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            ${icon}
+                            <span class="${statusClass}">${product.name}</span>
+                        </div>
+                        <div>
+                            <small class="text-muted">${product.date}</small>
+                            <span class="badge ${statusClass.replace('text-', 'bg-')} ms-2">
+                                ${daysRemaining <= 0 ? 'EXPIRED' : daysRemaining + 'd'}
+                            </span>
+                        </div>
+                    </div>
+                `;
             });
             
-            alert(notificationText);
+            notificationText += '</div>';
+            
+            // Create a modal-like popup
+            const notificationPopup = document.createElement('div');
+            notificationPopup.className = 'notification-popup';
+            notificationPopup.style.position = 'fixed';
+            notificationPopup.style.top = '50%';
+            notificationPopup.style.left = '50%';
+            notificationPopup.style.transform = 'translate(-50%, -50%)';
+            notificationPopup.style.backgroundColor = 'var(--card-bg)';
+            notificationPopup.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+            notificationPopup.style.borderRadius = '12px';
+            notificationPopup.style.padding = '20px';
+            notificationPopup.style.width = '90%';
+            notificationPopup.style.maxWidth = '500px';
+            notificationPopup.style.zIndex = '1000';
+            notificationPopup.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.3)';
+            notificationPopup.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="m-0" style="color: var(--primary-color);">
+                        <i class="fas fa-bell me-2"></i>Alerts
+                    </h5>
+                    <button class="icon-btn btn-sm close-popup">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                ${notificationText}
+                <button class="btn w-100 mt-3 close-popup">
+                    <i class="fas fa-check me-2"></i>Got it
+                </button>
+            `;
+            
+            // Add overlay
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.right = '0';
+            overlay.style.bottom = '0';
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            overlay.style.zIndex = '999';
+            overlay.style.backdropFilter = 'blur(5px)';
+            
+            // Close function
+            function closePopup() {
+                document.body.removeChild(notificationPopup);
+                document.body.removeChild(overlay);
+            }
+            
+            // Add close event
+            notificationPopup.querySelectorAll('.close-popup').forEach(btn => {
+                btn.addEventListener('click', closePopup);
+            });
+            
+            // Add to DOM
+            document.body.appendChild(overlay);
+            document.body.appendChild(notificationPopup);
             
             // Play alert sound if there are critical items
             if (criticalProducts.length > 0) {
-                const sound = document.getElementById('alertSound');
-                sound.currentTime = 0;
-                sound.play();
+                playSound();
             }
         }
 
@@ -622,23 +929,34 @@
                 localStorage.removeItem('products');
                 document.getElementById('productList').innerHTML = '';
                 updateNotificationCount();
+                updateSummary();
                 checkEmptyState();
-                showAlert('All data cleared successfully!', 'success');
+                showAlert('All data cleared', 'success');
             }
-        }
-
-        function toggleProductList() {
-            const productList = document.getElementById('productList');
-            const isHidden = productList.style.display === 'none';
-            productList.style.display = isHidden ? 'block' : 'none';
-            checkEmptyState();
         }
 
         function checkEmptyState() {
             const productList = document.getElementById('productList');
             const emptyState = document.getElementById('emptyState');
+            const searchQuery = document.getElementById('searchBox').value;
             
-            if (productList.children.length === 0 && productList.style.display !== 'none') {
+            if (productList.children.length === 0) {
+                if (searchQuery) {
+                    emptyState.innerHTML = `
+                        <i class="fas fa-search"></i>
+                        <h4>No matching products</h4>
+                        <p>Try a different search term</p>
+                    `;
+                } else {
+                    emptyState.innerHTML = `
+                        <i class="fas fa-box-open"></i>
+                        <h4>No Products Found</h4>
+                        <p>Add some products to start tracking their expiry dates</p>
+                        <button class="btn btn-sm mt-2" onclick="document.getElementById('productName').focus()">
+                            <i class="fas fa-plus me-2"></i>Add First Product
+                        </button>
+                    `;
+                }
                 emptyState.style.display = 'block';
             } else {
                 emptyState.style.display = 'none';
@@ -646,18 +964,18 @@
         }
 
         function checkForExpiringProducts() {
-            const products = JSON.parse(localStorage.getItem('products')) || [];
+            const products = getProductsFromStorage();
             const expiringSoon = products.filter(product => {
-                const daysRemaining = calculateTimeRemaining(new Date(product.expiryDate));
-                return daysRemaining <= 7;
+                return calculateTimeRemaining(new Date(product.expiryDate)) <= 7;
             });
             
             if (expiringSoon.length > 0) {
                 updateNotificationCount();
+                updateSummary();
                 
                 // Only show alert if the page isn't currently visible
                 if (document.hidden) {
-                    const notification = new Notification('Product Expiry Alert', {
+                    const notification = new Notification('Expiry Tracker Alert', {
                         body: `${expiringSoon.length} product(s) expiring soon!`,
                         icon: 'https://cdn-icons-png.flaticon.com/512/2232/2232688.png'
                     });
@@ -666,18 +984,68 @@
                         window.focus();
                         showNotifications();
                     };
+                    
+                    playSound();
                 }
             }
         }
 
-        function showAlert(message, type) {
-            // In a real app, you might want to implement a more sophisticated notification system
-            console.log(`[${type.toUpperCase()}] ${message}`);
+        function playSound() {
+            const sound = document.getElementById('alertSound');
+            sound.currentTime = 0;
+            sound.play().catch(e => console.log('Audio play failed:', e));
         }
 
-        // Request notification permission
-        if (Notification.permission !== 'granted') {
-            Notification.requestPermission();
+        function showAlert(message, type) {
+            // Create alert element
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} fixed-alert`;
+            alert.style.position = 'fixed';
+            alert.style.bottom = '20px';
+            alert.style.right = '20px';
+            alert.style.zIndex = '1000';
+            alert.style.maxWidth = '300px';
+            alert.style.border = 'none';
+            alert.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.3)';
+            alert.style.display = 'flex';
+            alert.style.alignItems = 'center';
+            
+            let icon, color;
+            switch(type) {
+                case 'success':
+                    icon = '<i class="fas fa-check-circle me-2"></i>';
+                    color = 'var(--success-green)';
+                    break;
+                case 'warning':
+                    icon = '<i class="fas fa-exclamation-triangle me-2"></i>';
+                    color = 'var(--warning-orange)';
+                    break;
+                case 'danger':
+                    icon = '<i class="fas fa-times-circle me-2"></i>';
+                    color = 'var(--warning-red)';
+                    break;
+                default:
+                    icon = '<i class="fas fa-info-circle me-2"></i>';
+                    color = 'var(--info-blue)';
+            }
+            
+            alert.innerHTML = `
+                <div style="color: ${color}; font-size: 1.2rem;">
+                    ${icon}
+                </div>
+                <div>
+                    ${message}
+                </div>
+            `;
+            
+            document.body.appendChild(alert);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                alert.style.opacity = '0';
+                alert.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => document.body.removeChild(alert), 500);
+            }, 3000);
         }
     </script>
 
