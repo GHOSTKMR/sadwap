@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INVENTORY CONTROL v4.2</title>
+    <!-- Bootstrap 2025 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@2025.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --hacker-green: #00ff41;
+            --matrix-dark: #0d0208;
+            --terminal-text: #0aff0a;
+            --dark-panel: #0a1a0a;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: var(--matrix-dark);
+            color: var(--terminal-text);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .container-fluid {
+            padding: 20px;
+            max-width: 1400px;
+        }
+        
+        .header {
+            border-bottom: 1px solid var(--hacker-green);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--hacker-green), transparent);
+        }
+        
+        h1 {
+            color: var(--hacker-green);
+            text-shadow: 0 0 5px var(--hacker-green);
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+        
+        .panel {
+            background-color: var(--dark-panel);
+            border: 1px solid var(--hacker-green);
+            border-radius: 0;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .panel-title {
+            color: var(--hacker-green);
+            border-bottom: 1px dashed var(--hacker-green);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        select, input, button {
+            background-color: #111 !important;
+            color: var(--terminal-text) !important;
+            border: 1px solid var(--hacker-green) !important;
+            border-radius: 0 !important;
+        }
+        
+        select:focus, input:focus {
+            box-shadow: 0 0 0 0.25rem rgba(0, 255, 65, 0.25) !important;
+            border-color: var(--hacker-green) !important;
+        }
+        
+        .btn-primary {
+            background-color: var(--matrix-dark) !important;
+            color: var(--hacker-green) !important;
+            border: 1px solid var(--hacker-green) !important;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--hacker-green) !important;
+            color: var(--matrix-dark) !important;
+            box-shadow: 0 0 10px var(--hacker-green);
+        }
+        
+        .btn-danger {
+            background-color: var(--matrix-dark) !important;
+            color: #ff5555 !important;
+            border: 1px solid #ff5555 !important;
+        }
+        
+        .btn-danger:hover {
+            background-color: #ff5555 !important;
+            color: var(--matrix-dark) !important;
+        }
+        
+        .btn-success {
+            background-color: var(--matrix-dark) !important;
+            color: var(--hacker-green) !important;
+            border: 1px solid var(--hacker-green) !important;
+        }
+        
+        .btn-success:hover {
+            background-color: var(--hacker-green) !important;
+            color: var(--matrix-dark) !important;
+        }
+        
+        table {
+            color: var(--terminal-text) !important;
+            width: 100%;
+        }
+        
+        th {
+            background-color: var(--dark-panel) !important;
+            color: var(--hacker-green) !important;
+            border-bottom: 2px solid var(--hacker-green) !important;
+            position: sticky;
+            top: 0;
+        }
+        
+        td {
+            border-color: #1a3a1a !important;
+            vertical-align: middle !important;
+        }
+        
+        tr:hover {
+            background-color: rgba(0, 255, 65, 0.05) !important;
+        }
+        
+        .variance-positive {
+            color: var(--hacker-green);
+            font-weight: bold;
+        }
+        
+        .variance-negative {
+            color: #ff5555;
+            font-weight: bold;
+        }
+        
+        .empty-table-message {
+            color: #666;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 30px;
+        }
+        
+        .glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px var(--hacker-green);
+            }
+            to {
+                text-shadow: 0 0 10px var(--hacker-green), 0 0 20px var(--hacker-green);
+            }
+        }
+        
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(0, 255, 65, 0.05) 0%,
+                rgba(0, 0, 0, 0) 10%
+            );
+            background-size: 100% 8px;
+            pointer-events: none;
+            z-index: 1000;
+            animation: scanline 8s linear infinite;
+        }
+        
+        @keyframes scanline {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 0 100%;
+            }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .date-selector > * {
+                margin-bottom: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .chart-container {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanline"></div>
+    <div class="container-fluid">
+        <div class="header">
+            <div class="row">
+                <div class="col-md-8">
+                    <h1 class="glow">INVENTORY CONTROL v4.2</h1>
+                    <p class="text-muted">SYSTEM READY | DATA ENCRYPTED | ACCESS GRANTED</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div id="clock" class="h4"></div>
+                    <div id="date-display"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel">
+                    <h3 class="panel-title">VARIANCE ANALYTICS</h3>
+                    <div class="chart-container">
+                        <canvas id="varianceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h3 class="panel-title">INVENTORY MANAGEMENT</h3>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <button id="export-excel" class="btn btn-success me-2">
+                                <i class="bi bi-file-earmark-excel"></i> EXPORT TO EXCEL
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <select id="month-select" class="form-select">
+                                <option value="">SELECT MONTH</option>
+                                <option value="1">JANUARY</option>
+                                <option value="2">FEBRUARY</option>
+                                <option value="3">MARCH</option>
+                                <option value="4">APRIL</option>
+                                <option value="5">MAY</option>
+                                <option value="6">JUNE</option>
+                                <option value="7">JULY</option>
+                                <option value="8">AUGUST</option>
+                                <option value="9">SEPTEMBER</option>
+                                <option value="10">OCTOBER</option>
+                                <option value="11">NOVEMBER</option>
+                                <option value="12">DECEMBER</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="day-select" class="form-select">
+                                <option value="">SELECT DAY</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select id="year-select" class="form-select">
+                                <option value="">SELECT YEAR</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button id="load-btn" class="btn btn-primary w-100">LOAD INVENTORY</button>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <button id="new-day-btn" class="btn btn-primary w-100">NEW DAY</button>
+                        </div>
+                        <div class="col-md-6">
+                            <button id="save-btn" class="btn btn-success w-100">SAVE INVENTORY</button>
+                        </div>
+                    </div>
+                    
+                    <div class="selected-date h4 text-center mb-3" id="selected-date-display">
+                        SELECT DATE TO BEGIN
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table" id="inventory-table">
+                            <thead>
+                                <tr>
+                                    <th>ITEM NAME</th>
+                                    <th>SYSTEM COUNT</th>
+                                    <th>ON HAND</th>
+                                    <th>VARIANCE</th>
+                                    <th>ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-body">
+                                <tr class="empty-table-message">
+                                    <td colspan="5">NO INVENTORY DATA LOADED. SELECT DATE AND CLICK "LOAD INVENTORY" OR "NEW DAY".</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <button id="add-row-btn" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> ADD ITEM (ALT+A)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 2025 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@2025.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM elements
+            const monthSelect = document.getElementById('month-select');
+            const daySelect = document.getElementById('day-select');
+            const yearSelect = document.getElementById('year-select');
+            const loadBtn = document.getElementById('load-btn');
+            const newDayBtn = document.getElementById('new-day-btn');
+            const addRowBtn = document.getElementById('add-row-btn');
+            const saveBtn = document.getElementById('save-btn');
+            const exportBtn = document.getElementById('export-excel');
+            const selectedDateDisplay = document.getElementById('selected-date-display');
+            const inventoryBody = document.getElementById('inventory-body');
+            const clockElement = document.getElementById('clock');
+            const dateElement = document.getElementById('date-display');
+            const varianceChartCanvas = document.getElementById('varianceChart');
+            
+            // Chart variables
+            let varianceChart = null;
+            
+            // Current selected date
+            let currentDate = null;
+            let currentData = [];
+            
+            // Initialize the app
+            function init() {
+                updateClock();
+                setInterval(updateClock, 1000);
+                
+                // Populate years (current year -1 to +2)
+                const currentYear = new Date().getFullYear();
+                for (let i = currentYear - 1; i <= currentYear + 2; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = i;
+                    yearSelect.appendChild(option);
+                }
+                yearSelect.value = currentYear;
+                
+                // Check if there's a previously selected date in localStorage
+                const lastDate = localStorage.getItem('lastSelectedDate');
+                if (lastDate) {
+                    const [year, month, day] = lastDate.split('/');
+                    yearSelect.value = year;
+                    monthSelect.value = month;
+                    updateDaySelect(parseInt(month), parseInt(year));
+                    daySelect.value = day;
+                    currentDate = lastDate;
+                    loadInventoryData(currentDate);
+                    updateSelectedDateDisplay(month, day, year);
+                }
+                
+                // Set up keyboard shortcuts
+                setupKeyboardShortcuts();
+            }
+            
+            function updateClock() {
+                const now = new Date();
+                clockElement.textContent = now.toLocaleTimeString();
+                dateElement.textContent = now.toLocaleDateString();
+            }
+            
+            function updateSelectedDateDisplay(month, day, year) {
+                selectedDateDisplay.textContent = `INVENTORY FOR ${getMonthName(month)} ${day}, ${year}`;
+                selectedDateDisplay.className = 'h4 text-center mb-3 glow';
+                setTimeout(() => {
+                    selectedDateDisplay.classList.remove('glow');
+                }, 2000);
+            }
+            
+            // Set up keyboard navigation
+            function setupKeyboardShortcuts() {
+                document.addEventListener('keydown', function(e) {
+                    // Add new row with Alt+A
+                    if (e.altKey && e.key.toLowerCase() === 'a') {
+                        e.preventDefault();
+                        addNewRow();
+                    }
+                    
+                    // Save with Alt+S
+                    if (e.altKey && e.key.toLowerCase() === 's') {
+                        e.preventDefault();
+                        saveInventory();
+                    }
+                    
+                    // Export with Alt+E
+                    if (e.altKey && e.key.toLowerCase() === 'e') {
+                        e.preventDefault();
+                        exportToExcel();
+                    }
+                });
+            }
+            
+            // Populate days based on selected month and year
+            monthSelect.addEventListener('change', function() {
+                const month = parseInt(this.value);
+                const year = parseInt(yearSelect.value);
+                updateDaySelect(month, year);
+            });
+            
+            yearSelect.addEventListener('change', function() {
+                const month = parseInt(monthSelect.value);
+                const year = parseInt(this.value);
+                if (month) updateDaySelect(month, year);
+            });
+            
+            function updateDaySelect(month, year) {
+                daySelect.innerHTML = '<option value="">SELECT DAY</option>';
+                
+                if (!month || !year) return;
+                
+                const daysInMonth = new Date(year, month, 0).getDate();
+                
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const option = document.createElement('option');
+                    option.value = day;
+                    option.textContent = day;
+                    daySelect.appendChild(option);
+                }
+            }
+            
+            // Load inventory for selected date
+            loadBtn.addEventListener('click', function() {
+                const year = yearSelect.value;
+                const month = monthSelect.value;
+                const day = daySelect.value;
+                
+                if (!year || !month || !day) {
+                    showAlert('PLEASE SELECT YEAR, MONTH AND DAY', 'danger');
+                    return;
+                }
+                
+                currentDate = `${year}/${month}/${day}`;
+                // Save this date as the last selected date
+                localStorage.setItem('lastSelectedDate', currentDate);
+                updateSelectedDateDisplay(month, day, year);
+                
+                // Load data from localStorage
+                loadInventoryData(currentDate);
+            });
+            
+            // Start a new day (clear the table)
+            newDayBtn.addEventListener('click', function() {
+                const year = yearSelect.value;
+                const month = monthSelect.value;
+                const day = daySelect.value;
+                
+                if (!year || !month || !day) {
+                    showAlert('PLEASE SELECT YEAR, MONTH AND DAY', 'danger');
+                    return;
+                }
+                
+                currentDate = `${year}/${month}/${day}`;
+                // Save this date as the last selected date
+                localStorage.setItem('lastSelectedDate', currentDate);
+                updateSelectedDateDisplay(month, day, year);
+                
+                // Clear the table and show empty state
+                clearTable();
+                
+                // Add one empty row to start with
+                addNewRow();
+            });
+            
+            // Add new row to the table
+            addRowBtn.addEventListener('click', addNewRow);
+            
+            // Save inventory data
+            saveBtn.addEventListener('click', saveInventory);
+            
+            // Export to Excel
+            exportBtn.addEventListener('click', exportToExcel);
+            
+            function saveInventory() {
+                if (!currentDate) {
+                    showAlert('PLEASE SELECT A DATE FIRST', 'danger');
+                    return;
+                }
+                
+                const inventoryData = [];
+                const rows = inventoryBody.querySelectorAll('tr:not(.empty-table-message)');
+                
+                // If no rows (only the empty message), save empty array
+                if (rows.length === 0) {
+                    localStorage.setItem(`inventory_${currentDate}`, JSON.stringify([]));
+                    showAlert(`INVENTORY SAVED (EMPTY) FOR ${currentDate}`, 'success');
+                    return;
+                }
+                
+                currentData = [];
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    const itemName = cells[0].querySelector('input')?.value;
+                    const systemCount = cells[1].querySelector('input')?.value;
+                    const onHand = cells[2].querySelector('input')?.value;
+                    
+                    if (itemName) { // Only save rows with item names
+                        const itemData = {
+                            itemName,
+                            systemCount: parseFloat(systemCount) || 0,
+                            onHand: parseFloat(onHand) || 0,
+                            variance: (parseFloat(onHand) || 0) - (parseFloat(systemCount) || 0)
+                        };
+                        inventoryData.push(itemData);
+                        currentData.push(itemData);
+                    }
+                });
+                
+                // Save to localStorage with date-specific key
+                localStorage.setItem(`inventory_${currentDate}`, JSON.stringify(inventoryData));
+                showAlert(`INVENTORY SAVED FOR ${currentDate}`, 'success');
+                
+                // Update chart
+                updateVarianceChart();
+            }
+            
+            function exportToExcel() {
+                if (!currentDate || currentData.length === 0) {
+                    showAlert('NO DATA TO EXPORT', 'danger');
+                    return;
+                }
+                
+                // Prepare data for export
+                const exportData = [
+                    ['ITEM NAME', 'SYSTEM COUNT', 'ON HAND', 'VARIANCE'],
+                    ...currentData.map(item => [
+                        item.itemName,
+                        item.systemCount,
+                        item.onHand,
+                        item.variance
+                    ])
+                ];
+                
+                // Create workbook
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(exportData);
+                XLSX.utils.book_append_sheet(wb, ws, 'Inventory');
+                
+                // Generate file and download
+                const dateStr = currentDate.replace(/\//g, '-');
+                XLSX.writeFile(wb, `Inventory_${dateStr}.xlsx`);
+                
+                showAlert('EXPORTED TO EXCEL', 'success');
+            }
+            
+            function updateVarianceChart() {
+                if (!currentData || currentData.length === 0) {
+                    // Clear chart if no data
+                    if (varianceChart) {
+                        varianceChart.destroy();
+                        varianceChart = null;
+                    }
+                    return;
+                }
+                
+                // Sort data by absolute variance (descending)
+                const sortedData = [...currentData].sort((a, b) => Math.abs(b.variance) - Math.abs(a.variance));
+                
+                // Get top 10 items with highest variance
+                const topItems = sortedData.slice(0, 10);
+                
+                const ctx = varianceChartCanvas.getContext('2d');
+                
+                // Destroy previous chart if exists
+                if (varianceChart) {
+                    varianceChart.destroy();
+                }
+                
+                varianceChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: topItems.map(item => item.itemName),
+                        datasets: [
+                            {
+                                label: 'System Count',
+                                data: topItems.map(item => item.systemCount),
+                                backgroundColor: 'rgba(0, 255, 65, 0.7)',
+                                borderColor: 'rgba(0, 255, 65, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'On Hand',
+                                data: topItems.map(item => item.onHand),
+                                backgroundColor: 'rgba(0, 150, 255, 0.7)',
+                                borderColor: 'rgba(0, 150, 255, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 255, 65, 0.1)'
+                                },
+                                ticks: {
+                                    color: 'rgba(0, 255, 65, 0.8)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    color: 'rgba(0, 255, 65, 0.1)'
+                                },
+                                ticks: {
+                                    color: 'rgba(0, 255, 65, 0.8)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'rgba(0, 255, 65, 0.8)'
+                                }
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            }
+                        },
+                        animation: {
+                            duration: 2000
+                        }
+                    }
+                });
+            }
+            
+            function showAlert(message, type) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type} position-fixed top-0 end-0 m-3`;
+                alertDiv.style.zIndex = '2000';
+                alertDiv.style.minWidth = '300px';
+                alertDiv.textContent = message;
+                document.body.appendChild(alertDiv);
+                
+                setTimeout(() => {
+                    alertDiv.classList.add('fade');
+                    setTimeout(() => {
+                        alertDiv.remove();
+                    }, 500);
+                }, 3000);
+            }
+            
+            // Helper function to clear the table
+            function clearTable() {
+                inventoryBody.innerHTML = '';
+                // Add empty table message
+                const emptyRow = document.createElement('tr');
+                emptyRow.className = 'empty-table-message';
+                emptyRow.innerHTML = '<td colspan="5">NO ITEMS ADDED YET. CLICK "ADD ITEM" TO START.</td>';
+                inventoryBody.appendChild(emptyRow);
+                currentData = [];
+                
+                // Clear chart
+                if (varianceChart) {
+                    varianceChart.destroy();
+                    varianceChart = null;
+                }
+            }
+            
+            // Helper function to add a new row
+            function addNewRow() {
+                // Remove empty table message if it exists
+                const emptyMessage = inventoryBody.querySelector('.empty-table-message');
+                if (emptyMessage) {
+                    emptyMessage.remove();
+                }
+                
+                const row = document.createElement('tr');
+                
+                // Item Name
+                const itemNameCell = document.createElement('td');
+                const itemNameInput = document.createElement('input');
+                itemNameInput.type = 'text';
+                itemNameInput.className = 'form-control';
+                itemNameInput.placeholder = 'Enter item name';
+                itemNameCell.appendChild(itemNameInput);
+                
+                // System Count
+                const systemCountCell = document.createElement('td');
+                const systemCountInput = document.createElement('input');
+                systemCountInput.type = 'number';
+                systemCountInput.className = 'form-control';
+                systemCountInput.value = '0';
+                systemCountInput.step = '0.01';
+                systemCountInput.min = '0';
+                systemCountCell.appendChild(systemCountInput);
+                
+                // On Hand
+                const onHandCell = document.createElement('td');
+                const onHandInput = document.createElement('input');
+                onHandInput.type = 'number';
+                onHandInput.className = 'form-control';
+                onHandInput.value = '0';
+                onHandInput.step = '0.01';
+                onHandInput.min = '0';
+                onHandCell.appendChild(onHandInput);
+                
+                // Variance (calculated)
+                const varianceCell = document.createElement('td');
+                varianceCell.textContent = '0';
+                varianceCell.classList.add('variance-positive');
+                
+                // Actions
+                const actionsCell = document.createElement('td');
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-danger btn-sm';
+                deleteBtn.innerHTML = '<i class="bi bi-trash"></i> DELETE';
+                deleteBtn.addEventListener('click', function() {
+                    row.remove();
+                    // If this was the last row, show empty message
+                    if (inventoryBody.querySelectorAll('tr').length === 0) {
+                        clearTable();
+                    }
+                });
+                actionsCell.appendChild(deleteBtn);
+                
+                // Add all cells to the row
+                row.appendChild(itemNameCell);
+                row.appendChild(systemCountCell);
+                row.appendChild(onHandCell);
+                row.appendChild(varianceCell);
+                row.appendChild(actionsCell);
+                
+                // Add event listeners for calculation
+                const calculateVariance = function() {
+                    const system = parseFloat(systemCountInput.value) || 0;
+                    const onHand = parseFloat(onHandInput.value) || 0;
+                    const variance = onHand - system;
+                    
+                    varianceCell.textContent = variance.toFixed(2);
+                    
+                    if (variance > 0) {
+                        varianceCell.className = 'variance-positive';
+                    } else if (variance < 0) {
+                        varianceCell.className = 'variance-negative';
+                    } else {
+                        varianceCell.className = '';
+                    }
+                };
+                
+                systemCountInput.addEventListener('change', calculateVariance);
+                onHandInput.addEventListener('change', calculateVariance);
+                
+                // Add row to the table
+                inventoryBody.appendChild(row);
+                
+                // Focus on the new item name input
+                itemNameInput.focus();
+            }
+            
+            // Helper function to load inventory data
+            function loadInventoryData(date) {
+                const savedData = localStorage.getItem(`inventory_${date}`);
+                
+                // Clear existing rows and chart
+                clearTable();
+                
+                if (savedData) {
+                    const inventoryData = JSON.parse(savedData);
+                    currentData = inventoryData;
+                    
+                    if (inventoryData.length === 0) {
+                        // Show empty state for this date
+                        const emptyRow = document.createElement('tr');
+                        emptyRow.className = 'empty-table-message';
+                        emptyRow.innerHTML = '<td colspan="5">NO INVENTORY DATA FOR THIS DATE. CLICK "ADD ITEM" TO START.</td>';
+                        inventoryBody.appendChild(emptyRow);
+                        return;
+                    }
+                    
+                    inventoryData.forEach(item => {
+                        const row = document.createElement('tr');
+                        
+                        // Item Name
+                        const itemNameCell = document.createElement('td');
+                        const itemNameInput = document.createElement('input');
+                        itemNameInput.type = 'text';
+                        itemNameInput.className = 'form-control';
+                        itemNameInput.value = item.itemName;
+                        itemNameCell.appendChild(itemNameInput);
+                        
+                        // System Count
+                        const systemCountCell = document.createElement('td');
+                        const systemCountInput = document.createElement('input');
+                        systemCountInput.type = 'number';
+                        systemCountInput.className = 'form-control';
+                        systemCountInput.value = item.systemCount;
+                        systemCountInput.step = '0.01';
+                        systemCountInput.min = '0';
+                        systemCountCell.appendChild(systemCountInput);
+                        
+                        // On Hand
+                        const onHandCell = document.createElement('td');
+                        const onHandInput = document.createElement('input');
+                        onHandInput.type = 'number';
+                        onHandInput.className = 'form-control';
+                        onHandInput.value = item.onHand;
+                        onHandInput.step = '0.01';
+                        onHandInput.min = '0';
+                        onHandCell.appendChild(onHandInput);
+                        
+                        // Variance (calculated)
+                        const varianceCell = document.createElement('td');
+                        const variance = item.onHand - item.systemCount;
+                        varianceCell.textContent = variance.toFixed(2);
+                        
+                        if (variance > 0) {
+                            varianceCell.className = 'variance-positive';
+                        } else if (variance < 0) {
+                            varianceCell.className = 'variance-negative';
+                        }
+                        
+                        // Actions
+                        const actionsCell = document.createElement('td');
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'btn btn-danger btn-sm';
+                        deleteBtn.innerHTML = '<i class="bi bi-trash"></i> DELETE';
+                        deleteBtn.addEventListener('click', function() {
+                            row.remove();
+                            // If this was the last row, show empty message
+                            if (inventoryBody.querySelectorAll('tr').length === 0) {
+                                clearTable();
+                            }
+                        });
+                        actionsCell.appendChild(deleteBtn);
+                        
+                        // Add all cells to the row
+                        row.appendChild(itemNameCell);
+                        row.appendChild(systemCountCell);
+                        row.appendChild(onHandCell);
+                        row.appendChild(varianceCell);
+                        row.appendChild(actionsCell);
+                        
+                        // Add event listeners for calculation
+                        const calculateVariance = function() {
+                            const system = parseFloat(systemCountInput.value) || 0;
+                            const onHand = parseFloat(onHandInput.value) || 0;
+                            const newVariance = onHand - system;
+                            
+                            varianceCell.textContent = newVariance.toFixed(2);
+                            
+                            if (newVariance > 0) {
+                                varianceCell.className = 'variance-positive';
+                            } else if (newVariance < 0) {
+                                varianceCell.className = 'variance-negative';
+                            } else {
+                                varianceCell.className = '';
+                            }
+                        };
+                        
+                        systemCountInput.addEventListener('change', calculateVariance);
+                        onHandInput.addEventListener('change', calculateVariance);
+                        
+                        // Add row to the table
+                        inventoryBody.appendChild(row);
+                    });
+                    
+                    // Update chart with data for this specific date
+                    updateVarianceChart();
+                } else {
+                    // No data found for this date
+                    const emptyRow = document.createElement('tr');
+                    emptyRow.className = 'empty-table-message';
+                    emptyRow.innerHTML = '<td colspan="5">NO INVENTORY DATA FOUND FOR THIS DATE. CLICK "ADD ITEM" TO START.</td>';
+                    inventoryBody.appendChild(emptyRow);
+                }
+            }
+            
+            // Helper function to get month name
+            function getMonthName(monthNumber) {
+                const months = [
+                    'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+                    'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
+                ];
+                return months[parseInt(monthNumber) - 1];
+            }
+            
+            // Initialize the app
+            init();
+        });
+    </script>
+</body>
+</html>
