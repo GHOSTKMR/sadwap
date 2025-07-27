@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INVENTORY CONTROL v4.2</title>
+    <title>INVENTORY CONTROL v4.7</title>
     <!-- Bootstrap 2025 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@2025.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Chart.js -->
@@ -202,6 +202,36 @@
             }
         }
         
+        /* Sales Targets Panel */
+        .sales-targets-panel {
+            background-color: rgba(0, 20, 0, 0.7);
+            border: 1px solid var(--hacker-green);
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        .sales-input-group {
+            margin: 5px;
+            min-width: 200px;
+        }
+        
+        .sales-input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--hacker-green);
+        }
+        
+        .sales-input-group input, .sales-input-group select {
+            width: 100%;
+            padding: 8px;
+            background-color: #111;
+            color: var(--terminal-text);
+            border: 1px solid var(--hacker-green);
+        }
+        
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .date-selector > * {
@@ -216,6 +246,14 @@
             .chart-container {
                 height: 200px;
             }
+            
+            .sales-targets-panel {
+                flex-direction: column;
+            }
+            
+            .sales-input-group {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -225,7 +263,7 @@
         <div class="header">
             <div class="row">
                 <div class="col-md-8">
-                    <h1 class="glow">INVENTORY CONTROL v4.2</h1>
+                    <h1 class="glow">INVENTORY CONTROL v4.7</h1>
                     <p class="text-muted">SYSTEM READY | DATA ENCRYPTED | ACCESS GRANTED</p>
                 </div>
                 <div class="col-md-4 text-md-end">
@@ -257,6 +295,41 @@
                             <button id="export-excel" class="btn btn-success me-2">
                                 <i class="bi bi-file-earmark-excel"></i> EXPORT TO EXCEL
                             </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Sales Targets Section -->
+                    <div class="sales-targets-panel">
+                        <div class="sales-input-group">
+                            <label for="month-to-date-sales">MONTH TO DATE SALES:</label>
+                            <input type="number" id="month-to-date-sales" placeholder="Enter amount">
+                        </div>
+                        <div class="sales-input-group">
+                            <label for="target-sales">TARGET SALES:</label>
+                            <input type="number" id="target-sales" placeholder="Enter amount">
+                        </div>
+                        <div class="sales-input-group">
+                            <label for="average-daily-sales">AVERAGE DAILY SALES:</label>
+                            <input type="number" id="average-daily-sales" placeholder="Calculated" readonly>
+                        </div>
+                        <div class="sales-input-group">
+                            <label for="forecast-days">FORECAST DAYS (1-10):</label>
+                            <select id="forecast-days" class="form-select">
+                                <option value="1">1 Day</option>
+                                <option value="2">2 Days</option>
+                                <option value="3">3 Days</option>
+                                <option value="4">4 Days</option>
+                                <option value="5">5 Days</option>
+                                <option value="6">6 Days</option>
+                                <option value="7">7 Days</option>
+                                <option value="8">8 Days</option>
+                                <option value="9">9 Days</option>
+                                <option value="10">10 Days</option>
+                            </select>
+                        </div>
+                        <div class="sales-input-group">
+                            <label for="sales-forecast">SALES FORECAST:</label>
+                            <input type="number" id="sales-forecast" placeholder="Calculated" readonly>
                         </div>
                     </div>
                     
@@ -314,21 +387,17 @@
                                     <th>SYSTEM COUNT</th>
                                     <th>ON HAND</th>
                                     <th>VARIANCE</th>
-                                    <th>ACTIONS</th>
+                                    <th>MTD CONSUMPTION</th>
+                                    <th>AVG CONSUMPTION</th>
+                                    <th>C/1000</th>
+                                    <th>TO ORDER</th>
+                                    <th>REPLENISH</th>
                                 </tr>
                             </thead>
                             <tbody id="inventory-body">
-                                <tr class="empty-table-message">
-                                    <td colspan="5">NO INVENTORY DATA LOADED. SELECT DATE AND CLICK "LOAD INVENTORY" OR "NEW DAY".</td>
-                                </tr>
+                                <!-- Items will be loaded here automatically -->
                             </tbody>
                         </table>
-                    </div>
-                    
-                    <div class="text-center mt-3">
-                        <button id="add-row-btn" class="btn btn-primary">
-                            <i class="bi bi-plus-circle"></i> ADD ITEM (ALT+A)
-                        </button>
                     </div>
                 </div>
             </div>
@@ -340,13 +409,52 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Static item list - all items always displayed
+            const staticItems = [
+                "Philly Beef",
+                "Beef Steak",
+                "Chicken Steak",
+                "Lunch Chicken",
+                "Grill Chicken",
+                "Spicy Chicken",
+                "12 inch Tortilla",
+                "10.5 inch Tortilla",
+                "8 inch Tortilla",
+                "Chicken Burger",
+                "Junior Burger",
+                "Nuggets",
+                "Regular Bytes",
+                "Spicy Bytes",
+                "Veggie",
+                "Quatro",
+                "Aldella Strips",
+                "Hotdog",
+                "Eggs",
+                "Pancake Powder",
+                "Fries",
+                "Crispy",
+                "Hushbrown",
+                "Vanilla Muffin",
+                "Choco Muffin",
+                "Sansbastian Cake",
+                "Brownese Cheese Cake",
+                "Steak Bread",
+                "Brown Bread",
+                "Big Bun",
+                "Small Bun",
+                "Kiddie Bread",
+                "4.0 Potato Bun",
+                "Potato Steak Bread",
+                "White Bread",
+                "Multigrain Bread"
+            ];
+
             // DOM elements
             const monthSelect = document.getElementById('month-select');
             const daySelect = document.getElementById('day-select');
             const yearSelect = document.getElementById('year-select');
             const loadBtn = document.getElementById('load-btn');
             const newDayBtn = document.getElementById('new-day-btn');
-            const addRowBtn = document.getElementById('add-row-btn');
             const saveBtn = document.getElementById('save-btn');
             const exportBtn = document.getElementById('export-excel');
             const selectedDateDisplay = document.getElementById('selected-date-display');
@@ -354,6 +462,11 @@
             const clockElement = document.getElementById('clock');
             const dateElement = document.getElementById('date-display');
             const varianceChartCanvas = document.getElementById('varianceChart');
+            const mtdSalesInput = document.getElementById('month-to-date-sales');
+            const targetSalesInput = document.getElementById('target-sales');
+            const avgDailySalesInput = document.getElementById('average-daily-sales');
+            const forecastDaysSelect = document.getElementById('forecast-days');
+            const salesForecastInput = document.getElementById('sales-forecast');
             
             // Chart variables
             let varianceChart = null;
@@ -361,6 +474,13 @@
             // Current selected date
             let currentDate = null;
             let currentData = [];
+            let salesData = {
+                mtdSales: 0,
+                targetSales: 0,
+                avgDailySales: 0,
+                forecastDays: 1,
+                salesForecast: 0
+            };
             
             // Initialize the app
             function init() {
@@ -377,6 +497,9 @@
                 }
                 yearSelect.value = currentYear;
                 
+                // Create all inventory items on page load
+                createInventoryItems();
+                
                 // Check if there's a previously selected date in localStorage
                 const lastDate = localStorage.getItem('lastSelectedDate');
                 if (lastDate) {
@@ -390,8 +513,259 @@
                     updateSelectedDateDisplay(month, day, year);
                 }
                 
-                // Set up keyboard shortcuts
-                setupKeyboardShortcuts();
+                // Load sales data if exists
+                const savedSalesData = localStorage.getItem('salesData');
+                if (savedSalesData) {
+                    salesData = JSON.parse(savedSalesData);
+                    mtdSalesInput.value = salesData.mtdSales;
+                    targetSalesInput.value = salesData.targetSales;
+                    avgDailySalesInput.value = salesData.avgDailySales;
+                    forecastDaysSelect.value = salesData.forecastDays;
+                    salesForecastInput.value = salesData.salesForecast;
+                }
+                
+                // Load MTD consumption data if exists
+                loadMTDConsumptionData();
+                
+                // Set up event listeners
+                setupEventListeners();
+            }
+            
+            // Create all inventory items in the table
+            function createInventoryItems() {
+                inventoryBody.innerHTML = '';
+                
+                staticItems.forEach(item => {
+                    const row = document.createElement('tr');
+                    
+                    // Item Name (fixed)
+                    const itemNameCell = document.createElement('td');
+                    itemNameCell.textContent = item;
+                    row.appendChild(itemNameCell);
+                    
+                    // System Count (previously Open Stock)
+                    const systemCountCell = document.createElement('td');
+                    const systemCountInput = document.createElement('input');
+                    systemCountInput.type = 'number';
+                    systemCountInput.className = 'form-control';
+                    systemCountInput.value = '0';
+                    systemCountInput.step = '0.01';
+                    systemCountInput.min = '0';
+                    systemCountCell.appendChild(systemCountInput);
+                    row.appendChild(systemCountCell);
+                    
+                    // On Hand (previously System Count)
+                    const onHandCell = document.createElement('td');
+                    const onHandInput = document.createElement('input');
+                    onHandInput.type = 'number';
+                    onHandInput.className = 'form-control';
+                    onHandInput.value = '0';
+                    onHandInput.step = '0.01';
+                    onHandInput.min = '0';
+                    onHandCell.appendChild(onHandInput);
+                    row.appendChild(onHandCell);
+                    
+                    // Variance (calculated: On Hand - System Count)
+                    const varianceCell = document.createElement('td');
+                    varianceCell.textContent = '0';
+                    row.appendChild(varianceCell);
+                    
+                    // MTD Consumption (user input, persists across dates)
+                    const mtdConsumptionCell = document.createElement('td');
+                    const mtdConsumptionInput = document.createElement('input');
+                    mtdConsumptionInput.type = 'number';
+                    mtdConsumptionInput.className = 'form-control mtd-consumption';
+                    mtdConsumptionInput.value = '0';
+                    mtdConsumptionInput.step = '0.01';
+                    mtdConsumptionInput.min = '0';
+                    mtdConsumptionCell.appendChild(mtdConsumptionInput);
+                    row.appendChild(mtdConsumptionCell);
+                    
+                    // Average Consumption (calculated: MTD Consumption / current day of month)
+                    const avgConsumptionCell = document.createElement('td');
+                    avgConsumptionCell.textContent = '0';
+                    row.appendChild(avgConsumptionCell);
+                    
+                    // Consumption per 1000 (calculated: avgConsumption / avgDailySales * 1000)
+                    const consumptionPer1000Cell = document.createElement('td');
+                    consumptionPer1000Cell.textContent = '0';
+                    row.appendChild(consumptionPer1000Cell);
+                    
+                    // To Order (calculated: consumptionPer1000 * (salesForecast / 1000))
+                    const toOrderCell = document.createElement('td');
+                    toOrderCell.textContent = '0';
+                    row.appendChild(toOrderCell);
+                    
+                    // Replenish (calculated: checks to order vs system count)
+                    const replenishCell = document.createElement('td');
+                    replenishCell.textContent = '0';
+                    row.appendChild(replenishCell);
+                    
+                    // Add event listeners for calculation
+                    const calculateValues = function() {
+                        const systemCount = parseFloat(systemCountInput.value) || 0;
+                        const onHand = parseFloat(onHandInput.value) || 0;
+                        
+                        // Calculate variance (On Hand - System Count)
+                        const variance = onHand - systemCount;
+                        varianceCell.textContent = variance.toFixed(2);
+                        
+                        // Update variance color based on the value
+                        if (variance < 0) {
+                            // Negative variance (on hand < system count) - show in red
+                            varianceCell.className = 'variance-negative';
+                        } else if (variance > 0) {
+                            // Positive variance (on hand > system count) - show in green
+                            varianceCell.className = 'variance-positive';
+                        } else {
+                            // Zero variance - no special styling
+                            varianceCell.className = '';
+                        }
+                        
+                        // Get current date for calculations
+                        const today = new Date();
+                        const currentDay = today.getDate();
+                        
+                        // Get MTD consumption
+                        const mtdConsumption = parseFloat(mtdConsumptionInput.value) || 0;
+                        
+                        // Calculate average consumption (MTD / current day of month)
+                        const avgConsumption = mtdConsumption / currentDay;
+                        avgConsumptionCell.textContent = avgConsumption.toFixed(2);
+                        
+                        // Calculate consumption per 1000 (avgConsumption / avgDailySales * 1000)
+                        const avgDailySales = parseFloat(avgDailySalesInput.value) || 1; // avoid division by zero
+                        const consumptionPer1000 = (avgConsumption / avgDailySales) * 1000;
+                        consumptionPer1000Cell.textContent = consumptionPer1000.toFixed(2);
+                        
+                        // Calculate to order (consumptionPer1000 * (salesForecast / 1000))
+                        const salesForecast = parseFloat(salesForecastInput.value) || 0;
+                        const toOrder = consumptionPer1000 * (salesForecast / 1000);
+                        toOrderCell.textContent = toOrder.toFixed(2);
+                        
+                        // Calculate replenish (check to order vs system count)
+                        const replenish = toOrder - systemCount;
+                        if (replenish <= 0) {
+                            replenishCell.textContent = 'OK';
+                            replenishCell.className = 'variance-positive';
+                        } else {
+                            replenishCell.textContent = replenish.toFixed(2);
+                            replenishCell.className = 'variance-negative';
+                        }
+                    };
+                    
+                    // Add event listeners to inputs that trigger calculations
+                    systemCountInput.addEventListener('change', calculateValues);
+                    onHandInput.addEventListener('change', calculateValues);
+                    mtdConsumptionInput.addEventListener('change', function() {
+                        calculateValues();
+                        saveMTDConsumptionData(); // Save MTD consumption when changed
+                    });
+                    
+                    // Add row to the table
+                    inventoryBody.appendChild(row);
+                });
+                
+                // Add event listeners to sales inputs that affect calculations
+                mtdSalesInput.addEventListener('input', function() {
+                    calculateSalesMetrics();
+                    updateAllCalculations();
+                });
+                targetSalesInput.addEventListener('input', function() {
+                    calculateSalesMetrics();
+                    updateAllCalculations();
+                });
+                forecastDaysSelect.addEventListener('change', function() {
+                    calculateSalesMetrics();
+                    updateAllCalculations();
+                });
+            }
+            
+            // Calculate sales metrics (MTD, target, forecast, etc.)
+            function calculateSalesMetrics() {
+                // Get current values
+                const mtdSales = parseFloat(mtdSalesInput.value) || 0;
+                const targetSales = parseFloat(targetSalesInput.value) || 0;
+                const forecastDays = parseInt(forecastDaysSelect.value) || 1;
+                
+                // Get current date
+                const today = new Date();
+                const currentDay = today.getDate();
+                
+                // Calculate average daily sales (MTD Sales / current day of month)
+                const avgDailySales = mtdSales / currentDay;
+                
+                // Calculate sales forecast (average daily sales * forecast days)
+                const salesForecast = avgDailySales * forecastDays;
+                
+                // Update the UI
+                avgDailySalesInput.value = avgDailySales.toFixed(2);
+                salesForecastInput.value = salesForecast.toFixed(2);
+                
+                // Save to salesData object
+                salesData = {
+                    mtdSales,
+                    targetSales,
+                    avgDailySales,
+                    forecastDays,
+                    salesForecast
+                };
+                
+                // Save to localStorage
+                localStorage.setItem('salesData', JSON.stringify(salesData));
+            }
+            
+            // Update all calculations in the table (when sales data changes)
+            function updateAllCalculations() {
+                const rows = inventoryBody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const systemCountInput = row.querySelector('td:nth-child(2) input');
+                    const onHandInput = row.querySelector('td:nth-child(3) input');
+                    const mtdConsumptionInput = row.querySelector('td:nth-child(5) input');
+                    
+                    // Trigger calculation for each row
+                    if (systemCountInput && onHandInput && mtdConsumptionInput) {
+                        systemCountInput.dispatchEvent(new Event('change'));
+                        onHandInput.dispatchEvent(new Event('change'));
+                        mtdConsumptionInput.dispatchEvent(new Event('change'));
+                    }
+                });
+            }
+            
+            // Save MTD consumption data to localStorage
+            function saveMTDConsumptionData() {
+                const mtdConsumptionData = {};
+                const rows = inventoryBody.querySelectorAll('tr');
+                
+                rows.forEach(row => {
+                    const itemName = row.querySelector('td:first-child').textContent;
+                    const mtdConsumptionInput = row.querySelector('.mtd-consumption');
+                    if (mtdConsumptionInput) {
+                        mtdConsumptionData[itemName] = parseFloat(mtdConsumptionInput.value) || 0;
+                    }
+                });
+                
+                localStorage.setItem('mtdConsumptionData', JSON.stringify(mtdConsumptionData));
+            }
+            
+            // Load MTD consumption data from localStorage
+            function loadMTDConsumptionData() {
+                const savedData = localStorage.getItem('mtdConsumptionData');
+                if (!savedData) return;
+                
+                const mtdConsumptionData = JSON.parse(savedData);
+                const rows = inventoryBody.querySelectorAll('tr');
+                
+                rows.forEach(row => {
+                    const itemName = row.querySelector('td:first-child').textContent;
+                    const mtdConsumptionInput = row.querySelector('.mtd-consumption');
+                    if (mtdConsumptionInput && mtdConsumptionData[itemName] !== undefined) {
+                        mtdConsumptionInput.value = mtdConsumptionData[itemName];
+                    }
+                });
+                
+                // Update calculations after loading MTD data
+                updateAllCalculations();
             }
             
             function updateClock() {
@@ -408,42 +782,6 @@
                 }, 2000);
             }
             
-            // Set up keyboard navigation
-            function setupKeyboardShortcuts() {
-                document.addEventListener('keydown', function(e) {
-                    // Add new row with Alt+A
-                    if (e.altKey && e.key.toLowerCase() === 'a') {
-                        e.preventDefault();
-                        addNewRow();
-                    }
-                    
-                    // Save with Alt+S
-                    if (e.altKey && e.key.toLowerCase() === 's') {
-                        e.preventDefault();
-                        saveInventory();
-                    }
-                    
-                    // Export with Alt+E
-                    if (e.altKey && e.key.toLowerCase() === 'e') {
-                        e.preventDefault();
-                        exportToExcel();
-                    }
-                });
-            }
-            
-            // Populate days based on selected month and year
-            monthSelect.addEventListener('change', function() {
-                const month = parseInt(this.value);
-                const year = parseInt(yearSelect.value);
-                updateDaySelect(month, year);
-            });
-            
-            yearSelect.addEventListener('change', function() {
-                const month = parseInt(monthSelect.value);
-                const year = parseInt(this.value);
-                if (month) updateDaySelect(month, year);
-            });
-            
             function updateDaySelect(month, year) {
                 daySelect.innerHTML = '<option value="">SELECT DAY</option>';
                 
@@ -459,8 +797,7 @@
                 }
             }
             
-            // Load inventory for selected date
-            loadBtn.addEventListener('click', function() {
+            function loadInventoryForDate() {
                 const year = yearSelect.value;
                 const month = monthSelect.value;
                 const day = daySelect.value;
@@ -477,10 +814,9 @@
                 
                 // Load data from localStorage
                 loadInventoryData(currentDate);
-            });
+            }
             
-            // Start a new day (clear the table)
-            newDayBtn.addEventListener('click', function() {
+            function startNewDay() {
                 const year = yearSelect.value;
                 const month = monthSelect.value;
                 const day = daySelect.value;
@@ -495,21 +831,22 @@
                 localStorage.setItem('lastSelectedDate', currentDate);
                 updateSelectedDateDisplay(month, day, year);
                 
-                // Clear the table and show empty state
-                clearTable();
+                // Reset system count and on hand inputs to 0
+                const systemCountInputs = inventoryBody.querySelectorAll('td:nth-child(2) input');
+                const onHandInputs = inventoryBody.querySelectorAll('td:nth-child(3) input');
                 
-                // Add one empty row to start with
-                addNewRow();
-            });
-            
-            // Add new row to the table
-            addRowBtn.addEventListener('click', addNewRow);
-            
-            // Save inventory data
-            saveBtn.addEventListener('click', saveInventory);
-            
-            // Export to Excel
-            exportBtn.addEventListener('click', exportToExcel);
+                systemCountInputs.forEach(input => {
+                    input.value = '0';
+                    input.dispatchEvent(new Event('change'));
+                });
+                
+                onHandInputs.forEach(input => {
+                    input.value = '0';
+                    input.dispatchEvent(new Event('change'));
+                });
+                
+                showAlert('NEW DAY INVENTORY READY', 'success');
+            }
             
             function saveInventory() {
                 if (!currentDate) {
@@ -518,32 +855,34 @@
                 }
                 
                 const inventoryData = [];
-                const rows = inventoryBody.querySelectorAll('tr:not(.empty-table-message)');
-                
-                // If no rows (only the empty message), save empty array
-                if (rows.length === 0) {
-                    localStorage.setItem(`inventory_${currentDate}`, JSON.stringify([]));
-                    showAlert(`INVENTORY SAVED (EMPTY) FOR ${currentDate}`, 'success');
-                    return;
-                }
+                const rows = inventoryBody.querySelectorAll('tr');
                 
                 currentData = [];
                 rows.forEach(row => {
                     const cells = row.querySelectorAll('td');
-                    const itemName = cells[0].querySelector('input')?.value;
+                    const itemName = cells[0].textContent;
                     const systemCount = cells[1].querySelector('input')?.value;
                     const onHand = cells[2].querySelector('input')?.value;
+                    const variance = cells[3].textContent;
+                    const mtdConsumption = cells[4].querySelector('input')?.value;
+                    const avgConsumption = cells[5].textContent;
+                    const consumptionPer1000 = cells[6].textContent;
+                    const toOrder = cells[7].textContent;
+                    const replenish = cells[8].textContent;
                     
-                    if (itemName) { // Only save rows with item names
-                        const itemData = {
-                            itemName,
-                            systemCount: parseFloat(systemCount) || 0,
-                            onHand: parseFloat(onHand) || 0,
-                            variance: (parseFloat(onHand) || 0) - (parseFloat(systemCount) || 0)
-                        };
-                        inventoryData.push(itemData);
-                        currentData.push(itemData);
-                    }
+                    const itemData = {
+                        itemName,
+                        systemCount: parseFloat(systemCount) || 0,
+                        onHand: parseFloat(onHand) || 0,
+                        variance: parseFloat(variance) || 0,
+                        mtdConsumption: parseFloat(mtdConsumption) || 0,
+                        avgConsumption: parseFloat(avgConsumption) || 0,
+                        consumptionPer1000: parseFloat(consumptionPer1000) || 0,
+                        toOrder: parseFloat(toOrder) || 0,
+                        replenish
+                    };
+                    inventoryData.push(itemData);
+                    currentData.push(itemData);
                 });
                 
                 // Save to localStorage with date-specific key
@@ -562,13 +901,25 @@
                 
                 // Prepare data for export
                 const exportData = [
-                    ['ITEM NAME', 'SYSTEM COUNT', 'ON HAND', 'VARIANCE'],
+                    ['ITEM NAME', 'SYSTEM COUNT', 'ON HAND', 'VARIANCE', 'MTD CONSUMPTION', 
+                     'AVG CONSUMPTION', 'C/1000', 'TO ORDER', 'REPLENISH'],
                     ...currentData.map(item => [
                         item.itemName,
                         item.systemCount,
                         item.onHand,
-                        item.variance
-                    ])
+                        item.variance,
+                        item.mtdConsumption,
+                        item.avgConsumption,
+                        item.consumptionPer1000,
+                        item.toOrder,
+                        item.replenish
+                    ]),
+                    [],
+                    ['MONTH TO DATE SALES:', salesData.mtdSales],
+                    ['TARGET SALES:', salesData.targetSales],
+                    ['AVERAGE DAILY SALES:', salesData.avgDailySales],
+                    ['FORECAST DAYS:', salesData.forecastDays],
+                    ['SALES FORECAST:', salesData.salesForecast]
                 ];
                 
                 // Create workbook
@@ -623,6 +974,13 @@
                                 data: topItems.map(item => item.onHand),
                                 backgroundColor: 'rgba(0, 150, 255, 0.7)',
                                 borderColor: 'rgba(0, 150, 255, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Variance',
+                                data: topItems.map(item => item.variance),
+                                backgroundColor: 'rgba(255, 150, 0, 0.7)',
+                                borderColor: 'rgba(255, 150, 0, 1)',
                                 borderWidth: 1
                             }
                         ]
@@ -683,239 +1041,92 @@
                 }, 3000);
             }
             
-            // Helper function to clear the table
-            function clearTable() {
-                inventoryBody.innerHTML = '';
-                // Add empty table message
-                const emptyRow = document.createElement('tr');
-                emptyRow.className = 'empty-table-message';
-                emptyRow.innerHTML = '<td colspan="5">NO ITEMS ADDED YET. CLICK "ADD ITEM" TO START.</td>';
-                inventoryBody.appendChild(emptyRow);
-                currentData = [];
-                
-                // Clear chart
-                if (varianceChart) {
-                    varianceChart.destroy();
-                    varianceChart = null;
-                }
-            }
-            
-            // Helper function to add a new row
-            function addNewRow() {
-                // Remove empty table message if it exists
-                const emptyMessage = inventoryBody.querySelector('.empty-table-message');
-                if (emptyMessage) {
-                    emptyMessage.remove();
-                }
-                
-                const row = document.createElement('tr');
-                
-                // Item Name
-                const itemNameCell = document.createElement('td');
-                const itemNameInput = document.createElement('input');
-                itemNameInput.type = 'text';
-                itemNameInput.className = 'form-control';
-                itemNameInput.placeholder = 'Enter item name';
-                itemNameCell.appendChild(itemNameInput);
-                
-                // System Count
-                const systemCountCell = document.createElement('td');
-                const systemCountInput = document.createElement('input');
-                systemCountInput.type = 'number';
-                systemCountInput.className = 'form-control';
-                systemCountInput.value = '0';
-                systemCountInput.step = '0.01';
-                systemCountInput.min = '0';
-                systemCountCell.appendChild(systemCountInput);
-                
-                // On Hand
-                const onHandCell = document.createElement('td');
-                const onHandInput = document.createElement('input');
-                onHandInput.type = 'number';
-                onHandInput.className = 'form-control';
-                onHandInput.value = '0';
-                onHandInput.step = '0.01';
-                onHandInput.min = '0';
-                onHandCell.appendChild(onHandInput);
-                
-                // Variance (calculated)
-                const varianceCell = document.createElement('td');
-                varianceCell.textContent = '0';
-                varianceCell.classList.add('variance-positive');
-                
-                // Actions
-                const actionsCell = document.createElement('td');
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'btn btn-danger btn-sm';
-                deleteBtn.innerHTML = '<i class="bi bi-trash"></i> DELETE';
-                deleteBtn.addEventListener('click', function() {
-                    row.remove();
-                    // If this was the last row, show empty message
-                    if (inventoryBody.querySelectorAll('tr').length === 0) {
-                        clearTable();
-                    }
-                });
-                actionsCell.appendChild(deleteBtn);
-                
-                // Add all cells to the row
-                row.appendChild(itemNameCell);
-                row.appendChild(systemCountCell);
-                row.appendChild(onHandCell);
-                row.appendChild(varianceCell);
-                row.appendChild(actionsCell);
-                
-                // Add event listeners for calculation
-                const calculateVariance = function() {
-                    const system = parseFloat(systemCountInput.value) || 0;
-                    const onHand = parseFloat(onHandInput.value) || 0;
-                    const variance = onHand - system;
-                    
-                    varianceCell.textContent = variance.toFixed(2);
-                    
-                    if (variance > 0) {
-                        varianceCell.className = 'variance-positive';
-                    } else if (variance < 0) {
-                        varianceCell.className = 'variance-negative';
-                    } else {
-                        varianceCell.className = '';
-                    }
-                };
-                
-                systemCountInput.addEventListener('change', calculateVariance);
-                onHandInput.addEventListener('change', calculateVariance);
-                
-                // Add row to the table
-                inventoryBody.appendChild(row);
-                
-                // Focus on the new item name input
-                itemNameInput.focus();
-            }
-            
-            // Helper function to load inventory data
             function loadInventoryData(date) {
                 const savedData = localStorage.getItem(`inventory_${date}`);
-                
-                // Clear existing rows and chart
-                clearTable();
                 
                 if (savedData) {
                     const inventoryData = JSON.parse(savedData);
                     currentData = inventoryData;
                     
-                    if (inventoryData.length === 0) {
-                        // Show empty state for this date
-                        const emptyRow = document.createElement('tr');
-                        emptyRow.className = 'empty-table-message';
-                        emptyRow.innerHTML = '<td colspan="5">NO INVENTORY DATA FOR THIS DATE. CLICK "ADD ITEM" TO START.</td>';
-                        inventoryBody.appendChild(emptyRow);
-                        return;
-                    }
+                    // Update the table with saved values
+                    const rows = inventoryBody.querySelectorAll('tr');
                     
-                    inventoryData.forEach(item => {
-                        const row = document.createElement('tr');
-                        
-                        // Item Name
-                        const itemNameCell = document.createElement('td');
-                        const itemNameInput = document.createElement('input');
-                        itemNameInput.type = 'text';
-                        itemNameInput.className = 'form-control';
-                        itemNameInput.value = item.itemName;
-                        itemNameCell.appendChild(itemNameInput);
-                        
-                        // System Count
-                        const systemCountCell = document.createElement('td');
-                        const systemCountInput = document.createElement('input');
-                        systemCountInput.type = 'number';
-                        systemCountInput.className = 'form-control';
-                        systemCountInput.value = item.systemCount;
-                        systemCountInput.step = '0.01';
-                        systemCountInput.min = '0';
-                        systemCountCell.appendChild(systemCountInput);
-                        
-                        // On Hand
-                        const onHandCell = document.createElement('td');
-                        const onHandInput = document.createElement('input');
-                        onHandInput.type = 'number';
-                        onHandInput.className = 'form-control';
-                        onHandInput.value = item.onHand;
-                        onHandInput.step = '0.01';
-                        onHandInput.min = '0';
-                        onHandCell.appendChild(onHandInput);
-                        
-                        // Variance (calculated)
-                        const varianceCell = document.createElement('td');
-                        const variance = item.onHand - item.systemCount;
-                        varianceCell.textContent = variance.toFixed(2);
-                        
-                        if (variance > 0) {
-                            varianceCell.className = 'variance-positive';
-                        } else if (variance < 0) {
-                            varianceCell.className = 'variance-negative';
-                        }
-                        
-                        // Actions
-                        const actionsCell = document.createElement('td');
-                        const deleteBtn = document.createElement('button');
-                        deleteBtn.className = 'btn btn-danger btn-sm';
-                        deleteBtn.innerHTML = '<i class="bi bi-trash"></i> DELETE';
-                        deleteBtn.addEventListener('click', function() {
-                            row.remove();
-                            // If this was the last row, show empty message
-                            if (inventoryBody.querySelectorAll('tr').length === 0) {
-                                clearTable();
-                            }
-                        });
-                        actionsCell.appendChild(deleteBtn);
-                        
-                        // Add all cells to the row
-                        row.appendChild(itemNameCell);
-                        row.appendChild(systemCountCell);
-                        row.appendChild(onHandCell);
-                        row.appendChild(varianceCell);
-                        row.appendChild(actionsCell);
-                        
-                        // Add event listeners for calculation
-                        const calculateVariance = function() {
-                            const system = parseFloat(systemCountInput.value) || 0;
-                            const onHand = parseFloat(onHandInput.value) || 0;
-                            const newVariance = onHand - system;
+                    rows.forEach((row, index) => {
+                        const itemData = inventoryData[index];
+                        if (itemData) {
+                            const cells = row.querySelectorAll('td');
                             
-                            varianceCell.textContent = newVariance.toFixed(2);
+                            // Update input values
+                            cells[1].querySelector('input').value = itemData.systemCount;
+                            cells[2].querySelector('input').value = itemData.onHand;
                             
-                            if (newVariance > 0) {
-                                varianceCell.className = 'variance-positive';
-                            } else if (newVariance < 0) {
-                                varianceCell.className = 'variance-negative';
+                            // Update calculated values
+                            cells[3].textContent = itemData.variance.toFixed(2);
+                            
+                            // Set variance color
+                            if (itemData.variance < 0) {
+                                cells[3].className = 'variance-negative';
+                            } else if (itemData.variance > 0) {
+                                cells[3].className = 'variance-positive';
                             } else {
-                                varianceCell.className = '';
+                                cells[3].className = '';
                             }
-                        };
-                        
-                        systemCountInput.addEventListener('change', calculateVariance);
-                        onHandInput.addEventListener('change', calculateVariance);
-                        
-                        // Add row to the table
-                        inventoryBody.appendChild(row);
+                            
+                            // MTD Consumption is loaded from separate storage
+                            cells[5].textContent = itemData.avgConsumption || '0';
+                            cells[6].textContent = itemData.consumptionPer1000 || '0';
+                            cells[7].textContent = itemData.toOrder || '0';
+                            cells[8].textContent = itemData.replenish || '0';
+                        }
                     });
                     
-                    // Update chart with data for this specific date
+                    showAlert(`INVENTORY LOADED FOR ${date}`, 'success');
+                    
+                    // Update chart
                     updateVarianceChart();
                 } else {
-                    // No data found for this date
-                    const emptyRow = document.createElement('tr');
-                    emptyRow.className = 'empty-table-message';
-                    emptyRow.innerHTML = '<td colspan="5">NO INVENTORY DATA FOUND FOR THIS DATE. CLICK "ADD ITEM" TO START.</td>';
-                    inventoryBody.appendChild(emptyRow);
+                    showAlert('NO INVENTORY DATA FOUND FOR THIS DATE', 'warning');
                 }
             }
             
-            // Helper function to get month name
             function getMonthName(monthNumber) {
                 const months = [
                     'JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
                     'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'
                 ];
                 return months[parseInt(monthNumber) - 1];
+            }
+            
+            function setupEventListeners() {
+                // Month select change updates day select
+                monthSelect.addEventListener('change', function() {
+                    const year = yearSelect.value;
+                    const month = monthSelect.value;
+                    if (year && month) {
+                        updateDaySelect(month, year);
+                    }
+                });
+                
+                // Year select change updates day select if month is selected
+                yearSelect.addEventListener('change', function() {
+                    const year = yearSelect.value;
+                    const month = monthSelect.value;
+                    if (year && month) {
+                        updateDaySelect(month, year);
+                    }
+                });
+                
+                // Load button
+                loadBtn.addEventListener('click', loadInventoryForDate);
+                
+                // New Day button
+                newDayBtn.addEventListener('click', startNewDay);
+                
+                // Save button
+                saveBtn.addEventListener('click', saveInventory);
+                
+                // Export to Excel button
+                exportBtn.addEventListener('click', exportToExcel);
             }
             
             // Initialize the app
