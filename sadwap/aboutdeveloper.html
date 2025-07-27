@@ -1,230 +1,746 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mueen Ul Islam - CV</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.19.1/docxtemplater.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.0.0/pizzip.min.js"></script>
-  <style>
-    body {
-      background-color: #f7f7f7;
-      color: #333;
-    }
-    .container {
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    .header {
-      background-color: #4CAF50;
-      color: #fff;
-      padding: 20px;
-      border-radius: 10px 10px 0 0;
-    }
-    h1, h2, h3 {
-      color: #4CAF50;
-    }
-    .section-heading {
-      color: #4CAF50;
-      margin-top: 20px;
-    }
-    .skills, .languages, .experience, .education {
-      background-color: #f2f2f2;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
-    .section-heading {
-      border-bottom: 2px solid #4CAF50;
-      padding-bottom: 5px;
-    }
-    .contact-info {
-      font-size: 1.1rem;
-    }
-    .contact-info a {
-      text-decoration: none;
-      color: #4CAF50;
-    }
-    .contact-info a:hover {
-      text-decoration: underline;
-    }
-    .download-btn {
-      margin-top: 30px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-size: 1.1rem;
-      cursor: pointer;
-    }
-    .download-btn:hover {
-      background-color: #45a049;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mueen ul Islam - Hospitality Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #00ff41;
+            --secondary-color: #008f11;
+            --accent-color: #00ff41;
+            --light-color: #003b00;
+            --dark-color: #000000;
+            --text-color: #00ff41;
+            --text-light: #00ff41;
+            --glow: 0 0 5px #00ff41, 0 0 10px #00ff41;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+        
+        body {
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            background-color: var(--dark-color);
+            text-shadow: var(--glow);
+        }
+        
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            background-color: rgba(0, 0, 0, 0.85);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+            border: 1px solid var(--primary-color);
+        }
+        
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 0;
+            border-bottom: 2px solid var(--secondary-color);
+            margin-bottom: 30px;
+        }
+        
+        .header-text {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            text-shadow: var(--glow);
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+        
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .contact-item i {
+            color: var(--accent-color);
+            width: 20px;
+            text-align: center;
+        }
+        
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--accent-color);
+            box-shadow: var(--glow);
+            filter: grayscale(100%) brightness(1.5);
+        }
+        
+        section {
+            margin-bottom: 40px;
+            border: 1px solid var(--secondary-color);
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        section:hover {
+            box-shadow: var(--glow);
+            transform: translateY(-3px);
+        }
+        
+        h3 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
+        }
+        
+        .summary p {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .skill {
+            background-color: var(--light-color);
+            color: var(--text-color);
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            border: 1px solid var(--secondary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .skill:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+        
+        .experience-item, .education-item, .certification-item {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--secondary-color);
+        }
+        
+        .experience-item:last-child, .education-item:last-child, .certification-item:last-child {
+            border-bottom: none;
+        }
+        
+        .job-header, .edu-header {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        
+        .job-title, .edu-degree {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+        
+        .company, .edu-institution {
+            font-style: italic;
+            color: var(--secondary-color);
+        }
+        
+        .job-duration, .edu-duration {
+            color: var(--secondary-color);
+        }
+        
+        ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+            position: relative;
+        }
+        
+        li:before {
+            content: ">";
+            color: var(--accent-color);
+            position: absolute;
+            left: -15px;
+        }
+        
+        .accomplishments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .accomplishment-card {
+            background-color: var(--light-color);
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 3px 10px rgba(0, 255, 65, 0.1);
+            border-left: 4px solid var(--accent-color);
+            transition: all 0.3s ease;
+        }
+        
+        .accomplishment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--glow);
+        }
+        
+        .accomplishment-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .languages-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .language {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .language h4 {
+            margin-bottom: 5px;
+        }
+        
+        .language-level {
+            height: 8px;
+            background-color: var(--light-color);
+            border-radius: 4px;
+            margin-bottom: 5px;
+            overflow: hidden;
+        }
+        
+        .language-progress {
+            height: 100%;
+            background-color: var(--accent-color);
+            border-radius: 4px;
+            box-shadow: var(--glow);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            color: var(--text-light);
+            background-color: var(--light-color);
+            border-top: 1px solid var(--accent-color);
+        }
+        
+        .terminal {
+            background-color: var(--light-color);
+            border: 1px solid var(--accent-color);
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+        
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .terminal-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        
+        .terminal-btn.red {
+            background-color: #ff5f56;
+        }
+        
+        .terminal-btn.yellow {
+            background-color: #ffbd2e;
+        }
+        
+        .terminal-btn.green {
+            background-color: #27c93f;
+        }
+        
+        .terminal-title {
+            margin-left: 10px;
+            color: var(--secondary-color);
+            font-size: 0.8rem;
+        }
+        
+        .terminal-body {
+            overflow: hidden;
+        }
+        
+        .command {
+            color: var(--accent-color);
+        }
+        
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 15px;
+            background-color: var(--accent-color);
+            animation: blink 1s infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-img {
+                margin-top: 20px;
+            }
+            
+            .header-text {
+                order: 1;
+            }
+            
+            .job-header, .edu-header {
+                flex-direction: column;
+            }
+            
+            .job-duration, .edu-duration {
+                margin-top: 5px;
+            }
+            
+            .accomplishments-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Matrix rain animation */
+        @keyframes matrixRain {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100vh); }
+        }
+        
+        .matrix-char {
+            position: absolute;
+            color: var(--primary-color);
+            font-size: 14px;
+            animation: matrixRain 5s linear infinite;
+            opacity: 0.8;
+        }
+        
+        /* Typewriter effect */
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--accent-color) }
+        }
+        
+        .typewriter h1 {
+            overflow: hidden;
+            border-right: 2px solid var(--accent-color);
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: .15em;
+            animation: 
+                typing 3.5s steps(40, end),
+                blink-caret .75s step-end infinite;
+        }
+    </style>
 </head>
 <body>
-
-  <div class="container mt-5" id="cvContent">
-    <div class="header text-center">
-      <h1>Mueen Ul Islam</h1>
-      <p class="contact-info">
-        <strong>Phone:</strong> +966 567341924 | 
-        <strong>Email:</strong> <a href="mailto:moinranzao2@gmail.com">moinranzao2@gmail.com</a> | 
-        <strong>Location:</strong> Riyadh, KSA (Willing to relocate)
-      </p>
+    <canvas id="matrix-bg"></canvas>
+    
+    <div class="container">
+        <header>
+            <div class="header-text">
+                <div class="typewriter">
+                    <h1>Mueen ul Islam</h1>
+                </div>
+                <h2>Hospitality Manager</h2>
+                <div class="terminal">
+                    <div class="terminal-header">
+                        <div class="terminal-btn red"></div>
+                        <div class="terminal-btn yellow"></div>
+                        <div class="terminal-btn green"></div>
+                        <div class="terminal-title">user@terminal ~/profile</div>
+                    </div>
+                    <div class="terminal-body">
+                        <p><span class="command">> cat contact.info</span><span class="cursor"></span></p>
+                        <div class="contact-info">
+                            <div class="contact-item">
+                                <i class="fas fa-phone"></i>
+                                <span>+919622841731</span>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <span>moinranzao2@gmail.com</span>
+                            </div>
+                            <div class="contact-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Baramulla, Jammu and Kashmir 193101</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <img src="https://ghostkmr.github.io/sadwap/markhor.jpg" alt="Mueen ul Islam" class="profile-img">
+        </header>
+        
+        <section class="summary">
+            <h3>SUMMARY</h3>
+            <p>Results-driven hospitality manager with 8 years of experience in the industry, combining operational expertise with a strong IT background to streamline daily operations and enhance guest experiences. Adept at overseeing business functions, optimizing workflows, and implementing technology-driven solutions to improve efficiency and service quality.</p>
+            <p>Skilled in team leadership, problem-solving, and customer satisfaction, ensuring smooth and seamless hospitality operations. Proven ability to manage high-pressure environments while maintaining a commitment to excellence and guest satisfaction.</p>
+        </section>
+        
+        <section class="skills">
+            <h3>SKILLS</h3>
+            <div class="skills-container">
+                <span class="skill">Operational management</span>
+                <span class="skill">Customer feedback improvements</span>
+                <span class="skill">Customer Service</span>
+                <span class="skill">Service excellence</span>
+                <span class="skill">Service-orientated</span>
+                <span class="skill">Employee management</span>
+                <span class="skill">Health and Safety regulations</span>
+                <span class="skill">Staff development</span>
+                <span class="skill">Marketing and advertising</span>
+                <span class="skill">Strong leadership</span>
+                <span class="skill">Sanitation guidelines</span>
+                <span class="skill">Cost-controls</span>
+                <span class="skill">Health and Safety Compliance</span>
+                <span class="skill">Staff scheduling</span>
+            </div>
+        </section>
+        
+        <section class="experience">
+            <h3>EXPERIENCE</h3>
+            
+            <div class="experience-item">
+                <div class="job-header">
+                    <div>
+                        <span class="job-title">Assistant Restaurant Manager</span>
+                        <span class="company">Kudu | Riyadh, KSA</span>
+                    </div>
+                    <span class="job-duration">07/2024 - Current</span>
+                </div>
+                <ul>
+                    <li>Managed daily operations of the restaurant, overseeing food quality and customer service standards.</li>
+                    <li>Handled inventory management, including ordering supplies and conducting regular stock takes.</li>
+                    <li>Resolved customer complaints with professionalism, offering solutions to ensure satisfaction.</li>
+                    <li>Performed restaurant walk-through to gauge timeliness and excellent service quality.</li>
+                    <li>Optimised profits by controlling food, beverage and labour costs daily.</li>
+                    <li>Participated in local community events to raise the restaurant's profile and attract new customers.</li>
+                    <li>Determined root cause of performance trends, developing process improvement plans to target assurance in safety, quality and customer satisfaction.</li>
+                    <li>Implemented effective stock control procedures, reducing waste by 15% and improving profit margins through careful inventory management.</li>
+                    <li>Drove revenue by coaching team members on customer service and up-selling techniques.</li>
+                </ul>
+            </div>
+            
+            <div class="experience-item">
+                <div class="job-header">
+                    <div>
+                        <span class="job-title">Restaurant Supervisor</span>
+                        <span class="company">Americana | Jeddah, KSA</span>
+                    </div>
+                    <span class="job-duration">04/2022 - 04/2024</span>
+                </div>
+                <ul>
+                    <li>Trained workers in every position, including food preparation, money handling and cleaning roles.</li>
+                    <li>Addressed customer complaints, resolving issues promptly to uphold customer satisfaction.</li>
+                    <li>Supervised cash handling and reconciliation, ensuring accuracy in financial transactions.</li>
+                    <li>Handled escalated customer complaints to provide full resolutions and promote loyalty.</li>
+                    <li>Trained Front of House (FOH) staff on restaurant policies and procedures, guest service techniques and communication skills to ensure positive experience.</li>
+                    <li>Managed conflict resolution among staff and with customers, diplomatically addressing issues to maintain a positive atmosphere.</li>
+                    <li>Directed staff in daily work assignments to help each achieve goals and uphold restaurant reputation.</li>
+                    <li>Ran operations successfully according to industry best practices and owner standards.</li>
+                    <li>Oversaw use of ingredients to plan for costs and minimise food waste.</li>
+                </ul>
+            </div>
+            
+            <div class="experience-item">
+                <div class="job-header">
+                    <div>
+                        <span class="job-title">Assistant Manager</span>
+                        <span class="company">Grand MAMTA | Srinagar, Jammu and Kashmir</span>
+                    </div>
+                    <span class="job-duration">11/2018 - 11/2022</span>
+                </div>
+                <ul>
+                    <li>Coordinated with senior management to implement strategic plans for revenue growth.</li>
+                    <li>Oversaw daily operations, including opening and closing procedures, to maintain store standards.</li>
+                    <li>Facilitated communication between staff and senior management, acting as a point of contact.</li>
+                    <li>Prepared detailed reports on weekly sales, expenses, and staff productivity for management review.</li>
+                    <li>Monitored inventory levels, placing orders for stock replenishment to prevent shortages.</li>
+                    <li>Supervised supply purchases, management and tracking in line with budgetary requirements.</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section class="education">
+            <h3>EDUCATION</h3>
+            <div class="education-item">
+                <div class="edu-header">
+                    <div>
+                        <span class="edu-degree">Bachelor of Science: Computer Applications</span>
+                        <span class="edu-institution">Kashmir University | Srinagar</span>
+                    </div>
+                    <span class="edu-duration">2013</span>
+                </div>
+                <ul>
+                    <li>Programming & Development: C, C++, HTML, CSS, JavaScript, PHP, WordPress</li>
+                    <li>Artificial Intelligence & Databases: AI fundamentals, DBMS (Database Management Systems)</li>
+                    <li>Digital & Applied Sciences: Digital Electronics, Applied Mathematics, Mathematics & Science Essentials</li>
+                    <li>Software & Tools: MS Office Suite (Excel, Word, PowerPoint)</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section class="certifications">
+            <h3>CERTIFICATIONS</h3>
+            <div class="skills-container">
+                <span class="skill">food safety certified</span>
+                <span class="skill">cpr, first aid</span>
+                <span class="skill">effective shift management</span>
+                <span class="skill">time management</span>
+                <span class="skill">effective communication</span>
+                <span class="skill">Leadership Skills And Management</span>
+                <span class="skill">Restaurant certified trainer</span>
+                <span class="skill">diploma in hospitality management</span>
+                <span class="skill">HACCP certification course</span>
+            </div>
+        </section>
+        
+        <section class="accomplishments">
+            <h3>ACCOMPLISHMENTS</h3>
+            <div class="accomplishments-grid">
+                <div class="accomplishment-card">
+                    <h4>Awards & Recognitions</h4>
+                    <ul>
+                        <li>Awarded Double Platinum for outstanding performance in OA (Operational Audit) and QA (Quality Audit) audits.</li>
+                        <li>Recognized with Kudu's "Good" and "Excellent" ratings in C.E.R. audits related to food safety and customer service.</li>
+                        <li>Achieved Top Score in internal audits for Cash Handling and Inventory Management, demonstrating attention to detail and efficiency.</li>
+                    </ul>
+                </div>
+                
+                <div class="accomplishment-card">
+                    <h4>Projects & Technical Achievements</h4>
+                    <ul>
+                        <li>Developed Sadwap Application for Kudu's managerial use, streamlining operations and enhancing task management.</li>
+                        <li>Created the STM system for Americana to assist management in tracking and improving operational performance.</li>
+                        <li>Developed a MoviePlus replica of Netflix and Amazon Prime, providing a similar user experience for streaming content.</li>
+                        <li>Currently working on an AI-powered chatbot, aimed at improving user engagement and automating customer queries.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section class="languages">
+            <h3>LANGUAGES</h3>
+            <div class="languages-container">
+                <div class="language">
+                    <h4>English</h4>
+                    <div class="language-level">
+                        <div class="language-progress" style="width: 90%;"></div>
+                    </div>
+                    <span>C1 Advanced</span>
+                </div>
+                
+                <div class="language">
+                    <h4>Arabic</h4>
+                    <div class="language-level">
+                        <div class="language-progress" style="width: 40%;"></div>
+                    </div>
+                    <span>A2 Elementary</span>
+                </div>
+                
+                <div class="language">
+                    <h4>Hindi</h4>
+                    <div class="language-level">
+                        <div class="language-progress" style="width: 75%;"></div>
+                    </div>
+                    <span>B2 Upper Intermediate</span>
+                </div>
+                
+                <div class="language">
+                    <h4>Urdu</h4>
+                    <div class="language-level">
+                        <div class="language-progress" style="width: 60%;"></div>
+                    </div>
+                    <span>B1 Intermediate</span>
+                </div>
+            </div>
+        </section>
+        
+        <section class="hobbies">
+            <h3>HOBBIES AND INTERESTS</h3>
+            <ul>
+                <li><strong>Web & Application Development:</strong> Building websites and applications using HTML, CSS, and JavaScript.</li>
+                <li><strong>Backend Development:</strong> Currently expanding expertise by learning Python and Django for web applications.</li>
+                <li><strong>Passionate about exploring A.I</strong></li>
+            </ul>
+        </section>
+        
+        <section class="driving">
+            <h3>DRIVING LICENCE</h3>
+            <ul>
+                <li>Indian driving license</li>
+            </ul>
+        </section>
     </div>
-
-    <div class="experience">
-      <h2 class="section-heading">Professional Summary</h2>
-      <p>A versatile professional with a diverse background in fine dining, quick-service restaurants, and technology. Adept at creating exceptional customer experiences and leveraging technical expertise to develop web and mobile applications that improve operational efficiency and enhance user engagement. Open to relocating for a rewarding career opportunity with a leading company.</p>
-    </div>
-
-    <div class="experience">
-      <h2 class="section-heading">Work Experience</h2>
-      <h3>Assistant Restaurant Manager – Kudu KSA</h3>
-      <p><strong>June 2024 – Present</strong></p>
-      <ul>
-        <li>Successfully managed daily operations ensuring smooth functioning of the restaurant.</li>
-        <li>Achieved excellent internal audit reports with scores of 97% and 94% in departmental audits.</li>
-        <li>Implemented C.E.R. Cares, enhancing customer service, employee performance, and overall operational standards.</li>
-        <li>Relocated to Kingdom Tower, Riyadh, to oversee and ensure compliance with critical control points for government inspections.</li>
-        <li>Coordinated with the food safety department ensuring restaurant met all required regulations for government visits.</li>
-        <li>Fully proficient in ISP software, ensuring smooth handling of restaurant operations and compliance with safety standards.</li>
-        <li>Top Scorer in promoting the company's application loyalty program, driving customer engagement and loyalty.</li>
-      </ul>
-
-      <h3>Freelancer – Web Designer and Developer</h3>
-      <p><strong>2020 – Present</strong></p>
-      <ul>
-        <li>Designed and developed responsive websites using HTML, CSS, and JavaScript.</li>
-        <li>Built and deployed Android applications using Android Studio to streamline operations for businesses.</li>
-        <li>Developed SADWAP (Stand Alone Dynamic Web Application Program) for recording daily managerial tasks.</li>
-        <li>Created STM Store to Mobile Application for Hardee's, enabling managers to access Outlook accounts via mobile devices.</li>
-        <li>Developed Movie Plus, an Android platform application connecting to third-party servers for seamless media streaming.</li>
-      </ul>
-
-      <h3>Assistant Manager (Fine Dining and QSR) – Hotel Grand Mamta, Kashmir, Srinagar</h3>
-      <p><strong>2018 – 2022</strong></p>
-      <ul>
-        <li>Delivered exceptional guest services in both fine dining and quick-service settings, handling customer needs professionally.</li>
-        <li>Maintained high service standards and ensured smooth operations in the restaurant and bar areas.</li>
-        <li>Increased foreign customer visits by delivering excellent customer service.</li>
-      </ul>
-
-      <h3>Shift Supervisor – Americana (Hardee's), KSA</h3>
-      <p><strong>April 2022 – May 2024</strong></p>
-      <ul>
-        <li>Managed P&L to ensure financial performance met or exceeded targets.</li>
-        <li>Optimized labor management to improve productivity and reduce costs.</li>
-        <li>Minimized food costs and ensured excellent customer service to increase company profitability.</li>
-        <li>Maintained National Food Safety and Standards with double platinum records.</li>
-        <li>Ensured complete customer satisfaction through high-quality service.</li>
-      </ul>
-    </div>
-
-    <div class="education">
-      <h2 class="section-heading">Education</h2>
-      <p><strong>Degree in Computer Applications</strong><br> Kashmir University, Srinagar (2011 – 2013)</p>
-    </div>
-
-    <div class="skills">
-      <h2 class="section-heading">Skills</h2>
-      <ul>
-        <li>Web design and development (HTML, CSS, JavaScript)</li>
-        <li>Android application development (Android Studio)</li>
-        <li>Customer service excellence</li>
-        <li>Training and team development</li>
-        <li>Proficient in **ISP** and **CrunchTime** software</li>
-        <li>Proficient in **Office Excel**, **PowerPoint**, and **Outlook**</li>
-        <li>Fluent in English, Hindi, Urdu, and Arabic</li>
-        <li>Government food safety and inspection compliance</li>
-        <li>Effective time management and organizational skills</li>
-      </ul>
-    </div>
-
-    <div class="languages">
-      <h2 class="section-heading">Languages</h2>
-      <ul>
-        <li>English (Fluent)</li>
-        <li>Hindi (Fluent)</li>
-        <li>Urdu (Fluent)</li>
-        <li>Arabic (Intermediate)</li>
-      </ul>
-    </div>
-
-    <div class="achievements">
-      <h2 class="section-heading">Awards and Achievements</h2>
-      <ul>
-        <li>Created and developed **SADWAP**, **STM Store to Mobile Application**, and **Movie Plus**, enhancing business efficiency and user engagement.</li>
-        <li>Recognized for achieving **double platinum records** in Food Safety and Standards (Hardee’s).</li>
-        <li>Top Scorer in the **Effective Shift Management Program** by Kudu, KSA.</li>
-        <li>Increased foreign customer visits through outstanding customer service at Hotel Grand Mamta.</li>
-      </ul>
-    </div>
-
-    <div class="text-center">
-      <a href="https://play.google.com/store/apps/details?id=com.example.sadwap" target="_blank" class="btn btn-success mt-3">SADWAP - Android App</a>
-      <a href="https://play.google.com/store/apps/details?id=com.example.stmstore" target="_blank" class="btn btn-success mt-3">STM Store to Mobile - Android App</a>
-      <a href="https://play.google.com/store/apps/details?id=com.example.movieplus" target="_blank" class="btn btn-success mt-3">Movie Plus - Android App</a>
-    </div>
-
-    <div class="text-center">
-      <button class="download-btn" onclick="downloadWord()">Download Word</button>
-    </div>
-  </div>
-
-  <script>
-    function downloadWord() {
-      // Prepare the Word document content
-      const content = `
-        Mueen Ul Islam\n
-        Phone: +966 567341924 | Email: moinranzao2@gmail.com | Location: Riyadh, KSA (Willing to relocate)\n\n
-
-        Professional Summary:
-        A versatile professional with a diverse background in fine dining, quick-service restaurants, and technology. 
-        Adept at creating exceptional customer experiences and leveraging technical expertise to develop web and mobile applications 
-        that improve operational efficiency and enhance user engagement. Open to relocating for a rewarding career opportunity with a leading company.\n\n
-
-        Work Experience:
-        Assistant Restaurant Manager – Kudu KSA (June 2024 – Present)
-        - Successfully managed daily operations ensuring smooth functioning of the restaurant.
-        - Achieved excellent internal audit reports with scores of 97% and 94% in departmental audits.
-        - Implemented C.E.R. Cares, enhancing customer service, employee performance, and overall operational standards.\n
-        Freelance Web Designer and Developer (2020 – Present)
-        - Designed and developed responsive websites using HTML, CSS, and JavaScript.\n
-        Assistant Manager (Fine Dining and QSR) – Hotel Grand Mamta, Kashmir (2018 – 2022)\n
-        Shift Supervisor – Americana (Hardee's), KSA (April 2022 – May 2024)\n\n
-
-        Education:
-        Degree in Computer Applications - Kashmir University, Srinagar (2011 – 2013)\n\n
-
-        Skills:
-        - Web design and development (HTML, CSS, JavaScript)
-        - Android application development (Android Studio)\n
-        - Customer service excellence\n
-        - Government food safety and inspection compliance\n\n
-
-        Languages:
-        - English (Fluent)\n
-        - Hindi (Fluent)\n
-        - Urdu (Fluent)\n
-        - Arabic (Intermediate)\n
-      `;
-
-      const doc = new Blob([content], { type: 'application/msword' });
-
-      // Create an anchor link to trigger the download
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(doc);
-      link.download = 'Mueen_Ul_Islam_CV.doc';
-      link.click();
-    }
-  </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <footer>
+        &copy; 2024 Mueen ul Islam - All Rights Reserved
+    </footer>
+    
+    <script>
+        // Matrix background effect
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const nums = '0123456789';
+        
+        const alphabet = katakana + latin + nums;
+        
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        
+        const rainDrops = [];
+        
+        for (let x = 0; x < columns; x++) {
+            rainDrops[x] = 1;
+        }
+        
+        const draw = () => {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ff41';
+            ctx.font = fontSize + 'px monospace';
+            
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+                
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        };
+        
+        setInterval(draw, 30);
+        
+        // Terminal typing effect
+        const terminalCommands = [
+            "> cat skills.list",
+            "> ls experience/",
+            "> grep 'education' profile.db",
+            "> ./run --achievements"
+        ];
+        
+        let currentCommand = 0;
+        const terminalElement = document.querySelector('.terminal-body');
+        
+        function typeCommand() {
+            if (currentCommand < terminalCommands.length) {
+                const commandElement = document.createElement('p');
+                commandElement.innerHTML = `<span class="command">${terminalCommands[currentCommand]}</span><span class="cursor"></span>`;
+                terminalElement.appendChild(commandElement);
+                
+                setTimeout(() => {
+                    commandElement.querySelector('.cursor').style.animation = 'none';
+                    commandElement.innerHTML = commandElement.innerHTML.replace('<span class="cursor"></span>', '');
+                    
+                    // Add some fake output
+                    if (currentCommand === 0) {
+                        const output = document.createElement('div');
+                        output.innerHTML = `
+                            <p>Operational management</p>
+                            <p>Customer feedback improvements</p>
+                            <p>Customer Service</p>
+                            <p>...and 10 more skills</p>
+                        `;
+                        terminalElement.appendChild(output);
+                    }
+                    
+                    currentCommand++;
+                    setTimeout(typeCommand, 1000);
+                }, 1500);
+            } else {
+                // Reset after a delay
+                setTimeout(() => {
+                    terminalElement.querySelectorAll('p:not(:first-child), div').forEach(el => el.remove());
+                    currentCommand = 0;
+                    typeCommand();
+                }, 5000);
+            }
+        }
+        
+        // Start the terminal animation after a delay
+        setTimeout(typeCommand, 3000);
+        
+        // Resize handler for matrix background
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
 </body>
 </html>
