@@ -298,15 +298,11 @@
                         </div>
                     </div>
                     
-                    <!-- Sales Targets Section -->
+                    <!-- Sales Targets Section - Removed target sales input -->
                     <div class="sales-targets-panel">
                         <div class="sales-input-group">
                             <label for="month-to-date-sales">MONTH TO DATE SALES:</label>
                             <input type="number" id="month-to-date-sales" placeholder="Enter amount">
-                        </div>
-                        <div class="sales-input-group">
-                            <label for="target-sales">TARGET SALES:</label>
-                            <input type="number" id="target-sales" placeholder="Enter amount">
                         </div>
                         <div class="sales-input-group">
                             <label for="average-daily-sales">AVERAGE DAILY SALES:</label>
@@ -463,7 +459,6 @@
             const dateElement = document.getElementById('date-display');
             const varianceChartCanvas = document.getElementById('varianceChart');
             const mtdSalesInput = document.getElementById('month-to-date-sales');
-            const targetSalesInput = document.getElementById('target-sales');
             const avgDailySalesInput = document.getElementById('average-daily-sales');
             const forecastDaysSelect = document.getElementById('forecast-days');
             const salesForecastInput = document.getElementById('sales-forecast');
@@ -476,7 +471,6 @@
             let currentData = [];
             let salesData = {
                 mtdSales: 0,
-                targetSales: 0,
                 avgDailySales: 0,
                 forecastDays: 1,
                 salesForecast: 0
@@ -518,7 +512,6 @@
                 if (savedSalesData) {
                     salesData = JSON.parse(savedSalesData);
                     mtdSalesInput.value = salesData.mtdSales;
-                    targetSalesInput.value = salesData.targetSales;
                     avgDailySalesInput.value = salesData.avgDailySales;
                     forecastDaysSelect.value = salesData.forecastDays;
                     salesForecastInput.value = salesData.salesForecast;
@@ -671,21 +664,16 @@
                     calculateSalesMetrics();
                     updateAllCalculations();
                 });
-                targetSalesInput.addEventListener('input', function() {
-                    calculateSalesMetrics();
-                    updateAllCalculations();
-                });
                 forecastDaysSelect.addEventListener('change', function() {
                     calculateSalesMetrics();
                     updateAllCalculations();
                 });
             }
             
-            // Calculate sales metrics (MTD, target, forecast, etc.)
+            // Calculate sales metrics (MTD, forecast, etc.)
             function calculateSalesMetrics() {
                 // Get current values
                 const mtdSales = parseFloat(mtdSalesInput.value) || 0;
-                const targetSales = parseFloat(targetSalesInput.value) || 0;
                 const forecastDays = parseInt(forecastDaysSelect.value) || 1;
                 
                 // Get current date
@@ -705,7 +693,6 @@
                 // Save to salesData object
                 salesData = {
                     mtdSales,
-                    targetSales,
                     avgDailySales,
                     forecastDays,
                     salesForecast
@@ -916,7 +903,6 @@
                     ]),
                     [],
                     ['MONTH TO DATE SALES:', salesData.mtdSales],
-                    ['TARGET SALES:', salesData.targetSales],
                     ['AVERAGE DAILY SALES:', salesData.avgDailySales],
                     ['FORECAST DAYS:', salesData.forecastDays],
                     ['SALES FORECAST:', salesData.salesForecast]
