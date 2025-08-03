@@ -484,13 +484,17 @@
             }
             
             // Create gradient for the chart
-            const gradientAchieved = ctx.createLinearGradient(0, 0, 0, 400);
-            gradientAchieved.addColorStop(0, 'rgba(0, 255, 65, 0.8)');
-            gradientAchieved.addColorStop(1, 'rgba(0, 143, 17, 0.1)');
-            
             const gradientGrowth = ctx.createLinearGradient(0, 0, 0, 400);
             gradientGrowth.addColorStop(0, 'rgba(0, 123, 255, 0.8)');
             gradientGrowth.addColorStop(1, 'rgba(0, 56, 143, 0.1)');
+            
+            // Prepare segmented data for achieved values
+            const achievedSegments = [];
+            const segmentColors = [];
+            
+            for (let i = 0; i < achievedData.length; i++) {
+                achievedSegments.push(achievedData[i]);
+            }
             
             chart = new Chart(ctx, {
                 type: "line",
@@ -499,18 +503,34 @@
                     datasets: [
                         {
                             label: "ACHIEVED (%)",
-                            data: achievedData,
-                            borderColor: "#00ff41",
-                            backgroundColor: gradientAchieved,
+                            data: achievedSegments,
+                            borderColor: (context) => {
+                                const value = context.dataset.data[context.dataIndex];
+                                return value < 100 ? '#ff0000' : '#00ff41';
+                            },
+                            backgroundColor: (context) => {
+                                const value = context.dataset.data[context.dataIndex];
+                                return value < 100 ? 'rgba(255, 0, 0, 0.1)' : 'rgba(0, 255, 65, 0.1)';
+                            },
                             borderWidth: 2,
                             tension: 0.3,
                             fill: true,
-                            pointBackgroundColor: "#00ff41",
+                            pointBackgroundColor: (context) => {
+                                const value = context.dataset.data[context.dataIndex];
+                                return value < 100 ? '#ff0000' : '#00ff41';
+                            },
                             pointBorderColor: "#000",
                             pointHoverRadius: 6,
-                            pointHoverBackgroundColor: "#00ff41",
+                            pointHoverBackgroundColor: (context) => {
+                                const value = context.dataset.data[context.dataIndex];
+                                return value < 100 ? '#ff0000' : '#00ff41';
+                            },
                             pointHoverBorderColor: "#000",
-                            pointHoverBorderWidth: 2
+                            pointHoverBorderWidth: 2,
+                            segment: {
+                                borderColor: ctx => ctx.p0.parsed.y < 100 ? '#ff0000' : '#00ff41',
+                                backgroundColor: ctx => ctx.p0.parsed.y < 100 ? 'rgba(255, 0, 0, 0.1)' : 'rgba(0, 255, 65, 0.1)'
+                            }
                         },
                         {
                             label: "GROWTH (%)",
