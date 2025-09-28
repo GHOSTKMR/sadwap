@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,43 +15,43 @@
 
     <style>
         :root {
-            --primary-color: #00ff88;
-            --dark-bg: #121212;
-            --darker-bg: #0a0a0a;
-            --card-bg: #1e1e1e;
-            --text-color: #e0e0e0;
-            --text-muted: #aaaaaa;
-            --warning-red: #ff5555;
-            --warning-orange: #ffaa00;
-            --success-green: #00cc66;
-            --info-blue: #3399ff;
+            --primary-color: #2c7be5;
+            --secondary-color: #6e84a3;
+            --dark-bg: #f5f7fa;
+            --darker-bg: #e5e9f2;
+            --card-bg: #ffffff;
+            --text-color: #3b506c;
+            --text-muted: #6e84a3;
+            --warning-red: #e63757;
+            --warning-orange: #f6c343;
+            --success-green: #00d97e;
+            --info-blue: #39afd1;
+            --border-color: #e3ebf6;
         }
 
         body {
-            font-family: 'Roboto', 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
             background-color: var(--dark-bg);
             color: var(--text-color);
             min-height: 100vh;
             margin: 0;
             padding: 20px;
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
         .container {
             background-color: var(--card-bg);
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 25px;
             margin: 0 auto;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            max-width: 800px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            max-width: 900px;
+            border: 1px solid var(--border-color);
         }
 
         h5 {
             color: var(--primary-color);
             padding-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
             font-weight: 600;
             margin-bottom: 20px;
             position: relative;
@@ -63,28 +62,27 @@
             position: absolute;
             bottom: 0;
             left: 0;
-            width: 60px;
-            height: 3px;
+            width: 40px;
+            height: 2px;
             background: var(--primary-color);
-            border-radius: 3px;
+            border-radius: 2px;
         }
 
         .btn {
             background-color: var(--primary-color);
-            color: var(--darker-bg);
+            color: white;
             border: none;
             margin-bottom: 10px;
-            transition: all 0.3s ease;
-            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
             font-weight: 500;
-            border-radius: 8px;
+            border-radius: 6px;
             padding: 10px 20px;
         }
 
         .btn:hover {
-            background-color: #00cc70;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+            background-color: #1c6cd5;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(44, 123, 229, 0.2);
         }
 
         .btn-outline {
@@ -94,7 +92,7 @@
         }
 
         .btn-outline:hover {
-            background-color: rgba(0, 255, 136, 0.1);
+            background-color: rgba(44, 123, 229, 0.1);
         }
 
         .form-label {
@@ -105,20 +103,20 @@
         }
 
         .form-control {
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: white;
             color: var(--text-color);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            height: 45px;
-            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            height: 42px;
+            border-radius: 6px;
             padding: 10px 15px;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .form-control:focus {
-            background-color: rgba(255, 255, 255, 0.08);
+            background-color: white;
             color: var(--text-color);
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.2);
+            box-shadow: 0 0 0 3px rgba(44, 123, 229, 0.1);
         }
 
         .result ul {
@@ -129,29 +127,29 @@
 
         .result ul li {
             padding: 16px;
-            margin: 10px 0;
+            margin: 8px 0;
             border-radius: 8px;
-            transition: all 0.3s ease;
-            background-color: rgba(255, 255, 255, 0.03);
+            transition: all 0.2s ease;
+            background-color: white;
             position: relative;
             border-left: 4px solid var(--primary-color);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
         }
 
         .result ul li:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transform: translateY(-1px);
         }
 
         .critical {
             border-left-color: var(--warning-red);
-            background-color: rgba(255, 85, 85, 0.08);
+            background-color: rgba(230, 55, 87, 0.03);
         }
 
         .warning {
             border-left-color: var(--warning-orange);
-            background-color: rgba(255, 170, 0, 0.08);
+            background-color: rgba(246, 195, 67, 0.03);
         }
 
         .safe {
@@ -159,45 +157,44 @@
         }
 
         .notification-icon {
-            font-size: 20px;
+            font-size: 18px;
             color: var(--primary-color);
             position: relative;
             cursor: pointer;
-            transition: all 0.3s ease;
-            width: 40px;
-            height: 40px;
+            transition: all 0.2s ease;
+            width: 38px;
+            height: 38px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            background-color: rgba(0, 255, 136, 0.1);
+            background-color: rgba(44, 123, 229, 0.1);
         }
 
         .notification-icon:hover {
-            background-color: rgba(0, 255, 136, 0.2);
-            transform: scale(1.1);
+            background-color: rgba(44, 123, 229, 0.2);
         }
 
         .notification-count {
             color: white;
             background-color: var(--warning-red);
             border-radius: 50%;
-            font-size: 11px;
+            font-size: 10px;
             position: absolute;
             top: -2px;
             right: -2px;
             padding: 3px 6px;
             font-weight: bold;
-            min-width: 20px;
+            min-width: 18px;
             text-align: center;
         }
 
         .search-box {
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: white;
             color: var(--text-color);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
             flex-grow: 1;
-            border-radius: 8px 0 0 8px;
+            border-radius: 6px 0 0 6px;
             padding: 10px 15px;
         }
 
@@ -207,29 +204,29 @@
         }
 
         .icon-btn {
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: white;
             color: var(--text-color);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 45px;
-            height: 45px;
+            border: 1px solid var(--border-color);
+            width: 42px;
+            height: 42px;
             text-align: center;
             cursor: pointer;
-            border-radius: 8px;
+            border-radius: 6px;
             padding: 10px;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .icon-btn:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(44, 123, 229, 0.1);
             color: var(--primary-color);
-            transform: translateY(-2px);
+            border-color: var(--primary-color);
         }
 
         .icon-btn i {
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .countdown {
@@ -264,9 +261,9 @@
 
         .badge {
             font-weight: 500;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -278,7 +275,7 @@
 
         .badge-warning {
             background-color: var(--warning-orange);
-            color: black;
+            color: white;
         }
 
         .badge-safe {
@@ -293,7 +290,7 @@
 
         /* Custom scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         ::-webkit-scrollbar-track {
@@ -302,7 +299,7 @@
 
         ::-webkit-scrollbar-thumb {
             background: var(--primary-color);
-            border-radius: 4px;
+            border-radius: 3px;
         }
 
         /* Empty state */
@@ -313,9 +310,9 @@
         }
 
         .empty-state i {
-            font-size: 48px;
+            font-size: 40px;
             color: var(--primary-color);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             opacity: 0.5;
         }
 
@@ -327,7 +324,7 @@
         /* Animation for critical items */
         @keyframes pulse {
             0% { opacity: 1; }
-            50% { opacity: 0.7; }
+            50% { opacity: 0.8; }
             100% { opacity: 1; }
         }
 
@@ -338,25 +335,53 @@
         /* Status indicator */
         .status-indicator {
             display: inline-block;
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             margin-right: 8px;
         }
 
         .status-critical {
             background-color: var(--warning-red);
-            box-shadow: 0 0 8px var(--warning-red);
         }
 
         .status-warning {
             background-color: var(--warning-orange);
-            box-shadow: 0 0 8px var(--warning-orange);
         }
 
         .status-safe {
             background-color: var(--success-green);
-            box-shadow: 0 0 8px var(--success-green);
+        }
+
+        /* Current time display */
+        .current-time {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-family: 'Roboto Mono', monospace;
+            background-color: rgba(44, 123, 229, 0.05);
+            padding: 6px 12px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        /* Toggle button for product list */
+        .toggle-btn {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .toggle-btn:hover {
+            background-color: rgba(44, 123, 229, 0.1);
+            border-color: var(--primary-color);
         }
 
         /* Responsive adjustments */
@@ -370,7 +395,7 @@
             }
             
             .search-box {
-                border-radius: 8px;
+                border-radius: 6px;
                 margin-bottom: 10px;
             }
             
@@ -384,16 +409,32 @@
                 width: auto;
             }
         }
+
+        /* Fade animation */
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Alert styling */
+        .fixed-alert {
+            border-radius: 6px;
+            padding: 12px 16px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <!-- Header with title and notification -->
+        <!-- Header with title, time, and notification -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="m-0" style="color: var(--primary-color);">
-                <i class="fas fa-hourglass-half me-2"></i> Expiry Tracker
-            </h4>
+            <div class="d-flex align-items-center">
+                <h4 class="m-0" style="color: var(--primary-color);">
+                    <i class="fas fa-hourglass-half me-2"></i> Expiry Tracker
+                </h4>
+                <div class="current-time" id="currentTime"></div>
+            </div>
             <span class="notification-icon" id="notificationIcon" onclick="showNotifications()" title="View Expiring Soon">
                 <i class="fas fa-bell"></i>
                 <span class="notification-count" id="notificationCount">0</span>
@@ -419,7 +460,12 @@
 
         <!-- Search and Actions -->
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="m-0">Your Products</h5>
+            <div class="d-flex align-items-center">
+                <h5 class="m-0 me-3">Your Products</h5>
+                <button class="toggle-btn" id="toggleListBtn">
+                    <i class="fas fa-eye"></i> Show List
+                </button>
+            </div>
             <div class="d-flex">
                 <button class="icon-btn me-2" id="exportData" title="Export to Excel">
                     <i class="fas fa-file-export"></i>
@@ -438,7 +484,7 @@
         </div>
 
         <!-- Product List -->
-        <div class="result">
+        <div class="result" id="productListContainer">
             <ul id="productList">
                 <!-- Products will be added here dynamically -->
             </ul>
@@ -453,7 +499,7 @@
         </div>
         
         <!-- Summary Card -->
-        <div class="mt-4 p-3 rounded" style="background-color: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.1);">
+        <div class="mt-4 p-3 rounded" style="background-color: rgba(44, 123, 229, 0.05); border: 1px solid rgba(44, 123, 229, 0.1);">
             <div class="d-flex justify-content-between">
                 <div>
                     <small class="text-muted">TOTAL PRODUCTS</small>
@@ -461,11 +507,11 @@
                 </div>
                 <div class="text-end">
                     <small class="text-muted">EXPIRING SOON</small>
-                    <h4 class="m-0 text-warning" id="expiringSoonCount">0</h4>
+                    <h4 class="m-0" style="color: var(--warning-orange);" id="expiringSoonCount">0</h4>
                 </div>
                 <div class="text-end">
                     <small class="text-muted">EXPIRED</small>
-                    <h4 class="m-0 text-danger" id="expiredCount">0</h4>
+                    <h4 class="m-0" style="color: var(--warning-red);" id="expiredCount">0</h4>
                 </div>
             </div>
         </div>
@@ -480,6 +526,7 @@
             loadProductsFromLocalStorage();
             updateNotificationCount();
             updateSummary();
+            updateCurrentTime();
             
             // Set up event listeners
             document.getElementById('expiryForm').addEventListener('submit', handleFormSubmit);
@@ -487,6 +534,10 @@
             document.getElementById('exportData').addEventListener('click', exportToExcel);
             document.getElementById('searchBox').addEventListener('keyup', searchProducts);
             document.getElementById('searchButton').addEventListener('click', searchProducts);
+            document.getElementById('toggleListBtn').addEventListener('click', toggleProductList);
+            
+            // Update time every second
+            setInterval(updateCurrentTime, 1000);
             
             // Check for expiring products every hour
             setInterval(checkForExpiringProducts, 3600000);
@@ -498,6 +549,10 @@
             
             // Set focus to product name field
             document.getElementById('productName').focus();
+            
+            // Initially hide the product list
+            document.getElementById('productListContainer').style.display = 'none';
+            document.getElementById('toggleListBtn').innerHTML = '<i class="fas fa-eye"></i> Show List';
         });
 
         function handleFormSubmit(event) {
@@ -597,9 +652,12 @@
                         </div>
                         <div class="countdown mt-2" id="countdown-${product.id}"></div>
                     </div>
-                    <button class="icon-btn btn-sm delete-product" data-id="${product.id}" title="Delete">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <div class="d-flex align-items-center">
+                        <span class="current-time me-3" id="item-time-${product.id}"></span>
+                        <button class="icon-btn btn-sm delete-product" data-id="${product.id}" title="Delete">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
             `;
             
@@ -612,6 +670,9 @@
             
             // Start the countdown timer for this product
             startCountdown(product.expiryDate, `countdown-${product.id}`);
+            
+            // Update the time for this item
+            updateItemTime(`item-time-${product.id}`);
         }
 
         function deleteProduct(productId, productName) {
@@ -684,7 +745,7 @@
                 
                 if (timeDiff <= 0) {
                     countdownElement.innerHTML = `
-                        <span class="text-danger">
+                        <span style="color: var(--warning-red);">
                             <i class="fas fa-exclamation-circle me-1"></i>Expired ${formatRelativeTime(new Date(expiryDate))}
                         </span>
                     `;
@@ -707,7 +768,7 @@
                 }
                 
                 countdownElement.innerHTML = `
-                    <span class="text-muted">
+                    <span style="color: var(--text-muted);">
                         <i class="far fa-clock me-1"></i>${statusText}
                     </span>
                 `;
@@ -835,13 +896,13 @@
                 let icon, statusClass;
                 
                 if (daysRemaining < 0) {
-                    icon = '<i class="fas fa-skull-crossbones text-danger me-2"></i>';
+                    icon = '<i class="fas fa-skull-crossbones me-2" style="color: var(--warning-red);"></i>';
                     statusClass = 'text-danger';
                 } else if (daysRemaining === 0) {
-                    icon = '<i class="fas fa-exclamation-triangle text-warning me-2"></i>';
+                    icon = '<i class="fas fa-exclamation-triangle me-2" style="color: var(--warning-orange);"></i>';
                     statusClass = 'text-warning';
                 } else {
-                    icon = '<i class="fas fa-clock text-warning me-2"></i>';
+                    icon = '<i class="fas fa-clock me-2" style="color: var(--warning-orange);"></i>';
                     statusClass = 'text-warning';
                 }
                 
@@ -849,11 +910,11 @@
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <div>
                             ${icon}
-                            <span class="${statusClass}">${product.name}</span>
+                            <span style="color: var(--text-color);">${product.name}</span>
                         </div>
                         <div>
-                            <small class="text-muted">${product.date}</small>
-                            <span class="badge ${statusClass.replace('text-', 'bg-')} ms-2">
+                            <small style="color: var(--text-muted);">${product.date}</small>
+                            <span class="badge ${daysRemaining <= 0 ? 'badge-critical' : 'badge-warning'} ms-2">
                                 ${daysRemaining <= 0 ? 'EXPIRED' : daysRemaining + 'd'}
                             </span>
                         </div>
@@ -871,13 +932,13 @@
             notificationPopup.style.left = '50%';
             notificationPopup.style.transform = 'translate(-50%, -50%)';
             notificationPopup.style.backgroundColor = 'var(--card-bg)';
-            notificationPopup.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-            notificationPopup.style.borderRadius = '12px';
+            notificationPopup.style.border = '1px solid var(--border-color)';
+            notificationPopup.style.borderRadius = '10px';
             notificationPopup.style.padding = '20px';
             notificationPopup.style.width = '90%';
             notificationPopup.style.maxWidth = '500px';
             notificationPopup.style.zIndex = '1000';
-            notificationPopup.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.3)';
+            notificationPopup.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.1)';
             notificationPopup.innerHTML = `
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="m-0" style="color: var(--primary-color);">
@@ -900,9 +961,8 @@
             overlay.style.left = '0';
             overlay.style.right = '0';
             overlay.style.bottom = '0';
-            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
             overlay.style.zIndex = '999';
-            overlay.style.backdropFilter = 'blur(5px)';
             
             // Close function
             function closePopup() {
@@ -1007,7 +1067,7 @@
             alert.style.zIndex = '1000';
             alert.style.maxWidth = '300px';
             alert.style.border = 'none';
-            alert.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.3)';
+            alert.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.1)';
             alert.style.display = 'flex';
             alert.style.alignItems = 'center';
             
@@ -1047,6 +1107,53 @@
                 alert.style.transition = 'opacity 0.5s ease';
                 setTimeout(() => document.body.removeChild(alert), 500);
             }, 3000);
+        }
+
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour12: true, 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeString;
+            
+            // Update time for each product item
+            const timeElements = document.querySelectorAll('[id^="item-time-"]');
+            timeElements.forEach(element => {
+                element.textContent = now.toLocaleTimeString('en-US', { 
+                    hour12: true, 
+                    hour: '2-digit', 
+                    minute: '2-digit'
+                });
+            });
+        }
+
+        function updateItemTime(elementId) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour12: true, 
+                hour: '2-digit', 
+                minute: '2-digit'
+            });
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = timeString;
+            }
+        }
+
+        function toggleProductList() {
+            const productListContainer = document.getElementById('productListContainer');
+            const toggleBtn = document.getElementById('toggleListBtn');
+            
+            if (productListContainer.style.display === 'none') {
+                productListContainer.style.display = 'block';
+                toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide List';
+            } else {
+                productListContainer.style.display = 'none';
+                toggleBtn.innerHTML = '<i class="fas fa-eye"></i> Show List';
+            }
         }
     </script>
 
