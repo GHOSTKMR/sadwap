@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yearly Sales Tracker</title>
+    <title>Professional Sales Performance Dashboard - SAR</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- jQuery -->
@@ -18,70 +18,149 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --hacker-green: #00ff41;
-            --matrix-green: #008f11;
-            --dark-bg: #0a0a0a;
-            --darker-bg: #050505;
-            --terminal-text: #e0e0e0;
-            --glow-effect: 0 0 5px var(--hacker-green), 0 0 10px var(--hacker-green);
+            --primary-blue: #2c7be5;
+            --secondary-blue: #6e84a3;
+            --success-green: #00d97e;
+            --warning-orange: #f6c343;
+            --danger-red: #e63757;
+            --light-bg: #f9fbfd;
+            --card-bg: #ffffff;
+            --text-dark: #3b506c;
+            --text-muted: #6e84a3;
+            --border-color: #e3ebf6;
         }
         
         body {
-            background-color: var(--dark-bg);
-            color: var(--terminal-text);
-            font-family: 'Courier New', monospace;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
             min-height: 100vh;
-        }
-        
-        .container {
-            margin-top: 20px;
+            padding-top: 20px;
             padding-bottom: 40px;
         }
         
+        .container {
+            max-width: 1400px;
+        }
+        
         h2 {
-            color: var(--hacker-green);
-            font-weight: bold;
+            color: var(--primary-blue);
+            font-weight: 600;
             text-align: center;
-            margin-bottom: 20px;
-            text-shadow: var(--glow-effect);
-            letter-spacing: 2px;
-            border-bottom: 1px solid var(--matrix-green);
-            padding-bottom: 10px;
+            margin-bottom: 25px;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #1a56db 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(44, 123, 229, 0.15);
+        }
+        
+        .dashboard-header h3 {
+            margin-bottom: 0;
+            font-weight: 500;
+        }
+        
+        .notification-panel {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+        
+        .notification-item {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background-color: rgba(44, 123, 229, 0.05);
+            border-left: 4px solid var(--primary-blue);
+        }
+        
+        .notification-item.warning {
+            background-color: rgba(246, 195, 67, 0.05);
+            border-left-color: var(--warning-orange);
+        }
+        
+        .notification-item.success {
+            background-color: rgba(0, 217, 126, 0.05);
+            border-left-color: var(--success-green);
+        }
+        
+        .notification-item.danger {
+            background-color: rgba(230, 55, 87, 0.05);
+            border-left-color: var(--danger-red);
+        }
+        
+        .summary-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .summary-card .value {
+            font-size: 2rem;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+        
+        .summary-card .label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .sales-input {
             width: 100%;
             padding: 8px;
             margin: 5px 0;
-            border-radius: 2px;
-            border: 1px solid var(--matrix-green);
-            background-color: var(--darker-bg);
-            color: var(--hacker-green);
-            font-family: 'Courier New', monospace;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background-color: white;
+            color: var(--text-dark);
+            font-family: 'Segoe UI', sans-serif;
+            transition: all 0.2s ease;
         }
         
         .sales-input:focus {
             outline: none;
-            border-color: var(--hacker-green);
-            box-shadow: var(--glow-effect);
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(44, 123, 229, 0.1);
         }
         
         .result-cell {
             width: 120px;
             text-align: center;
             padding: 10px;
-            color: var(--hacker-green);
-            font-weight: bold;
+            font-weight: 600;
         }
         
         #chart-container {
             margin-top: 30px;
             width: 100%;
             height: 400px;
-            background-color: var(--darker-bg);
-            border: 1px solid var(--matrix-green);
-            padding: 10px;
-            box-shadow: var(--glow-effect);
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
         }
         
         .btn-container {
@@ -93,37 +172,26 @@
         }
         
         .btn {
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            letter-spacing: 1px;
-            border-radius: 2px;
-            border: 1px solid var(--hacker-green);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            border-radius: 6px;
             transition: all 0.3s ease;
+            padding: 10px 20px;
         }
         
         .btn:hover {
-            box-shadow: var(--glow-effect);
             transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         
-        .btn-success {
-            background-color: transparent;
-            color: var(--hacker-green);
-        }
-        
-        .btn-success:hover {
-            background-color: rgba(0, 255, 65, 0.1);
+        .btn-primary {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
         }
         
         .btn-danger {
-            background-color: transparent;
-            color: #ff3860;
-            border-color: #ff3860;
-        }
-        
-        .btn-danger:hover {
-            background-color: rgba(255, 56, 96, 0.1);
-            box-shadow: 0 0 5px #ff3860, 0 0 10px #ff3860;
+            background-color: var(--danger-red);
+            border-color: var(--danger-red);
         }
         
         .month-selector {
@@ -132,44 +200,58 @@
         }
         
         .form-select {
-            background-color: var(--darker-bg);
-            color: var(--hacker-green);
-            border: 1px solid var(--matrix-green);
-            font-family: 'Courier New', monospace;
+            background-color: white;
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
+            font-family: 'Segoe UI', sans-serif;
+            border-radius: 6px;
+            padding: 8px 12px;
         }
         
         .form-select:focus {
-            border-color: var(--hacker-green);
-            box-shadow: var(--glow-effect);
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(44, 123, 229, 0.1);
         }
         
         .table {
-            color: var(--terminal-text);
-            border-color: var(--matrix-green);
+            color: var(--text-dark);
+            border-color: var(--border-color);
         }
         
         .table th {
-            background-color: var(--darker-bg);
-            color: var(--hacker-green);
-            border-color: var(--matrix-green);
+            background-color: rgba(44, 123, 229, 0.05);
+            color: var(--primary-blue);
+            border-color: var(--border-color);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            padding: 12px 15px;
         }
         
         .table td {
-            border-color: var(--matrix-green);
+            border-color: var(--border-color);
             vertical-align: middle;
+            padding: 10px 15px;
         }
         
         .table tbody tr:hover {
-            background-color: rgba(0, 143, 17, 0.1);
+            background-color: rgba(44, 123, 229, 0.03);
         }
         
         .table-responsive {
-            max-height: 500px;
-            overflow-y: auto;
-            border: 1px solid var(--matrix-green);
-            box-shadow: var(--glow-effect);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .total-row {
+            background-color: rgba(44, 123, 229, 0.05);
+            font-weight: 600;
+        }
+        
+        .currency-symbol {
+            font-size: 0.8em;
+            margin-right: 2px;
         }
         
         /* Custom scrollbar */
@@ -179,27 +261,17 @@
         }
         
         ::-webkit-scrollbar-track {
-            background: var(--darker-bg);
+            background: #f1f1f1;
+            border-radius: 4px;
         }
         
         ::-webkit-scrollbar-thumb {
-            background: var(--matrix-green);
+            background: var(--secondary-blue);
             border-radius: 4px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--hacker-green);
-        }
-        
-        /* Terminal-like blinking cursor effect */
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-        
-        .cursor {
-            animation: blink 1s step-end infinite;
-            color: var(--hacker-green);
+            background: var(--primary-blue);
         }
         
         /* Responsive adjustments */
@@ -221,6 +293,10 @@
                 font-size: 12px;
                 padding: 8px 4px;
             }
+            
+            .summary-card .value {
+                font-size: 1.5rem;
+            }
         }
         
         @media (max-width: 576px) {
@@ -237,108 +313,185 @@
             }
         }
         
-        /* Terminal header effect */
-        .terminal-header {
-            position: relative;
-            padding: 10px 15px;
-            background-color: var(--darker-bg);
-            border: 1px solid var(--matrix-green);
-            margin-bottom: 20px;
+        .card-header {
+            background-color: rgba(44, 123, 229, 0.05);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px;
+            font-weight: 600;
+            color: var(--primary-blue);
         }
         
-        .terminal-header::before {
-            content: ">";
+        .progress {
+            height: 8px;
+            margin-top: 5px;
+        }
+        
+        .progress-bar {
+            background-color: var(--primary-blue);
+        }
+        
+        .notification-badge {
             position: absolute;
-            left: 5px;
-            color: var(--hacker-green);
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger-red);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
         }
         
-        /* Glowing border effect */
-        .glow-border {
+        .saudi-flag {
+            display: inline-block;
+            width: 20px;
+            height: 15px;
+            background: linear-gradient(to right, #006233 0%, #006233 33%, white 33%, white 66%, #006233 66%, #006233 100%);
             position: relative;
+            margin-right: 8px;
+            border-radius: 2px;
         }
         
-        .glow-border::after {
-            content: '';
+        .saudi-flag::before {
+            content: "";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            color: white;
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border: 1px solid transparent;
-            border-radius: inherit;
-            pointer-events: none;
-        }
-        
-        .glow-border:hover::after {
-            border-color: var(--hacker-green);
-            box-shadow: var(--glow-effect);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 8px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2><i class="fas fa-terminal"></i> YEARLY SALES TRACKER <span class="cursor">_</span></h2>
+        <h2><i class="fas fa-chart-line me-2"></i> <span class="saudi-flag"></span> SALES PERFORMANCE DASHBOARD - SAR</h2>
         
-        <div class="terminal-header glow-border">
-            <div class="month-selector">
-                <label for="month-select">SELECT MONTH:</label>
-                <select id="month-select" class="form-select w-auto d-inline ms-2">
-                    <option value="January">JANUARY</option>
-                    <option value="February">FEBRUARY</option>
-                    <option value="March">MARCH</option>
-                    <option value="April">APRIL</option>
-                    <option value="May">MAY</option>
-                    <option value="June">JUNE</option>
-                    <option value="July">JULY</option>
-                    <option value="August">AUGUST</option>
-                    <option value="September">SEPTEMBER</option>
-                    <option value="October">OCTOBER</option>
-                    <option value="November">NOVEMBER</option>
-                    <option value="December">DECEMBER</option>
-                </select>
+        <div class="dashboard-header">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h3><i class="fas fa-calendar-alt me-2"></i> SALES TRACKER - SAUDI ARABIA</h3>
+                    <p class="mb-0">Monitor performance against targets and previous year (SAR)</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="month-selector">
+                        <label for="month-select" class="text-white me-2">SELECT MONTH:</label>
+                        <select id="month-select" class="form-select w-auto d-inline">
+                            <option value="January">JANUARY</option>
+                            <option value="February">FEBRUARY</option>
+                            <option value="March">MARCH</option>
+                            <option value="April">APRIL</option>
+                            <option value="May">MAY</option>
+                            <option value="June">JUNE</option>
+                            <option value="July">JULY</option>
+                            <option value="August">AUGUST</option>
+                            <option value="September">SEPTEMBER</option>
+                            <option value="October">OCTOBER</option>
+                            <option value="November">NOVEMBER</option>
+                            <option value="December">DECEMBER</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <div id="chart-container" class="glow-border">
-            <canvas id="growth-achieved-chart"></canvas>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="summary-card">
+                    <div class="label">MONTH TO DATE SALES</div>
+                    <div class="value" id="mtd-sales"><span class="currency-symbol">SAR</span> 0</div>
+                    <div class="progress">
+                        <div class="progress-bar" id="mtd-sales-progress" role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="summary-card">
+                    <div class="label">MONTH TO DATE TARGET</div>
+                    <div class="value" id="mtd-target"><span class="currency-symbol">SAR</span> 0</div>
+                    <div class="progress">
+                        <div class="progress-bar" id="mtd-target-progress" role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="summary-card">
+                    <div class="label">ACHIEVEMENT RATE</div>
+                    <div class="value" id="achievement-rate">0%</div>
+                    <div class="progress">
+                        <div class="progress-bar" id="achievement-progress" role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="summary-card">
+                    <div class="label">GROWTH VS LAST YEAR</div>
+                    <div class="value" id="growth-rate">0%</div>
+                    <div class="progress">
+                        <div class="progress-bar" id="growth-progress" role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
         </div>
         
-        <div class="terminal-header glow-border mt-4">
-            <h5><i class="fas fa-table"></i> SALES DATA INPUT</h5>
+        <div class="notification-panel">
+            <h5><i class="fas fa-bell me-2"></i> PERFORMANCE NOTIFICATIONS</h5>
+            <div id="notifications-container">
+                <!-- Notifications will be added here dynamically -->
+            </div>
         </div>
         
         <div class="row">
             <div class="col-md-12">
-                <div class="table-responsive glow-border">
-                    <table class="table table-bordered">
+                <div id="chart-container">
+                    <canvas id="performance-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <i class="fas fa-table me-2"></i> DAILY SALES DATA (SAR)
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-0">
                         <thead>
                             <tr>
                                 <th>DAY</th>
-                                <th>SALES</th>
-                                <th>TARGET</th>
-                                <th>LAST YEAR</th>
+                                <th>SALES (SAR)</th>
+                                <th>TARGET (SAR)</th>
+                                <th>LAST YEAR (SAR)</th>
                                 <th>ACHIEVED (%)</th>
                                 <th>GROWTH (%)</th>
                             </tr>
                         </thead>
                         <tbody id="sales-table-body"></tbody>
                         <tfoot>
-                            <tr>
-                                <td colspan="4" class="text-end">AVERAGE</td>
-                                <td id="total-achieved" class="text-success fw-bold">0%</td>
-                                <td id="total-growth" class="text-success fw-bold">0%</td>
+                            <tr class="total-row">
+                                <td class="text-end">TOTAL</td>
+                                <td id="total-sales" class="fw-bold"><span class="currency-symbol">SAR</span> 0</td>
+                                <td id="total-target" class="fw-bold"><span class="currency-symbol">SAR</span> 0</td>
+                                <td id="total-lastyear" class="fw-bold"><span class="currency-symbol">SAR</span> 0</td>
+                                <td id="total-achieved" class="fw-bold">0%</td>
+                                <td id="total-growth" class="fw-bold">0%</td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
                 
-                <div class="btn-container">
-                    <button class="btn btn-success" id="exportPdf">
-                        <i class="fas fa-file-pdf"></i> EXPORT TO PDF
+                <div class="btn-container p-3">
+                    <button class="btn btn-primary" id="exportPdf">
+                        <i class="fas fa-file-pdf me-2"></i> EXPORT TO PDF
                     </button>
                     <button class="btn btn-danger" id="clearAll">
-                        <i class="fas fa-trash-alt"></i> CLEAR ALL DATA
+                        <i class="fas fa-trash-alt me-2"></i> CLEAR ALL DATA
                     </button>
                 </div>
             </div>
@@ -368,6 +521,16 @@
             targetData[month] = JSON.parse(localStorage.getItem(`targetData_${month}`)) || Array(30).fill('');
             lastYearData[month] = JSON.parse(localStorage.getItem(`lastYearData_${month}`)) || Array(30).fill('');
         });
+
+        // Format SAR currency
+        function formatSAR(value) {
+            return new Intl.NumberFormat('ar-SA', {
+                style: 'currency',
+                currency: 'SAR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value).replace('SAR', '').trim();
+        }
 
         // Load data for the selected month
         function loadMonthData() {
@@ -409,9 +572,17 @@
 
         // Update the chart and percentages dynamically
         function updateResults() {
+            let totalSales = 0;
+            let totalTarget = 0;
+            let totalLastYear = 0;
             let totalAchieved = 0;
             let totalGrowth = 0;
             let validDays = 0;
+            let today = new Date().getDate();
+            
+            // Reset arrays
+            achievedData.length = 0;
+            growthData.length = 0;
 
             for (let i = 1; i <= 30; i++) {
                 const sales = parseFloat($(`#sales-${i}`).val()) || 0;
@@ -421,8 +592,8 @@
                 const achieved = target > 0 ? (sales / target) * 100 : 0;
                 const growth = lastYear > 0 ? ((sales - lastYear) / lastYear) * 100 : 0;
 
-                $(`#achieved-${i}`).text(achieved.toFixed(2) + '%');
-                $(`#growth-${i}`).text(growth.toFixed(2) + '%');
+                $(`#achieved-${i}`).text(achieved.toFixed(1) + '%');
+                $(`#growth-${i}`).text(growth.toFixed(1) + '%');
 
                 // Color coding based on performance
                 if (achieved >= 100) {
@@ -441,25 +612,33 @@
                     $(`#growth-${i}`).addClass('text-danger').removeClass('text-success text-warning');
                 }
 
-                achievedData[i - 1] = achieved;
-                growthData[i - 1] = growth;
+                achievedData.push(achieved);
+                growthData.push(growth);
 
                 salesData[currentMonth][i - 1] = sales;
                 targetData[currentMonth][i - 1] = target;
                 lastYearData[currentMonth][i - 1] = lastYear;
 
                 if (sales > 0 || target > 0 || lastYear > 0) {
+                    totalSales += sales;
+                    totalTarget += target;
+                    totalLastYear += lastYear;
                     totalAchieved += achieved;
                     totalGrowth += growth;
                     validDays++;
                 }
             }
 
+            // Update totals
+            $("#total-sales").html('<span class="currency-symbol">SAR</span> ' + formatSAR(totalSales));
+            $("#total-target").html('<span class="currency-symbol">SAR</span> ' + formatSAR(totalTarget));
+            $("#total-lastyear").html('<span class="currency-symbol">SAR</span> ' + formatSAR(totalLastYear));
+            
             const avgAchieved = validDays > 0 ? (totalAchieved / validDays) : 0;
             const avgGrowth = validDays > 0 ? (totalGrowth / validDays) : 0;
 
-            $("#total-achieved").text(avgAchieved.toFixed(2) + '%');
-            $("#total-growth").text(avgGrowth.toFixed(2) + '%');
+            $("#total-achieved").text(avgAchieved.toFixed(1) + '%');
+            $("#total-growth").text(avgGrowth.toFixed(1) + '%');
 
             // Color code the averages
             $("#total-achieved").toggleClass('text-success', avgAchieved >= 100)
@@ -470,13 +649,49 @@
                              .toggleClass('text-warning', avgGrowth === 0)
                              .toggleClass('text-danger', avgGrowth < 0);
 
+            // Calculate MTD values (only up to today's date)
+            let mtdSales = 0;
+            let mtdTarget = 0;
+            let mtdLastYear = 0;
+            
+            for (let i = 1; i <= today && i <= 30; i++) {
+                mtdSales += parseFloat(salesData[currentMonth][i - 1]) || 0;
+                mtdTarget += parseFloat(targetData[currentMonth][i - 1]) || 0;
+                mtdLastYear += parseFloat(lastYearData[currentMonth][i - 1]) || 0;
+            }
+            
+            const mtdAchievement = mtdTarget > 0 ? (mtdSales / mtdTarget) * 100 : 0;
+            const mtdGrowth = mtdLastYear > 0 ? ((mtdSales - mtdLastYear) / mtdLastYear) * 100 : 0;
+            
+            // Update summary cards
+            $("#mtd-sales").html('<span class="currency-symbol">SAR</span> ' + formatSAR(mtdSales));
+            $("#mtd-target").html('<span class="currency-symbol">SAR</span> ' + formatSAR(mtdTarget));
+            $("#achievement-rate").text(mtdAchievement.toFixed(1) + '%');
+            $("#growth-rate").text(mtdGrowth.toFixed(1) + '%');
+            
+            // Update progress bars
+            $("#mtd-sales-progress").css('width', Math.min((mtdSales / totalTarget) * 100, 100) + '%');
+            $("#mtd-target-progress").css('width', Math.min((mtdTarget / totalTarget) * 100, 100) + '%');
+            $("#achievement-progress").css('width', Math.min(mtdAchievement, 100) + '%');
+            $("#growth-progress").css('width', Math.min(Math.abs(mtdGrowth), 100) + '%');
+            
+            // Color code growth progress bar
+            if (mtdGrowth > 0) {
+                $("#growth-progress").css('background-color', 'var(--success-green)');
+            } else if (mtdGrowth < 0) {
+                $("#growth-progress").css('background-color', 'var(--danger-red)');
+            } else {
+                $("#growth-progress").css('background-color', 'var(--warning-orange)');
+            }
+
             saveData();
             updateChart();
+            updateNotifications(mtdSales, mtdTarget, mtdLastYear, mtdAchievement, mtdGrowth, today);
         }
 
         // Update the chart
         function updateChart() {
-            const ctx = document.getElementById("growth-achieved-chart").getContext("2d");
+            const ctx = document.getElementById("performance-chart").getContext("2d");
             
             // Destroy previous chart if it exists
             if (chart) {
@@ -484,69 +699,51 @@
             }
             
             // Create gradient for the chart
+            const gradientAchieved = ctx.createLinearGradient(0, 0, 0, 400);
+            gradientAchieved.addColorStop(0, 'rgba(44, 123, 229, 0.8)');
+            gradientAchieved.addColorStop(1, 'rgba(44, 123, 229, 0.1)');
+            
             const gradientGrowth = ctx.createLinearGradient(0, 0, 0, 400);
-            gradientGrowth.addColorStop(0, 'rgba(0, 123, 255, 0.8)');
-            gradientGrowth.addColorStop(1, 'rgba(0, 56, 143, 0.1)');
-            
-            // Prepare segmented data for achieved values
-            const achievedSegments = [];
-            const segmentColors = [];
-            
-            for (let i = 0; i < achievedData.length; i++) {
-                achievedSegments.push(achievedData[i]);
-            }
+            gradientGrowth.addColorStop(0, 'rgba(0, 217, 126, 0.8)');
+            gradientGrowth.addColorStop(1, 'rgba(0, 217, 126, 0.1)');
             
             chart = new Chart(ctx, {
                 type: "line",
                 data: {
-                    labels: Array.from({ length: 30 }, (_, i) => `D${i + 1}`),
+                    labels: Array.from({ length: 30 }, (_, i) => `Day ${i + 1}`),
                     datasets: [
                         {
-                            label: "ACHIEVED (%)",
-                            data: achievedSegments,
-                            borderColor: (context) => {
-                                const value = context.dataset.data[context.dataIndex];
-                                return value < 100 ? '#ff0000' : '#00ff41';
-                            },
-                            backgroundColor: (context) => {
-                                const value = context.dataset.data[context.dataIndex];
-                                return value < 100 ? 'rgba(255, 0, 0, 0.1)' : 'rgba(0, 255, 65, 0.1)';
-                            },
+                            label: "Achievement (%)",
+                            data: achievedData,
+                            borderColor: "#2c7be5",
+                            backgroundColor: gradientAchieved,
                             borderWidth: 2,
                             tension: 0.3,
                             fill: true,
-                            pointBackgroundColor: (context) => {
-                                const value = context.dataset.data[context.dataIndex];
-                                return value < 100 ? '#ff0000' : '#00ff41';
-                            },
-                            pointBorderColor: "#000",
+                            pointBackgroundColor: "#2c7be5",
+                            pointBorderColor: "#fff",
                             pointHoverRadius: 6,
-                            pointHoverBackgroundColor: (context) => {
-                                const value = context.dataset.data[context.dataIndex];
-                                return value < 100 ? '#ff0000' : '#00ff41';
-                            },
-                            pointHoverBorderColor: "#000",
+                            pointHoverBackgroundColor: "#2c7be5",
+                            pointHoverBorderColor: "#fff",
                             pointHoverBorderWidth: 2,
-                            segment: {
-                                borderColor: ctx => ctx.p0.parsed.y < 100 ? '#ff0000' : '#00ff41',
-                                backgroundColor: ctx => ctx.p0.parsed.y < 100 ? 'rgba(255, 0, 0, 0.1)' : 'rgba(0, 255, 65, 0.1)'
-                            }
+                            yAxisID: 'y'
                         },
                         {
-                            label: "GROWTH (%)",
+                            label: "Growth (%)",
                             data: growthData,
-                            borderColor: "#007bff",
+                            borderColor: "#00d97e",
                             backgroundColor: gradientGrowth,
                             borderWidth: 2,
                             tension: 0.3,
                             fill: true,
-                            pointBackgroundColor: "#007bff",
-                            pointBorderColor: "#000",
+                            pointBackgroundColor: "#00d97e",
+                            pointBorderColor: "#fff",
                             pointHoverRadius: 6,
-                            pointHoverBackgroundColor: "#007bff",
-                            pointHoverBorderColor: "#000",
-                            pointHoverBorderWidth: 2
-                        },
+                            pointHoverBackgroundColor: "#00d97e",
+                            pointHoverBorderColor: "#fff",
+                            pointHoverBorderWidth: 2,
+                            yAxisID: 'y1'
+                        }
                     ],
                 },
                 options: {
@@ -555,26 +752,26 @@
                     plugins: {
                         legend: {
                             labels: {
-                                color: "#e0e0e0",
+                                color: "#3b506c",
                                 font: {
-                                    family: "'Courier New', monospace",
-                                    weight: 'bold'
+                                    family: "'Segoe UI', sans-serif",
+                                    weight: '600'
                                 }
                             }
                         },
                         tooltip: {
-                            backgroundColor: "rgba(10, 10, 10, 0.9)",
-                            titleColor: "#00ff41",
-                            bodyColor: "#e0e0e0",
-                            borderColor: "#00ff41",
+                            backgroundColor: "rgba(255, 255, 255, 0.95)",
+                            titleColor: "#2c7be5",
+                            bodyColor: "#3b506c",
+                            borderColor: "#e3ebf6",
                             borderWidth: 1,
-                            cornerRadius: 2,
+                            cornerRadius: 6,
                             displayColors: true,
                             intersect: false,
                             mode: 'index',
                             callbacks: {
                                 label: function(context) {
-                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + '%';
+                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
                                 }
                             }
                         }
@@ -582,30 +779,47 @@
                     scales: {
                         x: {
                             grid: {
-                                color: "rgba(0, 143, 17, 0.2)"
+                                color: "rgba(227, 235, 246, 0.5)"
                             },
                             ticks: {
-                                color: "#e0e0e0",
+                                color: "#6e84a3",
                                 font: {
-                                    family: "'Courier New', monospace"
+                                    family: "'Segoe UI', sans-serif"
                                 }
                             }
                         },
                         y: {
                             beginAtZero: true,
                             grid: {
-                                color: "rgba(0, 143, 17, 0.2)"
+                                color: "rgba(227, 235, 246, 0.5)"
                             },
                             ticks: {
-                                color: "#e0e0e0",
+                                color: "#6e84a3",
                                 callback: function (value) {
                                     return value + "%";
                                 },
                                 font: {
-                                    family: "'Courier New', monospace"
+                                    family: "'Segoe UI', sans-serif"
                                 }
-                            }
+                            },
+                            position: 'left'
                         },
+                        y1: {
+                            beginAtZero: true,
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                color: "#6e84a3",
+                                callback: function (value) {
+                                    return value + "%";
+                                },
+                                font: {
+                                    family: "'Segoe UI', sans-serif"
+                                }
+                            },
+                            position: 'right'
+                        }
                     },
                     elements: {
                         line: {
@@ -613,6 +827,82 @@
                         }
                     }
                 },
+            });
+        }
+
+        // Update notifications
+        function updateNotifications(mtdSales, mtdTarget, mtdLastYear, mtdAchievement, mtdGrowth, today) {
+            const notificationsContainer = $("#notifications-container");
+            notificationsContainer.empty();
+            
+            // Today's target notification
+            const todayTarget = parseFloat(targetData[currentMonth][today - 1]) || 0;
+            const todaySales = parseFloat(salesData[currentMonth][today - 1]) || 0;
+            const todayLastYear = parseFloat(lastYearData[currentMonth][today - 1]) || 0;
+            
+            let todayAchievement = todayTarget > 0 ? (todaySales / todayTarget) * 100 : 0;
+            let todayGrowth = todayLastYear > 0 ? ((todaySales - todayLastYear) / todayLastYear) * 100 : 0;
+            
+            // Yesterday's data
+            const yesterday = today > 1 ? today - 1 : 30; // Handle month transition
+            const yesterdaySales = parseFloat(salesData[currentMonth][yesterday - 1]) || 0;
+            const yesterdayTarget = parseFloat(targetData[currentMonth][yesterday - 1]) || 0;
+            const yesterdayLastYear = parseFloat(lastYearData[currentMonth][yesterday - 1]) || 0;
+            
+            let yesterdayAchievement = yesterdayTarget > 0 ? (yesterdaySales / yesterdayTarget) * 100 : 0;
+            let yesterdayGrowth = yesterdayLastYear > 0 ? ((yesterdaySales - yesterdayLastYear) / yesterdayLastYear) * 100 : 0;
+            
+            // Create notifications
+            const notifications = [];
+            
+            // Today's target
+            if (todayTarget > 0) {
+                notifications.push({
+                    text: `Today's target is SAR ${formatSAR(todayTarget)}. You've achieved ${todayAchievement.toFixed(1)}% so far.`,
+                    type: todayAchievement >= 100 ? 'success' : (todayAchievement >= 80 ? 'warning' : 'danger')
+                });
+            } else {
+                notifications.push({
+                    text: `No target set for today.`,
+                    type: 'warning'
+                });
+            }
+            
+            // Yesterday's performance
+            if (yesterdaySales > 0) {
+                notifications.push({
+                    text: `Yesterday: Achieved ${yesterdayAchievement.toFixed(1)}% of target and ${yesterdayGrowth >= 0 ? 'grew' : 'declined'} by ${Math.abs(yesterdayGrowth).toFixed(1)}% vs last year.`,
+                    type: yesterdayAchievement >= 100 ? 'success' : (yesterdayAchievement >= 80 ? 'warning' : 'danger')
+                });
+            }
+            
+            // MTD performance
+            notifications.push({
+                text: `Month to Date: ${mtdAchievement.toFixed(1)}% of target achieved, ${mtdGrowth >= 0 ? 'growth' : 'decline'} of ${Math.abs(mtdGrowth).toFixed(1)}% vs last year.`,
+                type: mtdAchievement >= 100 ? 'success' : (mtdAchievement >= 80 ? 'warning' : 'danger')
+            });
+            
+            // Remaining target for the month
+            const remainingTarget = mtdTarget > 0 ? (mtdTarget - mtdSales) : 0;
+            if (remainingTarget > 0 && today < 30) {
+                const daysRemaining = 30 - today;
+                const dailyTargetNeeded = remainingTarget / daysRemaining;
+                
+                notifications.push({
+                    text: `To hit monthly target, need average of SAR ${formatSAR(dailyTargetNeeded)} per day for the remaining ${daysRemaining} days.`,
+                    type: dailyTargetNeeded > (mtdSales / today) ? 'danger' : 'success'
+                });
+            }
+            
+            // Add notifications to container
+            notifications.forEach(notification => {
+                const notificationElement = $(`
+                    <div class="notification-item ${notification.type}">
+                        <i class="fas fa-${notification.type === 'success' ? 'check-circle' : notification.type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'} me-2"></i>
+                        ${notification.text}
+                    </div>
+                `);
+                notificationsContainer.append(notificationElement);
             });
         }
 
@@ -625,53 +915,55 @@
             });
             
             // Add title
-            pdf.setFont('courier', 'bold');
-            pdf.setTextColor(0, 255, 65);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(44, 123, 229);
             pdf.setFontSize(18);
-            pdf.text(`SALES DATA - ${currentMonth.toUpperCase()}`, 14, 15);
+            pdf.text(`SALES PERFORMANCE REPORT - ${currentMonth.toUpperCase()} (SAR)`, 14, 15);
             
             // Add current date
             pdf.setFontSize(10);
-            pdf.setTextColor(150, 150, 150);
+            pdf.setTextColor(110, 132, 163);
             pdf.text(`Generated: ${new Date().toLocaleString()}`, 14, 20);
+            
+            // Add summary
+            pdf.setFontSize(12);
+            pdf.setTextColor(59, 80, 108);
+            pdf.text(`Month to Date Sales: SAR ${$("#mtd-sales").text().replace('SAR', '').trim()}`, 14, 30);
+            pdf.text(`Month to Date Target: SAR ${$("#mtd-target").text().replace('SAR', '').trim()}`, 14, 37);
+            pdf.text(`Achievement Rate: ${$("#achievement-rate").text()}`, 14, 44);
+            pdf.text(`Growth Rate: ${$("#growth-rate").text()}`, 14, 51);
             
             // Add table
             pdf.autoTable({
                 html: '#sales-table-body',
-                startY: 25,
-                head: [['DAY', 'SALES', 'TARGET', 'LAST YEAR', 'ACHIEVED (%)', 'GROWTH (%)']],
+                startY: 60,
+                head: [['DAY', 'SALES (SAR)', 'TARGET (SAR)', 'LAST YEAR (SAR)', 'ACHIEVED (%)', 'GROWTH (%)']],
                 headStyles: {
-                    fillColor: [10, 10, 10],
-                    textColor: [0, 255, 65],
+                    fillColor: [44, 123, 229],
+                    textColor: [255, 255, 255],
                     fontStyle: 'bold',
-                    font: 'courier'
+                    font: 'helvetica'
                 },
                 bodyStyles: {
-                    textColor: [200, 200, 200],
-                    font: 'courier'
+                    textColor: [59, 80, 108],
+                    font: 'helvetica'
                 },
                 alternateRowStyles: {
-                    fillColor: [20, 20, 20]
+                    fillColor: [249, 251, 253]
                 },
                 styles: {
-                    lineColor: [0, 143, 17],
+                    lineColor: [227, 235, 246],
                     lineWidth: 0.1
                 },
-                margin: { top: 25 }
+                margin: { top: 60 }
             });
             
-            // Add summary
-            pdf.setFontSize(12);
-            pdf.setTextColor(0, 255, 65);
-            pdf.text(`AVERAGE ACHIEVED: ${$("#total-achieved").text()}`, 14, pdf.lastAutoTable.finalY + 10);
-            pdf.text(`AVERAGE GROWTH: ${$("#total-growth").text()}`, 14, pdf.lastAutoTable.finalY + 20);
-            
-            // Add watermark
+            // Add footer
             pdf.setFontSize(8);
-            pdf.setTextColor(0, 143, 17);
-            pdf.text('© SALES TRACKER PRO - CONFIDENTIAL', pdf.internal.pageSize.width - 60, pdf.internal.pageSize.height - 5);
+            pdf.setTextColor(110, 132, 163);
+            pdf.text('© SALES PERFORMANCE DASHBOARD - CONFIDENTIAL', pdf.internal.pageSize.width - 70, pdf.internal.pageSize.height - 5);
             
-            pdf.save(`${currentMonth}_SALES_DATA.pdf`);
+            pdf.save(`${currentMonth}_SALES_REPORT_SAR.pdf`);
         }
 
         // Clear all data for current month
@@ -695,18 +987,6 @@
         // Initialize
         $(document).ready(() => {
             loadMonthData();
-            
-            // Add terminal-like typing effect to title
-            const title = "YEARLY SALES TRACKER";
-            let i = 0;
-            const typingEffect = setInterval(() => {
-                $("h2").html(`<i class="fas fa-terminal"></i> ${title.substring(0, i)}<span class="cursor">_</span>`);
-                i++;
-                if (i > title.length) {
-                    clearInterval(typingEffect);
-                    $("h2").html(`<i class="fas fa-terminal"></i> ${title} <span class="cursor">_</span>`);
-                }
-            }, 100);
         });
     </script>
 </body>
