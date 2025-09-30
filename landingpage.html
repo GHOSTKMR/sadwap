@@ -452,6 +452,31 @@
             color: #6c757d;
             font-size: 0.9rem;
         }
+
+        /* Iframe Styles */
+        .iframe-container {
+            width: 100%;
+            height: 400px;
+            border: none;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #f8f9fa;
+        }
+
+        .iframe-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #6c757d;
+        }
+
+        .iframe-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #adb5bd;
+        }
     </style>
 </head>
 <body>
@@ -534,7 +559,7 @@
         <div class="dashboard-content">
             <!-- Welcome Banner -->
             <div class="welcome-banner">
-                <h2>Welcome back,Ops.MANAGER</h2>
+                <h2>Welcome back, Ops Manager</h2>
                 <p>Here's what's happening with your restaurant.</p>
             </div>
 
@@ -611,23 +636,39 @@
                 </div>
             </div>
 
-            <!-- Charts -->
+            <!-- Charts replaced with iframes -->
             <div class="charts-container">
                 <div class="chart-card">
                     <div class="chart-header">
-                        <div class="chart-title">Revenue Trends (Last 7 Days)</div>
+                        <div class="chart-title">Revenue Trends</div>
                         <div class="chart-actions">
-                            <button class="btn btn-sm btn-outline-secondary">Week</button>
-                            <button class="btn btn-sm btn-outline-secondary">Month</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="loadRevenueFrame('week')">Week</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="loadRevenueFrame('month')">Month</button>
                         </div>
                     </div>
-                    <canvas id="revenueChart" height="250"></canvas>
+                    <div class="iframe-container" id="revenueFrame">
+                        <div class="iframe-placeholder">
+                            <i class="fas fa-chart-line"></i>
+                            <p>Revenue data will load here</p>
+                            <small>Click on a tool above to view specific data</small>
+                        </div>
+                    </div>
                 </div>
                 <div class="chart-card">
                     <div class="chart-header">
                         <div class="chart-title">Inventory Status</div>
+                        <div class="chart-actions">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="loadInventoryFrame('overview')">Overview</button>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="loadInventoryFrame('details')">Details</button>
+                        </div>
                     </div>
-                    <canvas id="inventoryChart" height="250"></canvas>
+                    <div class="iframe-container" id="inventoryFrame">
+                        <div class="iframe-placeholder">
+                            <i class="fas fa-boxes"></i>
+                            <p>Inventory data will load here</p>
+                            <small>Click on a tool above to view specific data</small>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -635,43 +676,16 @@
             <div class="recent-activity">
                 <div class="chart-header">
                     <div class="chart-title">Recent Activity</div>
-                    <button class="btn btn-sm btn-outline-primary">View All</button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="clearActivity()">Clear All</button>
                 </div>
-                <ul class="activity-list">
+                <ul class="activity-list" id="activityList">
                     <li class="activity-item">
                         <div class="activity-icon">
-                            <i class="fas fa-shopping-cart"></i>
+                            <i class="fas fa-user-clock"></i>
                         </div>
                         <div class="activity-content">
-                            <div>New order #2847 received</div>
-                            <div class="activity-time">2 minutes ago</div>
-                        </div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-box"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div>Inventory updated for Chicken Breast</div>
-                            <div class="activity-time">15 minutes ago</div>
-                        </div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div>3 items approaching expiration date</div>
-                            <div class="activity-time">1 hour ago</div>
-                        </div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div>Daily sales report generated</div>
-                            <div class="activity-time">2 hours ago</div>
+                            <div>You logged in to the dashboard</div>
+                            <div class="activity-time">Just now</div>
                         </div>
                     </li>
                 </ul>
@@ -738,70 +752,86 @@
         setInterval(updateTime, 1000);
         updateTime();
 
-        // Charts
-        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-        const revenueChart = new Chart(revenueCtx, {
-            type: 'line',
-            data: {
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                datasets: [{
-                    label: 'Revenue ($)',
-                    data: [3200, 4100, 3800, 5200, 6100, 7500, 6800],
-                    borderColor: '#3498db',
-                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            drawBorder: false
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
-                }
+        // Activity tracking
+        const activityList = document.getElementById('activityList');
+        let activityId = 1;
+
+        function addActivity(activity, iconClass) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            const activityItem = document.createElement('li');
+            activityItem.className = 'activity-item';
+            activityItem.innerHTML = `
+                <div class="activity-icon">
+                    <i class="${iconClass}"></i>
+                </div>
+                <div class="activity-content">
+                    <div>${activity}</div>
+                    <div class="activity-time">${timeString}</div>
+                </div>
+            `;
+            
+            activityList.insertBefore(activityItem, activityList.firstChild);
+            
+            // Limit to 10 activities
+            if (activityList.children.length > 10) {
+                activityList.removeChild(activityList.lastChild);
             }
+            
+            activityId++;
+        }
+
+        function clearActivity() {
+            activityList.innerHTML = '';
+            addActivity('You cleared the activity log', 'fas fa-eraser');
+        }
+
+        // Iframe loading functions
+        function loadRevenueFrame(type) {
+            const frame = document.getElementById('revenueFrame');
+            let url = '';
+            
+            if (type === 'week') {
+                url = 'https://ghostkmr.github.io/sadwap/salestracker.html';
+                addActivity('You viewed weekly revenue trends', 'fas fa-chart-line');
+            } else if (type === 'month') {
+                url = 'https://ghostkmr.github.io/sadwap/salestracker.html?view=monthly';
+                addActivity('You viewed monthly revenue trends', 'fas fa-chart-bar');
+            }
+            
+            if (url) {
+                frame.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0"></iframe>`;
+            }
+        }
+
+        function loadInventoryFrame(type) {
+            const frame = document.getElementById('inventoryFrame');
+            let url = '';
+            
+            if (type === 'overview') {
+                url = 'https://ghostkmr.github.io/sadwap/inventorystatus.html';
+                addActivity('You viewed inventory overview', 'fas fa-boxes');
+            } else if (type === 'details') {
+                url = 'https://ghostkmr.github.io/sadwap/inventorystatus.html?view=detailed';
+                addActivity('You viewed detailed inventory status', 'fas fa-clipboard-list');
+            }
+            
+            if (url) {
+                frame.innerHTML = `<iframe src="${url}" width="100%" height="100%" frameborder="0"></iframe>`;
+            }
+        }
+
+        // Track tool usage
+        document.querySelectorAll('.tool-card').forEach(tool => {
+            tool.addEventListener('click', function(e) {
+                const toolName = this.querySelector('.tool-title').textContent;
+                addActivity(`You accessed ${toolName}`, 'fas fa-tools');
+            });
         });
 
-        const inventoryCtx = document.getElementById('inventoryChart').getContext('2d');
-        const inventoryChart = new Chart(inventoryCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['In Stock', 'Low Stock', 'Out of Stock'],
-                datasets: [{
-                    data: [75, 15, 10],
-                    backgroundColor: [
-                        '#2ecc71',
-                        '#f39c12',
-                        '#e74c3c'
-                    ],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
+        // Initial activity
+        addActivity('Dashboard loaded successfully', 'fas fa-check-circle');
     </script>
 </body>
 </html>
-
