@@ -26,12 +26,26 @@
             --border-color: #e2e8f0;
         }
         
+        [data-theme="dark"] {
+            --primary-blue: #2d3748;
+            --secondary-blue: #4a5568;
+            --accent-blue: #63b3ed;
+            --light-bg: #1a202c;
+            --dark-text: #e2e8f0;
+            --light-text: #a0aec0;
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #fc8181;
+            --border-color: #4a5568;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--light-bg);
             color: var(--dark-text);
             margin: 0;
             padding: 0;
+            transition: all 0.3s ease;
         }
         
         .container-fluid {
@@ -59,7 +73,7 @@
         }
         
         .panel {
-            background-color: white;
+            background-color: var(--light-bg);
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             padding: 25px;
@@ -68,7 +82,7 @@
         }
         
         .panel-title {
-            color: var(--primary-blue);
+            color: var(--accent-blue);
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
             margin-bottom: 20px;
@@ -81,6 +95,8 @@
             border: 1px solid var(--border-color);
             padding: 10px 12px;
             font-size: 0.9rem;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
         }
         
         .form-control:focus, .form-select:focus {
@@ -135,8 +151,8 @@
         }
         
         th {
-            background-color: #f1f5f9;
-            color: var(--primary-blue);
+            background-color: var(--primary-blue);
+            color: white;
             font-weight: 600;
             padding: 12px 15px;
             border-bottom: 2px solid var(--border-color);
@@ -151,7 +167,7 @@
         }
         
         tr:hover {
-            background-color: #f8fafc;
+            background-color: rgba(0, 0, 0, 0.05);
         }
         
         .variance-positive {
@@ -171,7 +187,7 @@
         }
         
         .metric-card {
-            background: white;
+            background: var(--light-bg);
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -182,7 +198,7 @@
         .metric-value {
             font-size: 1.8rem;
             font-weight: 600;
-            color: var(--primary-blue);
+            color: var(--accent-blue);
             margin: 10px 0;
         }
         
@@ -205,7 +221,7 @@
         }
         
         .sales-targets-panel {
-            background-color: #edf2f7;
+            background-color: var(--primary-blue);
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
@@ -224,7 +240,7 @@
         .sales-input-group label {
             display: block;
             margin-bottom: 8px;
-            color: var(--primary-blue);
+            color: white;
             font-weight: 500;
             font-size: 0.9rem;
         }
@@ -252,14 +268,14 @@
         }
         
         .date-selector {
-            background-color: #f7fafc;
+            background-color: var(--primary-blue);
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
         }
         
         .selected-date-display {
-            background-color: var(--primary-blue);
+            background-color: var(--secondary-blue);
             color: white;
             padding: 15px;
             border-radius: 8px;
@@ -291,6 +307,82 @@
             border-left-color: var(--danger);
         }
         
+        /* Dark mode toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Welcome Modal */
+        .welcome-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .welcome-content {
+            background: var(--light-bg);
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .notification-item {
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        
+        .notification-salary {
+            border-left-color: #4299e1;
+            background: rgba(66, 153, 225, 0.1);
+        }
+        
+        .notification-weekend {
+            border-left-color: #48bb78;
+            background: rgba(72, 187, 120, 0.1);
+        }
+        
+        .notification-campaign {
+            border-left-color: #ed8936;
+            background: rgba(237, 137, 54, 0.1);
+        }
+        
+        .notification-special {
+            border-left-color: #9f7aea;
+            background: rgba(159, 122, 234, 0.1);
+        }
+        
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .date-selector > * {
@@ -317,10 +409,62 @@
             .metric-card {
                 text-align: center;
             }
+            
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Dark Mode Toggle -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+
+    <!-- Welcome Modal -->
+    <div class="welcome-modal" id="welcomeModal">
+        <div class="welcome-content">
+            <h2 class="mb-4 text-center"><i class="fas fa-calendar-alt me-2"></i>October 2025 - Important Notifications</h2>
+            
+            <div class="notification-item notification-salary">
+                <h4><i class="fas fa-money-bill-wave me-2"></i>Salary Days</h4>
+                <p class="mb-1"><strong>Upcoming:</strong> October 25-27 (Last 3 days of month)</p>
+                <p class="mb-0"><strong>Impact:</strong> Expected 25% increase in sales during these days</p>
+            </div>
+            
+            <div class="notification-item notification-weekend">
+                <h4><i class="fas fa-calendar-day me-2"></i>Weekend Special Days</h4>
+                <p class="mb-1"><strong>Weekends:</strong> Fridays & Saturdays</p>
+                <p class="mb-1"><strong>Special Events:</strong> Family Weekend (Oct 10-12)</p>
+                <p class="mb-0"><strong>Impact:</strong> 40% higher consumption on weekends, plan 50% extra inventory</p>
+            </div>
+            
+            <div class="notification-item notification-campaign">
+                <h4><i class="fas fa-bullhorn me-2"></i>Ongoing Campaigns</h4>
+                <p class="mb-1"><strong>Ramadan Preparation:</strong> Starting October 15th</p>
+                <p class="mb-1"><strong>National Day Promotion:</strong> September 23 - October 5</p>
+                <p class="mb-0"><strong>Impact:</strong> 30% sales boost expected during campaign periods</p>
+            </div>
+            
+            <div class="notification-item notification-special">
+                <h4><i class="fas fa-star me-2"></i>Month Beginning Status</h4>
+                <p class="mb-1"><strong>Current Date:</strong> October 4, 2025</p>
+                <p class="mb-1"><strong>Month Progress:</strong> 13% completed</p>
+                <p class="mb-0"><strong>Sales Target:</strong> SAR 10,900 / SAR 10,000 (109% achieved)</p>
+            </div>
+            
+            <div class="mt-4 text-center">
+                <button class="btn btn-primary btn-lg" id="closeWelcome">
+                    <i class="fas fa-check me-2"></i> Continue to Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="container-fluid">
         <div class="header">
             <div class="row align-items-center">
@@ -361,7 +505,7 @@
             <div class="col-md-3">
                 <div class="metric-card">
                     <div class="metric-label">MONTH TO DATE SALES</div>
-                    <div class="metric-value" id="mtd-sales-value">$0</div>
+                    <div class="metric-value" id="mtd-sales-value">SAR 0</div>
                     <div class="metric-change positive"><i class="fas fa-arrow-up me-1"></i> 8.5% from target</div>
                 </div>
             </div>
@@ -395,11 +539,11 @@
                     <!-- Sales Targets Section -->
                     <div class="sales-targets-panel">
                         <div class="sales-input-group">
-                            <label for="month-to-date-sales">Month to Date Sales ($)</label>
-                            <input type="number" id="month-to-date-sales" class="form-control" placeholder="Enter amount">
+                            <label for="month-to-date-sales">Month to Date Sales (SAR)</label>
+                            <input type="number" id="month-to-date-sales" class="form-control" placeholder="Enter amount" value="10900">
                         </div>
                         <div class="sales-input-group">
-                            <label for="average-daily-sales">Average Daily Sales ($)</label>
+                            <label for="average-daily-sales">Average Daily Sales (SAR)</label>
                             <input type="number" id="average-daily-sales" class="form-control" placeholder="Calculated" readonly>
                         </div>
                         <div class="sales-input-group">
@@ -418,7 +562,7 @@
                             </select>
                         </div>
                         <div class="sales-input-group">
-                            <label for="sales-forecast">Sales Forecast ($)</label>
+                            <label for="sales-forecast">Sales Forecast (SAR)</label>
                             <input type="number" id="sales-forecast" class="form-control" placeholder="Calculated" readonly>
                         </div>
                     </div>
@@ -439,7 +583,7 @@
                                     <option value="7">July</option>
                                     <option value="8">August</option>
                                     <option value="9">September</option>
-                                    <option value="10">October</option>
+                                    <option value="10" selected>October</option>
                                     <option value="11">November</option>
                                     <option value="12">December</option>
                                 </select>
@@ -546,6 +690,10 @@
             const avgDailySalesInput = document.getElementById('average-daily-sales');
             const forecastDaysSelect = document.getElementById('forecast-days');
             const salesForecastInput = document.getElementById('sales-forecast');
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            const welcomeModal = document.getElementById('welcomeModal');
+            const closeWelcome = document.getElementById('closeWelcome');
             
             // Metric elements
             const totalItemsElement = document.getElementById('total-items');
@@ -560,7 +708,7 @@
             let currentDate = null;
             let currentData = [];
             let salesData = {
-                mtdSales: 0,
+                mtdSales: 10900,
                 avgDailySales: 0,
                 forecastDays: 3,
                 salesForecast: 0
@@ -570,6 +718,10 @@
             function init() {
                 updateClock();
                 setInterval(updateClock, 1000);
+                
+                // Set default theme
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                setTheme(savedTheme);
                 
                 // Populate years (current year -1 to +2)
                 const currentYear = new Date().getFullYear();
@@ -619,6 +771,9 @@
                     
                     // Update metrics
                     updateMetrics();
+                } else {
+                    // Calculate initial sales metrics
+                    calculateSalesMetrics();
                 }
                 
                 // Load MTD consumption data if exists
@@ -626,6 +781,29 @@
                 
                 // Set up event listeners
                 setupEventListeners();
+                
+                // Show welcome modal if first visit this month
+                const lastWelcome = localStorage.getItem('lastWelcomeMonth');
+                const currentMonthYear = `${currentMonth}/${currentYear}`;
+                
+                if (lastWelcome !== currentMonthYear) {
+                    setTimeout(() => {
+                        welcomeModal.style.display = 'flex';
+                    }, 1000);
+                    localStorage.setItem('lastWelcomeMonth', currentMonthYear);
+                }
+            }
+            
+            // Theme management
+            function setTheme(theme) {
+                document.body.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                
+                if (theme === 'dark') {
+                    themeIcon.className = 'fas fa-sun';
+                } else {
+                    themeIcon.className = 'fas fa-moon';
+                }
             }
             
             // Create all inventory items in the table
@@ -865,7 +1043,7 @@
                 
                 // MTD Sales value
                 const mtdSales = parseFloat(mtdSalesInput.value) || 0;
-                mtdSalesValueElement.textContent = `$${mtdSales.toLocaleString()}`;
+                mtdSalesValueElement.textContent = `SAR ${mtdSales.toLocaleString()}`;
             }
             
             // Save MTD consumption data to localStorage
@@ -1052,10 +1230,10 @@
                         item.status
                     ]),
                     [],
-                    ['MONTH TO DATE SALES:', salesData.mtdSales],
-                    ['AVERAGE DAILY SALES:', salesData.avgDailySales],
+                    ['MONTH TO DATE SALES:', `SAR ${salesData.mtdSales}`],
+                    ['AVERAGE DAILY SALES:', `SAR ${salesData.avgDailySales}`],
                     ['FORECAST DAYS:', salesData.forecastDays],
-                    ['SALES FORECAST:', salesData.salesForecast]
+                    ['SALES FORECAST:', `SAR ${salesData.salesForecast}`]
                 ];
                 
                 // Create workbook
@@ -1286,6 +1464,18 @@
                 
                 // Export to Excel button
                 exportBtn.addEventListener('click', exportToExcel);
+                
+                // Theme toggle
+                themeToggle.addEventListener('click', function() {
+                    const currentTheme = document.body.getAttribute('data-theme') || 'light';
+                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                    setTheme(newTheme);
+                });
+                
+                // Close welcome modal
+                closeWelcome.addEventListener('click', function() {
+                    welcomeModal.style.display = 'none';
+                });
             }
             
             // Initialize the app
