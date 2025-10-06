@@ -3,133 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ask A.I. - Secure Chatbot</title>
+    <title>Kudu Assistant - PDF Chatbot</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
         :root {
-            --primary-color: #7c3aed;
-            --secondary-color: #1e293b;
-            --user-bubble: #7c3aed;
-            --bot-bubble: #334155;
-            --text-dark: #f8fafc;
-            --text-light: #94a3b8;
-            --bg-color: #0f172a;
+            --primary-color: #6f42c1;
+            --secondary-color: #0dcaf0;
+            --dark-bg: #121212;
+            --darker-bg: #0a0a0a;
+            --card-bg: #1e1e1e;
+            --text-primary: #e9ecef;
+            --text-secondary: #adb5bd;
+            --border-color: #343a40;
         }
 
         body {
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-color);
-            height: 100vh;
-            color: #f8fafc;
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.3s ease;
         }
 
-        .chatbot-container {
-            height: 100vh;
-            max-width: 500px;
-            margin: 0 auto;
-            background-color: #1e293b;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-            position: relative;
+        .chat-container {
+            max-width: 1400px;
+            height: 95vh;
+            background-color: var(--darker-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .chat-sidebar {
+            background: linear-gradient(180deg, var(--primary-color) 0%, #4a1e8a 100%);
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .chat-main {
             display: flex;
             flex-direction: column;
+            height: 100%;
         }
 
         .chat-header {
-            background-color: var(--primary-color);
+            background: linear-gradient(90deg, var(--primary-color) 0%, #4a1e8a 100%);
             color: white;
-            border-top-left-radius: 0.5rem;
-            border-top-right-radius: 0.5rem;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .chatbot-avatar {
-            width: 40px;
-            height: 40px;
-            background-color: white;
-            color: var(--primary-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-        }
-
-        .chat-messages {
+        .chat-body {
+            flex: 1;
+            padding: 20px;
             overflow-y: auto;
-            background-color: #1e293b;
-            display: flex;
-            flex-direction: column;
+            background-color: var(--dark-bg);
         }
 
         .message {
-            max-width: 80%;
-            padding: 0.75rem 1rem;
-            margin-bottom: 0.75rem;
-            border-radius: 1rem;
+            max-width: 85%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            margin-bottom: 15px;
             position: relative;
-            word-wrap: break-word;
-        }
-
-        .user-message {
-            align-self: flex-end;
-            background-color: var(--user-bubble);
-            color: white;
-            border-bottom-right-radius: 0.25rem;
-        }
-
-        .bot-message {
-            align-self: flex-start;
-            background-color: var(--bot-bubble);
-            color: var(--text-dark);
-            border-bottom-left-radius: 0.25rem;
-        }
-
-        .message-time {
-            font-size: 0.7rem;
-            color: var(--text-light);
-            margin-top: 0.25rem;
-            text-align: right;
-        }
-
-        .chat-input {
-            background-color: #1e293b;
-            border-top: 1px solid #334155;
-        }
-
-        .quick-replies .btn {
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
-            font-size: 0.8rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 1rem;
-            background-color: #334155;
-            color: #f8fafc;
-            border: none;
-        }
-
-        .welcome-message {
-            color: var(--text-dark);
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .header-actions .btn {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.8rem;
-        }
-
-        .dev-info {
-            padding: 1rem;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        .dev-info h5 {
-            color: var(--primary-color);
-            margin-bottom: 1rem;
+            animation: fadeIn 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         @keyframes fadeIn {
@@ -137,159 +80,325 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .message {
-            animation: fadeIn 0.3s ease-out;
+        .user-message {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+            color: white;
+            border-bottom-right-radius: 5px;
         }
 
-        ::-webkit-scrollbar {
-            width: 6px;
+        .bot-message {
+            align-self: flex-start;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-bottom-left-radius: 5px;
         }
 
-        ::-webkit-scrollbar-track {
-            background: #1e293b;
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .pdf-viewer-container {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            border-left: 1px solid var(--border-color);
+            background-color: var(--dark-bg);
+        }
+
+        .pdf-viewer-container.active {
+            display: flex;
+        }
+
+        .pdf-header {
+            padding: 12px 20px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pdf-viewer {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #2d2d2d;
+            padding: 20px;
+            overflow: auto;
+        }
+
+        .pdf-iframe {
+            width: 100%;
+            height: 100%;
+            max-width: 800px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            background-color: white;
+        }
+
+        .chat-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--darker-bg);
+        }
+
+        .typing-indicator {
+            display: none;
+            align-self: flex-start;
+            background-color: var(--card-bg);
+            color: var(--text-secondary);
+            padding: 12px 18px;
+            border-radius: 18px;
+            border-bottom-left-radius: 5px;
+            font-style: italic;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--text-secondary);
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .suggestion {
+            display: inline-block;
+            background-color: rgba(111, 66, 193, 0.2);
+            color: var(--secondary-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid rgba(111, 66, 193, 0.3);
+        }
+
+        .suggestion:hover {
+            background-color: rgba(111, 66, 193, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .pdf-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 12px;
             border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: #475569;
+        .pdf-item:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .feature-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .feature-list li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quick-action {
+            background-color: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px;
             border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-bottom: 10px;
+            text-align: center;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
+        .quick-action:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
         }
 
-        @media (max-width: 576px) {
-            .chatbot-container {
-                border-radius: 0;
+        .developer-info {
+            background: linear-gradient(135deg, rgba(13, 202, 240, 0.1), rgba(111, 66, 193, 0.1));
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid rgba(13, 202, 240, 0.2);
+            font-size: 0.85rem;
+        }
+
+        .message-content {
+            line-height: 1.5;
+        }
+
+        .greeting-message {
+            background: linear-gradient(135deg, rgba(13, 202, 240, 0.1), rgba(111, 66, 193, 0.1));
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        @media (max-width: 992px) {
+            .chat-container {
+                height: 95vh;
             }
             
             .message {
                 max-width: 90%;
             }
+            
+            .pdf-viewer-container {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 100;
+                background-color: var(--dark-bg);
+            }
         }
 
-        .form-control, .form-control:focus {
-            background-color: #334155;
-            color: #f8fafc;
-            border-color: #475569;
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
 
-        .pdf-content {
-            max-height: 400px;
-            overflow-y: auto;
-            padding: 1rem;
-            background-color: #1e293b;
-            border-radius: 0.5rem;
-            border: 1px solid #475569;
-            margin-top: 0.5rem;
+        ::-webkit-scrollbar-track {
+            background: var(--darker-bg);
         }
 
-        .pdf-content h1, .pdf-content h2, .pdf-content h3 {
-            color: #7c3aed;
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
         }
 
-        .pdf-content h1 {
-            font-size: 1.5rem;
-            border-bottom: 1px solid #475569;
-            padding-bottom: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .pdf-content h2 {
-            font-size: 1.3rem;
-            margin-top: 1.5rem;
-        }
-
-        .pdf-content h3 {
-            font-size: 1.1rem;
-        }
-
-        .pdf-content ul {
-            padding-left: 1.5rem;
-        }
-
-        .pdf-content table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-        }
-
-        .pdf-content table, .pdf-content th, .pdf-content td {
-            border: 1px solid #475569;
-        }
-
-        .pdf-content th, .pdf-content td {
-            padding: 0.5rem;
-            text-align: left;
-        }
-
-        .close-pdf-btn {
-            margin-top: 0.5rem;
-            width: 100%;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #5a2da3;
         }
     </style>
 </head>
 <body>
-    <div class="container-fluid chatbot-container">
+    <div class="container-fluid h-100">
         <div class="row h-100">
-            <div class="col-12 d-flex flex-column p-0">
-                <!-- Chat Header -->
-                <div class="chat-header d-flex align-items-center p-3">
-                    <div class="chatbot-avatar">
-                        <i class="bi bi-robot"></i>
-                    </div>
-                    <div class="ms-3">
-                        <h5 class="mb-0">Ask A.I.</h5>
-                        <small class="text-muted">Online</small>
-                    </div>
-                    <div class="header-actions ms-auto">
-                        <button class="btn btn-sm btn-outline-light" id="newChatBtn" title="New Chat">
-                            <i class="bi bi-plus-lg"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-light" id="devInfoBtn" title="Developer Info">
-                            <i class="bi bi-info-circle"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Chat Messages -->
-                <div class="chat-messages flex-grow-1 p-3" id="chatMessages">
-                    <div class="welcome-message text-center mb-4">
-                        <div class="chatbot-avatar mx-auto mb-2">
-                            <i class="bi bi-robot"></i>
+            <div class="col-12 h-100">
+                <div class="chat-container d-flex">
+                    <!-- Sidebar -->
+                    <div class="chat-sidebar col-md-4 col-lg-3">
+                        <div class="d-flex flex-column h-100">
+                            <div class="text-center mb-4">
+                                <h2><i class="bi bi-robot me-2"></i>Kudu Assistant</h2>
+                                <p class="mb-0">Your intelligent PDF document helper</p>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h5 class="mb-3"><i class="bi bi-collection-play me-2"></i>Quick Actions</h5>
+                                <button class="quick-action" onclick="insertSuggestion('Hello')">
+                                    <i class="bi bi-chat-dots me-2"></i>Start Conversation
+                                </button>
+                                <button class="quick-action" onclick="insertSuggestion('list pdfs')">
+                                    <i class="bi bi-list-ul me-2"></i>List Available PDFs
+                                </button>
+                                <button class="quick-action" onclick="insertSuggestion('help')">
+                                    <i class="bi bi-question-circle me-2"></i>Get Help
+                                </button>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h5 class="mb-3"><i class="bi bi-file-pdf me-2"></i>PDF Documents</h5>
+                                <div class="pdf-list">
+                                    <div class="pdf-item" onclick="openPDF('lafino_chicken')">
+                                        <div class="fw-bold">Lafino Chicken</div>
+                                        <div class="small">Product information and recipes</div>
+                                    </div>
+                                    <div class="pdf-item" onclick="openPDF('kudu_beef')">
+                                        <div class="fw-bold">Kudu Beef</div>
+                                        <div class="small">Beef products and nutritional info</div>
+                                    </div>
+                                    <div class="pdf-item" onclick="openPDF('kudu_chicken')">
+                                        <div class="fw-bold">Kudu Chicken</div>
+                                        <div class="small">Chicken products and preparation</div>
+                                    </div>
+                                    <div class="pdf-item" onclick="openPDF('philly_beef')">
+                                        <div class="fw-bold">Philly Beef</div>
+                                        <div class="small">Beef products and recipes</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <div class="developer-info">
+                                    <h6><i class="bi bi-code-slash me-2"></i>Developer Info</h6>
+                                    <p class="mb-1">Developed by Kudu Assistant AKA Ghost</p>
+                                    <p class="mb-0 small">Still under training for improvement and trying to access other sources for more information and knowledge!</p>
+                                    <p class="mb-0 small mt-2"><i class="bi bi-c-circle me-1"></i>Bootstrap 2025 - All devices optimized</p>
+                                </div>
+                            </div>
                         </div>
-                        <h5>Hello! I'm Ask A.I.</h5>
-                        <p class="text-muted">Your personal AI assistant</p>
                     </div>
-                </div>
-                
-                <!-- Developer Info Panel -->
-                <div class="d-none p-3" id="devInfoPanel">
-                    <div class="dev-info">
-                        <h5><i class="bi bi-code-slash"></i> Developer Information</h5>
-                        <p>This chatbot was created using:</p>
-                        <ul>
-                            <li>HTML5, CSS3, and JavaScript</li>
-                            <li>Bootstrap 5 for responsive design</li>
-                            <li>Simulated backend knowledge storage</li>
-                        </ul>
+                    
+                    <!-- Main Chat Area -->
+                    <div class="chat-main col-md-8 col-lg-6">
+                        <div class="chat-header">
+                            <h4 class="mb-0"><i class="bi bi-chat-left-text me-2"></i>PDF Assistant</h4>
+                        </div>
+                        <div class="chat-body" id="chatBody">
+                            <div class="welcome-message">
+                                <h4>Welcome to Kudu Assistant! <i class="bi bi-emoji-smile"></i></h4>
+                                <p class="mb-3">I'm your intelligent PDF assistant. I can help you view documents, answer questions, and provide information from available PDFs.</p>
+                                <p class="mb-0">Try asking me something or select a PDF from the sidebar to get started!</p>
+                            </div>
+                            
+                            <div class="greeting-message p-3 mb-3 rounded">
+                                <p class="mb-1"><strong>Greeting Examples:</strong></p>
+                                <div class="suggestion" onclick="insertSuggestion('Hello! How are you?')">Hello! How are you?</div>
+                                <div class="suggestion" onclick="insertSuggestion('Good morning!')">Good morning!</div>
+                                <div class="suggestion" onclick="insertSuggestion('What can you help me with?')">What can you help me with?</div>
+                            </div>
+                        </div>
+                        <div class="typing-indicator" id="typingIndicator">
+                            <i class="bi bi-three-dots"></i> Kudu Assistant is typing...
+                        </div>
+                        <div class="chat-footer">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="chatInput" placeholder="Type your message here...">
+                                <button class="btn btn-primary" id="sendButton" type="button">
+                                    <i class="bi bi-send"></i>
+                                </button>
+                            </div>
+                            <div class="mt-2 text-center">
+                                <small class="text-muted">Try: <span class="suggestion small" onclick="insertSuggestion('Show me Lafino Chicken PDF')">Show me Lafino Chicken PDF</span> or <span class="suggestion small" onclick="insertSuggestion('What PDFs do you have?')">What PDFs do you have?</span></small>
+                            </div>
+                        </div>
                     </div>
-                    <button class="btn btn-sm btn-primary w-100" id="backToChatBtn">
-                        <i class="bi bi-arrow-left"></i> Back to Chat
-                    </button>
-                </div>
-                
-                <!-- Chat Input -->
-                <div class="chat-input p-3" id="chatInput">
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="userInput" placeholder="Type your message...">
-                        <button class="btn btn-primary" id="sendBtn">
-                            <i class="bi bi-send"></i>
-                        </button>
-                    </div>
-                    <div class="quick-replies mt-2 d-flex flex-wrap" id="quickReplies">
-                        <!-- Quick replies will be added here -->
+                    
+                    <!-- PDF Viewer -->
+                    <div class="pdf-viewer-container col-lg-3" id="pdfViewerContainer">
+                        <div class="pdf-header">
+                            <h5 class="mb-0" id="pdfTitle">PDF Document</h5>
+                            <button class="btn btn-sm btn-outline-light" onclick="closePDF()">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+                        <div class="pdf-viewer">
+                            <iframe class="pdf-iframe" id="pdfIframe" src=""></iframe>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -298,557 +407,214 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // DOM Elements
-            const chatMessages = document.getElementById('chatMessages');
-            const userInput = document.getElementById('userInput');
-            const sendBtn = document.getElementById('sendBtn');
-            const newChatBtn = document.getElementById('newChatBtn');
-            const devInfoBtn = document.getElementById('devInfoBtn');
-            const devInfoPanel = document.getElementById('devInfoPanel');
-            const backToChatBtn = document.getElementById('backToChatBtn');
-            const chatInput = document.getElementById('chatInput');
-            const quickReplies = document.getElementById('quickReplies');
+        const chatBody = document.getElementById('chatBody');
+        const chatInput = document.getElementById('chatInput');
+        const sendButton = document.getElementById('sendButton');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const pdfViewerContainer = document.getElementById('pdfViewerContainer');
+        const pdfIframe = document.getElementById('pdfIframe');
+        const pdfTitle = document.getElementById('pdfTitle');
 
-            // Knowledge base with PDF content
-            const knowledgeBase = [
-                {
-                    question: "kudu beef",
-                    answer: `
-                        <strong>KUDU Beef Information</strong><br><br>
-                        Here's the detailed information about KUDU Beef:
-                        <div class="pdf-content d-none" id="kuduBeefPdfContent">
-                            <h1>KUDU 929</h1>
-                            <h2>KUDU Beef</h2>
-                            <h3>STK | SOP# 512</h3>
-                            
-                            <p><strong>Category:</strong> Classic KUDU Sandwiches</p>
-                            <p><strong>Station:</strong> Steak Station</p>
-                            <p><strong>Launch Date:</strong> April 1988</p>
-                            <p><strong>Note:</strong> None</p>
-                            
-                            <h2>INGREDIENTS: 715 Kcal</h2>
-                            <ul>
-                                <li>KUDU beef (110 G) - 1 No.</li>
-                                <li>Diced onion (tablespoon) - 14 Grams</li>
-                                <li>KUDU seasoning - 1 Dash</li>
-                                <li>Diced green pepper (teaspoon) - 7 Grams</li>
-                                <li>Soy sauce - 1/4 Ounce</li>
-                                <li>Steak Bread - 1 No.</li>
-                                <li>Mayonnaise - 1 Ounce</li>
-                                <li>Lettuce - 35 Grams</li>
-                                <li>Halfmoon tomato (1/4") - 2 Slices</li>
-                                <li>Yellow Cheese (Rectangular shape) - 1 Slice</li>
-                            </ul>
-                            
-                            <h2>HANDLING AND SERVICE: (KUDU Beef)</h2>
-                            <ul>
-                                <li>Receiving and storage: Frozen 0°F / Thawed 34°F to 40°F</li>
-                                <li>Packaging: 1 Case = 50 Pcs</li>
-                                <li>Shelf life: Frozen (6 months)</li>
-                                <li>Cooking time: 4-5 Minutes</li>
-                                <li>Shelf life (chiller) – 72 hours, Thaw – 24 hours/Use 48 Hours</li>
-                                <li>Serve the sandwich in the basket for dine in and in Paper bag #20 for take out</li>
-                            </ul>
-                            
-                            <h3>Condiments</h3>
-                            <p>One sandwich with 1 ketchup sachet and 1 Napkin</p>
-                            <p>One meal with (2 Ketchup Sachets, 2 Napkins, 1 Regular Fries and 1 Regular Soft drink).</p>
-                            
-                            <h2>HOW TO SUGGEST:</h2>
-                            <p>Cashier should communicate properly the KUDU Beef sandwich to the guests</p>
-                            <p><strong>Cashier to say</strong> "Welcome to KUDU Sir / Madam"</p>
-                            <p>If Guest asked for KUDU Beef Sandwich</p>
-                            <p><strong>Cashier to say</strong> "that will be with Fries and Drink Sir/Madam?"</p>
-                            <p>If Guest asked KUDU Beef Combo</p>
-                            <p><strong>Cashier to say</strong> "would you like to have Large Drink and Fries Sir/Madam?"</p>
-                            
-                            <h2>PRODUCT BUILD UP:</h2>
-                            <ul>
-                                <li>Steak Bread 10" - 122 Grams</li>
-                                <li>Mayonnaise - 28 Grams</li>
-                                <li>Shredded Lettuce - 35 Grams</li>
-                                <li>Half moon Tomato - 2 Pieces (1/4" thickness)</li>
-                                <li>KUDU® Beef (cooked) - 80 Grams</li>
-                                <li>Diced Onion - 14 Grams</li>
-                                <li>Diced Green Pepper - 7 Grams</li>
-                                <li>KUDU® Seasoning - 1 Dash</li>
-                                <li>Soy Sauce - 1/4 Ounce</li>
-                                <li>Yellow Cheese - 2 Pieces</li>
-                                <li>Steak Bread 10"</li>
-                            </ul>
-                            
-                            <h2>PREPARATION PROCEDURE:</h2>
-                            <ol>
-                                <li>Set Flat Grill temperature on 300°F-350°F.</li>
-                                <li>Spray oil one time only on the heated flat grill.</li>
-                                <li>Place the Beef on the greased part of the Flat grill and cook then replace your hand gloves with new ones.</li>
-                                <li>Garnish steak bread, remove the inner part of the steak bread (crown side) and Squeeze 1 ounce of mayonnaise in oval shape on crown side, then place lettuce and tomato evenly inside the bread</li>
-                                <li>Place the garnished steak bread on the Flat grill assigned for heating bread (Crown side up and cutting side facing to the garnish station); Flat grill setting on 200°F to 250°F.</li>
-                                <li>Add the diced onion using tablespoon (1 tablespoon = 14 grams) toss and mix for few seconds.</li>
-                                <li>Then sprinkle a dash of seasoning on the beef then toss and mix for few seconds.</li>
-                                <li>Turn over the garnished steak bread and heat the other side.</li>
-                                <li>Now add the diced green pepper using teaspoon (1 teaspoon = 7 grams) then toss and mix for few seconds.</li>
-                                <li>Finally, and when the meat is almost ready, squeeze 3/4 Ounce of soy sauce.</li>
-                                <li>Toss and mix for few seconds before you transfer the meat to the bread.</li>
-                                <li>After 4-5 minutes of cooking; line the meat on the grill to 8" long, add 2 halves of yellow cheese (1 slice) evenly on top of the meat.</li>
-                                <li>Using metal spatula, Scoop beef from grill and place it on the heal side of steak bread. (ensure that the cheese is toward the heel side).</li>
-                                <li>Transfer the prepared sandwich to the garnish station cut into two halves.</li>
-                                <li>Place at KUDU sandwich box/use basket for dine in. and serve as per guest request.</li>
-                                <li>If we hold the Beef in PHU; holding time of fully cooked Beef is 30 minutes in PHU with cover (KDBF).</li>
-                            </ol>
-                            
-                            <h2>ACKNOWLEDGMENT:</h2>
-                            <p>Make certain your team is aware of the procedures and able to explain the product clearly to the customers.</p>
-                            <p>Manager Review & Signature:</p>
-                            
-                            <table>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Date</th>
-                                    <th>Name</th>
-                                    <th>Date</th>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                            
-                            <p>Store Managers should address questions/concerns regarding this change to your Operations Trainer/Operations In-charge.</p>
-                        </div>
-                        <button class="btn btn-sm btn-primary mt-2" id="showPdfBtn">Show Full Kudu Beef Details</button>
-                    `,
-                    showPdf: true
-                },
-                {
-                    question: "kudu spicy chicken",
-                    answer: `
-                        <strong>Spicy KUDU Chicken Information</strong><br><br>
-                        Here's the detailed information about Spicy KUDU Chicken:
-                        <div class="pdf-content d-none" id="spicyChickenPdfContent">
-                            <h1>KUDU</h1>
-                            <h2>Spicy KUDU Chicken</h2>
-                            <h3>STK | SOP# 515</h3>
-                            
-                            <p><strong>Category:</strong> Classic KUDU Sandwiches</p>
-                            <p><strong>Station:</strong> Steak Station</p>
-                            <p><strong>Launch Date:</strong> April 2017</p>
-                            
-                            <h2>INGREDIENTS: 1069 Kcal</h2>
-                            <ul>
-                                <li>Spicy chicken steak - 1 No.</li>
-                                <li>Diced onion (tablespoon) - 14 Grams</li>
-                                <li>Diced green pepper (teaspoon) - 7 Grams</li>
-                                <li>White cheese - 1 Slice</li>
-                                <li>Steak bread - 1 No.</li>
-                                <li>Harissa mayo - 1 Ounce</li>
-                                <li>Shredded lettuce - 35 Grams</li>
-                                <li>Half moon tomato (1/4") - 2 Slices</li>
-                            </ul>
-                            
-                            <h2>HANDLING AND SERVICE: (Spicy Chicken)</h2>
-                            <ul>
-                                <li>Receiving and storage: Frozen 0°F / Thawed 34°F to 40°F</li>
-                                <li>Packaging: 1 Case = 50 Pcs</li>
-                                <li>Shelf life: Frozen (9 months)</li>
-                                <li>Cooking time: 3-4 Minutes</li>
-                                <li>Shelf life (chiller) – 72 hours, Thaw – 24 hours/Use 48 Hours</li>
-                                <li>Serve the sandwich in the basket for dine in and in Paper bag# 20 for take out</li>
-                            </ul>
-                            
-                            <h3>Condiments</h3>
-                            <p>One sandwich with 1 ketchup sachet and 1 Napkin</p>
-                            <p>One meal with (2 Ketchup Sachets, 2 Napkins, 1 Regular Fries and 1 Regular Soft drink.)</p>
-                            
-                            <h2>HOW TO SUGGEST:</h2>
-                            <p>Cashier should communicate properly the Spicy KUDU sandwich to the guests</p>
-                            <p><strong>Cashier to say</strong> "Welcome to KUDU Sir / Madam"</p>
-                            <p>If Guest asked for Spicy KUDU Chicken Sandwich</p>
-                            <p><strong>Cashier to say</strong> "that will be with Fries and Drink Sir/Madam?"</p>
-                            <p>If Guest asked Spicy KUDU Chicken Combo</p>
-                            <p><strong>Cashier to say</strong> "would you like to have big Drink and Fries Sir/Madam?"</p>
-                            
-                            <h2>PRODUCT BUILD UP:</h2>
-                            <ul>
-                                <li>10" Steak Bread (Crown)</li>
-                                <li>Harissa Mayo - 28 Grams</li>
-                                <li>Shredded Lettuce - 35 Grams</li>
-                                <li>Half moon Tomato - 2 Slices</li>
-                                <li>Spicy Chicken - 1 Order</li>
-                                <li>Diced Onion - 14 Grams</li>
-                                <li>Diced Green Pepper - 7 Grams</li>
-                                <li>White Cheese - 1 Slice (cut into half)</li>
-                                <li>10" Steak Bread (Heel)</li>
-                            </ul>
-                            
-                            <h2>PREPARATION PROCEDURE:</h2>
-                            <ol>
-                                <li>Set Flat Grill temperature on 300°F-350°F.</li>
-                                <li>Spray oil one time only on the heated flat grill.</li>
-                                <li>Place the chicken on the greased part of the Flat grill and cook then replace your hand gloves with new ones. (Cook on the right side of flat grill 36").</li>
-                                <li>Start to garnish steak bread:
-                                    <ul>
-                                        <li>Remove the inner part of the steak bread (crown side)</li>
-                                        <li>Squeeze 1 ounce of harissa sauce in oval shape inside the bread (crown side)</li>
-                                        <li>Place the lettuce and tomato evenly inside the bread</li>
-                                    </ul>
-                                </li>
-                                <li>Place the steak bread on flat grill assigned for heating bread (Crown side up and cutting side facing to the garnish station); Flat grill must keep on 250°F.</li>
-                                <li>Add the onion, toss & mix for few seconds.</li>
-                                <li>Turn over the garnished steak bread and heat the other side.</li>
-                                <li>Add the green pepper, toss and mix for few seconds.</li>
-                                <li>After 3-4 Minutes of cooking, When the meat is fully cooked, line it on the grill to 8" long, and place 1 slice of white cheese (cut into 2 halves) till it become soft on the chicken (not melted).</li>
-                                <li>Using metal spatula, Scoop spicy chicken from grill and place it into the bread.</li>
-                                <li>Transfer the prepared sandwich to the garnish station cut into two halves.</li>
-                                <li>Transfer the sandwich to the sandwich box, Then serve the order according to the guest request for dine in or take out.</li>
-                                <li>If we hold the spicy chicken in PHU; holding time of fully cooked spicy chicken is 30 minutes In PHU with cover (SPCH).</li>
-                            </ol>
-                            
-                            <h2>ACKNOWLEDGMENT:</h2>
-                            <p>Make certain your team is aware of the procedures and able to explain the product clearly to the customers.</p>
-                            <p>Manager Review & Signature:</p>
-                            
-                            <table>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Date</th>
-                                    <th>Name</th>
-                                    <th>Date</th>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                            
-                            <p>Store Managers should address questions/concerns regarding this change to your Operations Trainer/Operations In-charge.</p>
-                        </div>
-                        <button class="btn btn-sm btn-primary mt-2" id="showPdfBtn">Show Full Spicy Chicken Details</button>
-                    `,
-                    showPdf: true
-                },
-                {
-                    question: "kudu chicken",
-                    answer: `
-                        <strong>KUDU Chicken Information</strong><br><br>
-                        Here's the detailed information about KUDU Chicken:
-                        <div class="pdf-content d-none" id="kuduPdfContent">
-                            <h1>KUDU 929</h1>
-                            <h2>KUDU Chicken</h2>
-                            <h3>STK | SOP# 511</h3>
-                            
-                            <p><strong>Category:</strong> Classic KUDU Sandwiches</p>
-                            <p><strong>Station:</strong> Steak Station</p>
-                            <p><strong>Launch Date:</strong> April 1988</p>
-                            <p><strong>Note:</strong> KUDU Flagship Sandwich</p>
-                            
-                            <h2>INGREDIENTS: 609 Kcal</h2>
-                            <ul>
-                                <li>KUDU Chicken (110 G) - 1 No.</li>
-                                <li>Diced onion (tablespoon) - 14 Grams</li>
-                                <li>KUDU seasoning - 1 Dash</li>
-                                <li>Diced green pepper (teaspoon) - 7 Grams</li>
-                                <li>Soy sauce - 1/4 Oz.</li>
-                                <li>Steak Bread - 1 No.</li>
-                                <li>Mayonnaise - 1 Ounce</li>
-                                <li>Lettuce - 35 Grams</li>
-                                <li>Halfmoon tomato (1/4") - 2 Pieces</li>
-                            </ul>
-                            
-                            <h2>HANDLING AND SERVICE: (KUDU Chicken)</h2>
-                            <ul>
-                                <li>Receiving and storage: Frozen 0°F / Thawed 34°F to 40°F</li>
-                                <li>Packaging: 1 Case = 50 Pcs</li>
-                                <li>Shelf life: Frozen (6 months)</li>
-                                <li>Cooking time: 3-4 Minutes</li>
-                                <li>Shelf life (chiller) – 72 hours, Thaw – 24 hours/Use 48 Hours</li>
-                                <li>Serve the sandwich in the basket for dine in and in Paper bag# 20 for take out</li>
-                            </ul>
-                            
-                            <h3>Condiments</h3>
-                            <p>One sandwich with 1 ketchup sachet and 1 Napkin</p>
-                            <p>One meal with (2 Ketchup Sachets, 2 Napkins, 1 Regular Fries and 1 Regular Soft drink.)</p>
-                            
-                            <h2>HOW TO SUGGEST:</h2>
-                            <p>Cashier should communicate properly the Flagship KUDU sandwich to the guests</p>
-                            <p><strong>Cashier to say</strong> "Welcome to KUDU Sir / Madam"</p>
-                            <p>If Guest asked for KUDU Chicken Sandwich</p>
-                            <p><strong>Cashier to say</strong> "that will be with Fries and Drink Sir/Madam?"</p>
-                            <p>If Guest asked KUDU Chicken Combo</p>
-                            <p><strong>Cashier to say</strong> "would you like to have big Drink and Fries Sir/Madam?"</p>
-                            
-                            <h2>Steak Bread 10"Crown</h2>
-                            <ul>
-                                <li>Mayonnaise - 28 Grams</li>
-                                <li>Shredded Lettuce - 35 Grams</li>
-                                <li>Half moon Tomato - 28 Grams (2 Pcs)</li>
-                                <li>KUDU® Chicken (cooked) - 80 Grams</li>
-                                <li>Diced Onion - 14 Grams</li>
-                                <li>Diced Green Pepper - 7 Grams</li>
-                                <li>KUDU® Seasoning - 1 Dash</li>
-                                <li>Soy Sauce - 1/4 Oz.</li>
-                                <li>Steak Bread10" Heel</li>
-                            </ul>
-                            
-                            <h2>KUDU® CHICKEN SANDWICH CONFORMANCE CHECK</h2>
-                            <p><strong>The approach:</strong></p>
-                            <p>Pick a ready to serve sandwich and check it, to review the quality we are serving to our guests.</p>
-                            <p>Don't ask a crew to prepare one sandwich for checking purpose! It would be insignificant.</p>
-                            <p>A daily conformance check is required by MIC/Above Restaurant Level leaders during restaurant visits.</p>
-                            
-                            <h3>Conformance Check points:</h3>
-                            <p><strong>Weight:</strong> With the Box 340 g (±5g)</p>
-                            <p><strong>Temperature:</strong> ≥140°F (check protein inside the sandwich)</p>
-                            
-                            <h3>Quality Check:</h3>
-                            <p><strong>Appearance:</strong> Bread is golden brown, evenly seeded, cut into 2 even halves and shouldn't be crumbled.</p>
-                            <p>Chicken golden brown color, distributed evenly and placed between heel & tomatoes.</p>
-                            <p>Onion & Green pepper mixed properly with the protein.</p>
-                            <p><strong>Condiments:</strong> lettuce fresh & green / tomato red & firm / Mayonnaise from edge to edge.</p>
-                            
-                            <h2>PREPARATION PROCEDURE:</h2>
-                            <ol>
-                                <li>Set Flat Grill temperature on 300°F-350°F.</li>
-                                <li>Spray oil one time only on the heated flat grill.</li>
-                                <li>Place the chicken (110 Grams) on the greased part of the Flat grill and cook then replace your hand gloves with a new ones.</li>
-                                <li>Garnish steak bread, remove the inner part of the steak bread (crown side) and Squeeze 1 ounce of mayonnaise in oval shape on crown side, then place lettuce and tomato evenly inside the bread</li>
-                                <li>Place the garnished steak bread on the Flat grill assigned for heating bread (Crown side up and cutting side facing to the garnish station); Flat grill setting on 200°F to 250°F.</li>
-                                <li>Add the diced onion using tablespoon (1 tablespoon = 14 grams) toss and mix for few seconds.</li>
-                                <li>Then sprinkle a dash of seasoning on the chicken then toss and mix for few seconds.</li>
-                                <li>Turn over the garnished steak bread and heat the other side.</li>
-                                <li>Now add the diced green pepper using teaspoon (1 teaspoon = 7 grams)then toss and mix for few seconds.</li>
-                                <li>Finally, and when the meat is almost ready, squeeze 1/4 Oz. of soy sauce.</li>
-                                <li>Toss and mix for few seconds before you transfer the meat to the bread.</li>
-                                <li>After 3-4 minutes of cooking; line the meat on the grill to 8" long.</li>
-                                <li>Using metal spatula, Scoop chicken from grill and place it on the heal side of steak bread.</li>
-                                <li>Transfer the prepared sandwich to the garnish station cut into two halves.</li>
-                                <li>Place at KUDU sandwich box/use basket for dine in. and serve as per guest request.</li>
-                                <li>If we hold the chicken in PHU; holding time of fully cooked chicken is 30 minutes in PHU with cover (KDCH).</li>
-                            </ol>
-                            
-                            <h2>ACKNOWLEDGMENT:</h2>
-                            <p>Make certain your team is aware of the procedures and able to explain the product clearly to the customers.</p>
-                            <p>Manager Review & Signature:</p>
-                            
-                            <table>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Date</th>
-                                    <th>Name</th>
-                                    <th>Date</th>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                            
-                            <p>Store Managers should address questions/concerns regarding this change to your Operations Trainer/Operations In-charge.</p>
-                        </div>
-                        <button class="btn btn-sm btn-primary mt-2" id="showPdfBtn">Show Full Kudu Chicken Details</button>
-                    `,
-                    showPdf: true
-                },
-                {
-                    question: "what can you do?",
-                    answer: "I can answer questions based on my knowledge base. Try asking me about 'kudu beef', 'spicy chicken', or 'kudu chicken' as examples!"
-                },
-                {
-                    question: "how does this work?",
-                    answer: "I'm a simple AI chatbot that matches your questions with pre-programmed answers."
-                },
-                {
-                    question: "who created you?",
-                    answer: "I was created by a developer using HTML, CSS, and JavaScript."
-                },
-                {
-                    question: "what's your name?",
-                    answer: "I'm called Ask A.I.!"
-                }
-            ];
+        // PDF Database
+        const pdfDatabase = {
+            "lafino_chicken": {
+                name: "Lafino Chicken",
+                path: "file:///C:/Users/moinr/Desktop/all%20old/for%20complaint/database/lafino%20chicken.pdf",
+                description: "Information about chicken products, recipes, and nutritional information."
+            },
+            "kudu_beef": {
+                name: "Kudu Beef",
+                path: "file:///C:/Users/moinr/Desktop/all%20old/for%20complaint/database/kudu%20beef.pdf",
+                description: "Information about beef products, recipes, and nutritional information."
+            },
+            "kudu_chicken": {
+                name: "Kudu Chicken",
+                path: "file:///C:/Users/moinr/Desktop/all%20old/for%20complaint/database/kudu%20chicken.pdf",
+                description: "Information about chicken products, recipes, and nutritional information."
+            },
+            "philly_beef": {
+                name: "Philly Beef",
+                path: "file:///C:/Users/moinr/Desktop/all%20old/for%20complaint/database/philly%20beef.pdf",
+                description: "Information about beef products, recipes, and nutritional information."
+            }
+        };
+
+        // Greeting messages
+        const greetings = [
+            "Hello! How can I assist you today?",
+            "Hi there! What can I help you with?",
+            "Greetings! I'm here to help with your PDF documents.",
+            "Good day! How may I be of service?"
+        ];
+
+        // Farewell messages
+        const farewells = [
+            "Goodbye! Feel free to return if you need more assistance.",
+            "See you later! Don't hesitate to ask if you have more questions.",
+            "Farewell! I'm here whenever you need help with PDFs.",
+            "Take care! Remember I'm just a message away if you need me."
+        ];
+
+        // Get current time
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Get current date
+        function getCurrentDate() {
+            const now = new Date();
+            return now.toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        // Add a message to the chat
+        function addMessage(message, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', 'd-flex', 'flex-column');
+            messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
             
-            // Sample quick replies
-            const sampleQuickReplies = [
-                "What can you do?",
-                "How does this work?",
-                "Who created you?",
-                "What's your name?",
-                "kudu beef",
-                "kudu spicy chicken",
-                "kudu chicken"
-            ];
-
-            // Initialize quick replies
-            function initQuickReplies() {
-                quickReplies.innerHTML = '';
-                sampleQuickReplies.forEach(reply => {
-                    const btn = document.createElement('button');
-                    btn.className = 'btn btn-outline-light btn-sm';
-                    btn.textContent = reply;
-                    btn.addEventListener('click', () => {
-                        userInput.value = reply;
-                        sendMessage();
-                    });
-                    quickReplies.appendChild(btn);
-                });
-            }
-
-            // Add message to chat
-            function addMessage(text, isUser) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
-                
-                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                
-                messageDiv.innerHTML = `
-                    ${text}
-                    <div class="message-time">${time}</div>
-                `;
-                
-                chatMessages.appendChild(messageDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                
-                // Add event listener to show PDF button if it exists
-                const showPdfBtn = messageDiv.querySelector('#showPdfBtn');
-                if (showPdfBtn) {
-                    showPdfBtn.addEventListener('click', function() {
-                        let pdfContent;
-                        if (text.includes('KUDU Beef')) {
-                            pdfContent = messageDiv.querySelector('#kuduBeefPdfContent');
-                        } else if (text.includes('Spicy KUDU Chicken')) {
-                            pdfContent = messageDiv.querySelector('#spicyChickenPdfContent');
-                        } else if (text.includes('KUDU Chicken')) {
-                            pdfContent = messageDiv.querySelector('#kuduPdfContent');
-                        }
-                        
-                        if (pdfContent) {
-                            pdfContent.classList.toggle('d-none');
-                            this.textContent = pdfContent.classList.contains('d-none') ? 
-                                `Show Full ${text.includes('Beef') ? 'Kudu Beef' : text.includes('Spicy') ? 'kudu Spicy Chicken' : 'Kudu Chicken'} Details` : 'Hide Details';
-                        }
-                    });
-                }
-            }
-
-            // Clear chat
-            function clearChat() {
-                chatMessages.innerHTML = `
-                    <div class="welcome-message text-center mb-4">
-                        <div class="chatbot-avatar mx-auto mb-2">
-                            <i class="bi bi-robot"></i>
-                        </div>
-                        <h5>Hello! I'm Ask A.I.</h5>
-                        <p class="text-muted">Your personal AI assistant</p>
-                    </div>
-                `;
-            }
-
-            // Send message
-            function sendMessage() {
-                const message = userInput.value.trim();
-                if (message === '') return;
-                
-                addMessage(message, true);
-                userInput.value = '';
-                
-                // Show typing indicator
-                const typingIndicator = document.createElement('div');
-                typingIndicator.className = 'message bot-message typing-indicator';
-                typingIndicator.innerHTML = 'A.I. is thinking...';
-                chatMessages.appendChild(typingIndicator);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                
-                // Process after delay
-                setTimeout(() => {
-                    document.querySelector('.typing-indicator')?.remove();
-                    processMessage(message);
-                }, 1000 + Math.random() * 1000);
-            }
-
-            // Process user message
-            function processMessage(message) {
-                const lowerMessage = message.toLowerCase();
-                const matchedItem = knowledgeBase.find(item => 
-                    item.question.toLowerCase() === lowerMessage
-                );
-                
-                if (matchedItem) {
-                    addMessage(matchedItem.answer, false);
-                } else {
-                    const defaultResponses = [
-                        "I'm not sure I understand. Could you rephrase that?",
-                        "That's an interesting question. I don't have an answer yet.",
-                        "I'm still learning. Try asking me something else.",
-                        "I don't have information about that. Maybe ask differently."
-                    ];
-                    
-                    const response = defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
-                    addMessage(response, false);
-                }
-            }
-
-            // Toggle panels
-            function togglePanel(panelToShow) {
-                [devInfoPanel, chatInput].forEach(panel => {
-                    panel.classList.add('d-none');
-                });
-                
-                if (panelToShow) {
-                    panelToShow.classList.remove('d-none');
-                } else {
-                    chatInput.classList.remove('d-none');
-                }
-            }
-
-            // Event Listeners
-            sendBtn.addEventListener('click', sendMessage);
-            userInput.addEventListener('keypress', (e) => e.key === 'Enter' && sendMessage());
+            const messageContent = document.createElement('div');
+            messageContent.classList.add('message-content');
+            messageContent.textContent = message;
             
-            newChatBtn.addEventListener('click', () => {
-                if (confirm('Start a new chat? This will clear the current conversation.')) {
-                    clearChat();
-                    togglePanel();
-                }
-            });
+            const timeStamp = document.createElement('div');
+            timeStamp.classList.add('message-time');
+            timeStamp.textContent = getCurrentTime();
             
-            devInfoBtn.addEventListener('click', () => togglePanel(devInfoPanel));
-            backToChatBtn.addEventListener('click', () => togglePanel());
-            
-            // Initialize
-            initQuickReplies();
-            
-            // Welcome message
+            messageDiv.appendChild(messageContent);
+            messageDiv.appendChild(timeStamp);
+            chatBody.appendChild(messageDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        // Show typing indicator
+        function showTypingIndicator() {
+            typingIndicator.classList.add('active');
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        // Hide typing indicator
+        function hideTypingIndicator() {
+            typingIndicator.classList.remove('active');
+        }
+
+        // Handle user input
+        function handleUserInput() {
+            const message = chatInput.value.trim();
+            if (message === '') return;
+
+            // Add user message to chat
+            addMessage(message, true);
+            chatInput.value = '';
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            // Process bot response after a short delay
             setTimeout(() => {
-                addMessage("Hi! I'm Ask A.I. You can ask me questions about KUDU menu items like 'kudu beef', 'spicy chicken', or 'kudu chicken'!", false);
-            }, 800);
+                hideTypingIndicator();
+                processBotResponse(message.toLowerCase());
+            }, 1500);
+        }
+
+        // Process bot response
+        function processBotResponse(message) {
+            // Greetings
+            if (message.includes('hello') || message.includes('hi') || message.includes('hey') || 
+                message.includes('good morning') || message.includes('good afternoon') || message.includes('good evening')) {
+                const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+                addMessage(greeting);
+            }
+            // Farewells
+            else if (message.includes('bye') || message.includes('goodbye') || message.includes('see you') || 
+                     message.includes('farewell') || message.includes('cya')) {
+                const farewell = farewells[Math.floor(Math.random() * farewells.length)];
+                addMessage(farewell);
+            }
+            // How are you
+            else if (message.includes('how are you') || message.includes('how do you do')) {
+                addMessage("I'm functioning well, thank you for asking! How can I assist you today?");
+            }
+            // Thanks
+            else if (message.includes('thank') || message.includes('thanks')) {
+                addMessage("You're welcome! Is there anything else I can help you with?");
+            }
+            // Date and time
+            else if (message.includes('time') || message.includes('date')) {
+                if (message.includes('date')) {
+                    addMessage(`Today is ${getCurrentDate()}`);
+                } else {
+                    addMessage(`The current time is ${getCurrentTime()}`);
+                }
+            }
+            // PDF requests
+            else if (message.includes('lafino chicken')) {
+                openPDF('lafino_chicken');
+            } else if (message.includes('kudu beef')) {
+                openPDF('kudu_beef');
+            } else if (message.includes('kudu chicken')) {
+                openPDF('kudu_chicken');
+            } else if (message.includes('philly beef')) {
+                openPDF('philly_beef');
+            } else if (message.includes('list pdfs') || message.includes('available pdfs') || message.includes('what pdf')) {
+                listPDFs();
+            } else if (message.includes('help')) {
+                addMessage("I can help you with:\n• Viewing PDF documents (just ask for one by name)\n• Answering questions about PDF content\n• Providing general assistance\n\nTry saying 'Show me Lafino Chicken PDF' or 'What PDFs do you have?'");
+            } else {
+                addMessage("I'm not sure how to help with that. You can ask me to show a PDF, list available documents, or just chat! Try 'help' for more options.");
+            }
+
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        // Open a PDF
+        function openPDF(pdfId) {
+            if (pdfDatabase[pdfId]) {
+                const pdf = pdfDatabase[pdfId];
+                pdfViewerContainer.classList.add('active');
+                pdfIframe.src = pdf.path;
+                pdfTitle.textContent = pdf.name;
+                
+                addMessage(`I've opened the ${pdf.name} PDF for you. You can view it in the panel to the right.`);
+            } else {
+                addMessage("Sorry, I couldn't find that PDF. Try 'list pdfs' to see available documents.");
+            }
+        }
+
+        // List all available PDFs
+        function listPDFs() {
+            let pdfList = "Here are the PDF documents I have available:\n\n";
+            for (const [key, pdf] of Object.entries(pdfDatabase)) {
+                pdfList += `• ${pdf.name}: ${pdf.description}\n`;
+            }
+            pdfList += "\nJust ask for any of these by name!";
+            addMessage(pdfList);
+        }
+
+        // Insert suggestion into input
+        function insertSuggestion(text) {
+            chatInput.value = text;
+            chatInput.focus();
+        }
+
+        // Close PDF viewer
+        function closePDF() {
+            pdfViewerContainer.classList.remove('active');
+            pdfIframe.src = '';
+        }
+
+        // Event listeners
+        sendButton.addEventListener('click', handleUserInput);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleUserInput();
+            }
         });
+
+        // Initial bot message
+        setTimeout(() => {
+            addMessage("Hello! I'm Kudu Assistant, your PDF document helper. How can I assist you today?");
+        }, 1000);
     </script>
 </body>
-
 </html>
-
