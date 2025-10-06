@@ -581,6 +581,18 @@
             }).format(value);
         }
 
+        // NEW: Calculate AC based on your specific requirement
+        function calculateAC(sales, target, tc) {
+            if (target > 0 && tc >= 0) {
+                // AC represents how much of the adjusted target you've achieved
+                // Adjusted target = Target × (1 - TC/100)
+                const adjustedTarget = target * (1 - tc/100);
+                const ac = (sales / adjustedTarget) * 100;
+                return ac;
+            }
+            return 0;
+        }
+
         // Load data for the selected month
         function loadMonthData() {
             currentMonth = $("#month-select").val();
@@ -649,9 +661,8 @@
                 const lastYear = parseFloat($(`#lastYear-${i}`).val()) || 0;
                 let tc = parseFloat($(`#tc-${i}`).val()) || 0;
                 
-                // Calculate AC based on TC
-                // AC = 100 - TC
-                const ac = 100 - tc;
+                // NEW: Calculate AC using the new logic
+                const ac = calculateAC(sales, target, tc);
                 
                 // Calculate ACHIEVED percentage (Sales / Target * 100)
                 const achieved = target > 0 ? (sales / target) * 100 : 0;
@@ -702,7 +713,7 @@
                 } else if (tc <= 20) {
                     $(`#tc-${i}`).addClass('text-warning').removeClass('text-success text-danger');
                 } else {
-                    $(`#tc-${i}`).addClass('text-danger').removeClass('text-success text-warning');
+                    $(`#tc-${i}`).addClass('text-danger').removeClass('text-success text-danger');
                 }
 
                 // Average color coding
@@ -711,7 +722,7 @@
                 } else if (average >= 80) {
                     $(`#average-${i}`).addClass('text-warning').removeClass('text-success text-danger');
                 } else {
-                    $(`#average-${i}`).addClass('text-danger').removeClass('text-success text-warning');
+                    $(`#average-${i}`).addClass('text-danger').removeClass('text-success text-danger');
                 }
 
                 growthData.push(growth);
@@ -794,9 +805,14 @@
                 mtdAchieved += parseFloat(achievedData[currentMonth][i - 1]) || 0;
                 
                 // Calculate MTD average for each day
-                const dayAC = 100 - (parseFloat(tcData[currentMonth][i - 1]) || 0);
-                const dayGrowth = parseFloat(lastYearData[currentMonth][i - 1]) > 0 ? 
-                    ((parseFloat(salesData[currentMonth][i - 1]) - parseFloat(lastYearData[currentMonth][i - 1])) / parseFloat(lastYearData[currentMonth][i - 1])) * 100 : 0;
+                const daySales = parseFloat(salesData[currentMonth][i - 1]) || 0;
+                const dayTarget = parseFloat(targetData[currentMonth][i - 1]) || 0;
+                const dayTC = parseFloat(tcData[currentMonth][i - 1]) || 0;
+                const dayLastYear = parseFloat(lastYearData[currentMonth][i - 1]) || 0;
+                
+                const dayAC = calculateAC(daySales, dayTarget, dayTC);
+                const dayGrowth = dayLastYear > 0 ? 
+                    ((daySales - dayLastYear) / dayLastYear) * 100 : 0;
                 const dayAverage = (dayAC + dayGrowth) / 2;
                 mtdAverage += dayAverage;
             }
@@ -856,11 +872,13 @@
             gradientAchieved.addColorStop(0, 'rgba(156, 95, 255, 0.8)');
             gradientAchieved.addColorStop(1, 'rgba(156, 95, 255, 0.1)');
             
-            // Prepare AC data for chart
+            // Prepare AC data for chart using new calculation
             const acChartData = [];
             for (let i = 1; i <= 30; i++) {
+                const sales = parseFloat(salesData[currentMonth][i - 1]) || 0;
+                const target = parseFloat(targetData[currentMonth][i - 1]) || 0;
                 const tc = parseFloat(tcData[currentMonth][i - 1]) || 0;
-                const ac = 100 - tc;
+                const ac = calculateAC(sales, target, tc);
                 acChartData.push(ac);
             }
             
@@ -1019,7 +1037,7 @@
             });
         }
 
-        // Update notifications with new MTD Average and MTD T.C notifications
+        // Update notifications
         function updateNotifications(mtdSales, mtdTarget, mtdLastYear, mtdAchievement, mtdGrowth, today, mtdAchieved, mtdTC, mtdAverage) {
             const notificationsContainer = $("#notifications-container");
             notificationsContainer.empty();
@@ -1029,7 +1047,7 @@
             const todaySales = parseFloat(salesData[currentMonth][today - 1]) || 0;
             const todayLastYear = parseFloat(lastYearData[currentMonth][today - 1]) || 0;
             const todayTC = parseFloat(tcData[currentMonth][today - 1]) || 0;
-            const todayAC = 100 - todayTC;
+            const todayAC = calculateAC(todaySales, todayTarget, todayTC);
             const todayAchieved = parseFloat(achievedData[currentMonth][today - 1]) || 0;
             
             let todayGrowth = todayLastYear > 0 ? ((todaySales - todayLastYear) / todayLastYear) * 100 : 0;
@@ -1040,7 +1058,7 @@
             const yesterdayTarget = parseFloat(targetData[currentMonth][yesterday - 1]) || 0;
             const yesterdayLastYear = parseFloat(lastYearData[currentMonth][yesterday - 1]) || 0;
             const yesterdayTC = parseFloat(tcData[currentMonth][yesterday - 1]) || 0;
-            const yesterdayAC = 100 - yesterdayTC;
+            const yesterdayAC = calculateAC(yesterdaySales, yesterdayTarget, yesterdayTC);
             const yesterdayAchieved = parseFloat(achievedData[currentMonth][yesterday - 1]) || 0;
             
             let yesterdayGrowth = yesterdayLastYear > 0 ? ((yesterdaySales - yesterdayLastYear) / yesterdayLastYear) * 100 : 0;
@@ -1082,8 +1100,6 @@
                 text: `Month to Date: ${mtdAchievement.toFixed(1)}% of target achieved, ${mtdGrowth >= 0 ? 'growth' : 'decline'} of ${Math.abs(mtdGrowth).toFixed(1)}% vs last year.`,
                 type: mtdAchievement >= 100 ? 'success' : (mtdAchievement >= 80 ? 'warning' : 'danger')
             });
-            
-           
             
             // NEW: Month to Date T.C notification
             if (mtdTC > 0) {
