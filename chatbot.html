@@ -6,6 +6,8 @@
     <title>Kudu Assistant - PDF Chatbot</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- PDF.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
         :root {
             --primary-color: #6f42c1;
@@ -126,20 +128,56 @@
         .pdf-viewer {
             flex: 1;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #2d2d2d;
+            flex-direction: column;
+            background-color: var(--card-bg);
             padding: 20px;
             overflow: auto;
         }
 
-        .pdf-iframe {
-            width: 100%;
-            height: 100%;
-            max-width: 800px;
+        .pdf-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: var(--darker-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .pdf-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: var(--dark-bg);
+            border-radius: 10px;
             border: 1px solid var(--border-color);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            background-color: white;
+        }
+
+        .pdf-text-content {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            line-height: 1.6;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .pdf-page {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: bold;
         }
 
         .chat-footer {
@@ -253,6 +291,34 @@
         .greeting-message {
             background: linear-gradient(135deg, rgba(13, 202, 240, 0.1), rgba(111, 66, 193, 0.1));
             border-left: 4px solid var(--secondary-color);
+        }
+
+        .pdf-error {
+            color: #ff6b6b;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .pdf-alternative {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .search-box {
+            background-color: var(--darker-bg);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .highlight {
+            background-color: yellow;
+            color: black;
+            padding: 2px 4px;
+            border-radius: 3px;
         }
 
         @media (max-width: 992px) {
@@ -396,8 +462,42 @@
                                 <i class="bi bi-x-lg"></i>
                             </button>
                         </div>
+                        <div class="pdf-controls">
+                            <div class="d-flex gap-2 align-items-center">
+                                <button class="btn btn-sm btn-outline-light" onclick="prevPage()" id="prevPage">
+                                    <i class="bi bi-chevron-left"></i>
+                                </button>
+                                <span class="text-light small" id="pageInfo">Page 1 of 1</span>
+                                <button class="btn btn-sm btn-outline-light" onclick="nextPage()" id="nextPage">
+                                    <i class="bi bi-chevron-right"></i>
+                                </button>
+                            </div>
+                            <div class="search-box">
+                                <input type="text" class="form-control form-control-sm" id="searchInput" placeholder="Search in document...">
+                            </div>
+                        </div>
                         <div class="pdf-viewer">
-                            <iframe class="pdf-iframe" id="pdfIframe" src=""></iframe>
+                            <div id="pdfLoading" class="text-center text-light" style="display: none;">
+                                <div class="spinner-border text-primary mb-3" role="status">
+                                    <span class="visually-hidden">Loading PDF...</span>
+                                </div>
+                                <p>Extracting text from PDF...</p>
+                            </div>
+                            <div id="pdfError" class="pdf-error" style="display: none;">
+                                <i class="bi bi-exclamation-triangle display-4 mb-3"></i>
+                                <h5>PDF Loading Error</h5>
+                                <p>Unable to load the PDF document. This could be due to:</p>
+                                <ul class="text-start">
+                                    <li>PDF file not found</li>
+                                    <li>Network connectivity issues</li>
+                                    <li>Browser security restrictions</li>
+                                </ul>
+                            </div>
+                            <div class="pdf-content" id="pdfContent" style="display: none;">
+                                <div class="pdf-text-content" id="pdfTextContent">
+                                    <!-- PDF text content will be displayed here -->
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -407,34 +507,51 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Set up PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
         const chatBody = document.getElementById('chatBody');
         const chatInput = document.getElementById('chatInput');
         const sendButton = document.getElementById('sendButton');
         const typingIndicator = document.getElementById('typingIndicator');
         const pdfViewerContainer = document.getElementById('pdfViewerContainer');
-        const pdfIframe = document.getElementById('pdfIframe');
         const pdfTitle = document.getElementById('pdfTitle');
+        const pdfLoading = document.getElementById('pdfLoading');
+        const pdfError = document.getElementById('pdfError');
+        const pdfContent = document.getElementById('pdfContent');
+        const pdfTextContent = document.getElementById('pdfTextContent');
+        const pageInfo = document.getElementById('pageInfo');
+        const prevPageBtn = document.getElementById('prevPage');
+        const nextPageBtn = document.getElementById('nextPage');
+        const searchInput = document.getElementById('searchInput');
 
-        // PDF Database
+        // PDF state variables
+        let currentPDF = null;
+        let pdfDoc = null;
+        let pageNum = 1;
+        let extractedText = [];
+        let searchTerm = '';
+
+        // PDF Database with GitHub raw URLs
         const pdfDatabase = {
             "lafino_chicken": {
                 name: "Lafino Chicken",
-                path: "file:///C:/Users/moinr/Desktop/all%20old/for%20complaint/database/lafino%20chicken.pdf",
+                path: "https://raw.githubusercontent.com/GHOSTKMR/sadwap/main/lafino%20chicken.pdf",
                 description: "Information about chicken products, recipes, and nutritional information."
             },
             "kudu_beef": {
                 name: "Kudu Beef",
-                path: "file:///C:/Users/moinr/Desktop/all%20old/for%20complaint/database/kudu%20beef.pdf",
+                path: "https://raw.githubusercontent.com/GHOSTKMR/sadwap/main/kudu%20beef.pdf",
                 description: "Information about beef products, recipes, and nutritional information."
             },
             "kudu_chicken": {
                 name: "Kudu Chicken",
-                path: "https://github.com/GHOSTKMR/sadwap/blob/main/kuduchicken.pdf",
+                path: "https://raw.githubusercontent.com/GHOSTKMR/sadwap/main/kuduchicken.pdf",
                 description: "Information about chicken products, recipes, and nutritional information."
             },
             "philly_beef": {
                 name: "Philly Beef",
-                path: "file:///C:/Users/moinr/Desktop/all%20old/for%20complaint/database/philly%20beef.pdf",
+                path: "https://raw.githubusercontent.com/GHOSTKMR/sadwap/main/philly%20beef.pdf",
                 description: "Information about beef products, recipes, and nutritional information."
             }
         };
@@ -475,7 +592,19 @@
             
             const messageContent = document.createElement('div');
             messageContent.classList.add('message-content');
-            messageContent.textContent = message;
+            
+            // Handle line breaks in the message
+            const lines = message.split('\n');
+            lines.forEach((line, index) => {
+                if (line.trim() !== '') {
+                    const lineElement = document.createElement('div');
+                    lineElement.textContent = line;
+                    if (index > 0) {
+                        lineElement.style.marginTop = '5px';
+                    }
+                    messageContent.appendChild(lineElement);
+                }
+            });
             
             const timeStamp = document.createElement('div');
             timeStamp.classList.add('message-time');
@@ -567,15 +696,141 @@
             chatBody.scrollTop = chatBody.scrollHeight;
         }
 
-        // Open a PDF
-        function openPDF(pdfId) {
+        // Extract text from PDF
+        async function extractTextFromPDF(pdfPath) {
+            try {
+                const loadingTask = pdfjsLib.getDocument(pdfPath);
+                pdfDoc = await loadingTask.promise;
+                
+                extractedText = [];
+                
+                // Extract text from all pages
+                for (let i = 1; i <= pdfDoc.numPages; i++) {
+                    const page = await pdfDoc.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join(' ');
+                    extractedText.push({
+                        page: i,
+                        text: pageText
+                    });
+                }
+                
+                return extractedText;
+            } catch (error) {
+                console.error('Error extracting text from PDF:', error);
+                throw error;
+            }
+        }
+
+        // Display extracted text
+        function displayExtractedText() {
+            if (!extractedText.length) return;
+            
+            let htmlContent = '';
+            
+            extractedText.forEach((page, index) => {
+                let pageText = page.text;
+                
+                // Highlight search term if present
+                if (searchTerm) {
+                    const regex = new RegExp(`(${escapeRegExp(searchTerm)})`, 'gi');
+                    pageText = pageText.replace(regex, '<span class="highlight">$1</span>');
+                }
+                
+                htmlContent += `
+                    <div class="pdf-page">
+                        <div class="page-header">Page ${page.page}</div>
+                        <div class="page-text">${pageText}</div>
+                    </div>
+                `;
+            });
+            
+            pdfTextContent.innerHTML = htmlContent;
+            updatePageControls();
+        }
+
+        // Escape special characters for regex
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        // Update page navigation controls
+        function updatePageControls() {
+            if (!extractedText.length) return;
+            
+            pageInfo.textContent = `Page ${pageNum} of ${extractedText.length}`;
+            prevPageBtn.disabled = pageNum <= 1;
+            nextPageBtn.disabled = pageNum >= extractedText.length;
+            
+            // Scroll to current page
+            const pageElement = document.querySelector(`.pdf-page:nth-child(${pageNum})`);
+            if (pageElement) {
+                pageElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        // Previous page
+        function prevPage() {
+            if (pageNum <= 1) return;
+            pageNum--;
+            updatePageControls();
+        }
+
+        // Next page
+        function nextPage() {
+            if (pageNum >= extractedText.length) return;
+            pageNum++;
+            updatePageControls();
+        }
+
+        // Search in document
+        function searchInDocument() {
+            searchTerm = searchInput.value.trim();
+            pageNum = 1; // Reset to first page when searching
+            displayExtractedText();
+            
+            if (searchTerm) {
+                addMessage(`Searching for "${searchTerm}" in the document...`);
+            }
+        }
+
+        // Open a PDF and extract text
+        async function openPDF(pdfId) {
             if (pdfDatabase[pdfId]) {
                 const pdf = pdfDatabase[pdfId];
+                currentPDF = pdf;
                 pdfViewerContainer.classList.add('active');
-                pdfIframe.src = pdf.path;
                 pdfTitle.textContent = pdf.name;
                 
-                addMessage(`I've opened the ${pdf.name} PDF for you. You can view it in the panel to the right.`);
+                // Show loading indicator
+                pdfLoading.style.display = 'block';
+                pdfError.style.display = 'none';
+                pdfContent.style.display = 'none';
+                
+                // Reset state
+                pageNum = 1;
+                searchTerm = '';
+                searchInput.value = '';
+                
+                try {
+                    // Extract text from PDF
+                    await extractTextFromPDF(pdf.path);
+                    
+                    // Display extracted text
+                    displayExtractedText();
+                    
+                    // Show content
+                    pdfLoading.style.display = 'none';
+                    pdfContent.style.display = 'block';
+                    
+                    addMessage(`I've extracted the text from ${pdf.name} PDF and displayed it in the viewer. You can read the content and use the search feature to find specific information.`);
+                    
+                } catch (error) {
+                    console.error('Error opening PDF:', error);
+                    pdfLoading.style.display = 'none';
+                    pdfError.style.display = 'block';
+                    addMessage(`I tried to extract text from the ${pdf.name} PDF, but there was an error. The PDF might be corrupted or inaccessible.`);
+                }
             } else {
                 addMessage("Sorry, I couldn't find that PDF. Try 'list pdfs' to see available documents.");
             }
@@ -600,7 +855,9 @@
         // Close PDF viewer
         function closePDF() {
             pdfViewerContainer.classList.remove('active');
-            pdfIframe.src = '';
+            currentPDF = null;
+            pdfDoc = null;
+            extractedText = [];
         }
 
         // Event listeners
@@ -611,6 +868,13 @@
             }
         });
 
+        searchInput.addEventListener('input', searchInDocument);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchInDocument();
+            }
+        });
+
         // Initial bot message
         setTimeout(() => {
             addMessage("Hello! I'm Kudu Assistant, your PDF document helper. How can I assist you today?");
@@ -618,5 +882,3 @@
     </script>
 </body>
 </html>
-
-
