@@ -508,7 +508,7 @@
                                 <th>TARGET (SAR)</th>
                                 <th>LAST YEAR (SAR)</th>
                                 <th>T.C (%)</th>
-                                <th>A.C (%)</th>
+                                <th>A.C</th>
                                 <th>ACHIEVED (%)</th>
                                 <th>GROWTH (%)</th>
                                 <th>AVERAGE</th>
@@ -522,7 +522,7 @@
                                 <td id="total-target" class="fw-bold"><span class="currency-symbol">SAR</span> 0</td>
                                 <td id="total-lastyear" class="fw-bold"><span class="currency-symbol">SAR</span> 0</td>
                                 <td id="total-tc" class="fw-bold">0%</td>
-                                <td id="total-ac" class="fw-bold">0%</td>
+                                <td id="total-ac" class="fw-bold">0</td>
                                 <td id="total-achieved" class="fw-bold">0%</td>
                                 <td id="total-growth" class="fw-bold">0%</td>
                                 <td id="total-average" class="fw-bold">0%</td>
@@ -559,8 +559,8 @@
         const tcData = {};
         const acData = {};
         const achievedData = {};
-        const growthData = [];
-        const averageData = [];
+        const growthData = {};
+        const averageData = {};
         let chart = null;
 
         // Initialize data structures for all months
@@ -571,6 +571,8 @@
             tcData[month] = JSON.parse(localStorage.getItem(`tcData_${month}`)) || Array(30).fill('');
             acData[month] = JSON.parse(localStorage.getItem(`acData_${month}`)) || Array(30).fill('');
             achievedData[month] = JSON.parse(localStorage.getItem(`achievedData_${month}`)) || Array(30).fill('');
+            growthData[month] = JSON.parse(localStorage.getItem(`growthData_${month}`)) || Array(30).fill('');
+            averageData[month] = JSON.parse(localStorage.getItem(`averageData_${month}`)) || Array(30).fill('');
         });
 
         // Format SAR currency with English numerals
@@ -581,13 +583,11 @@
             }).format(value);
         }
 
-        // NEW: Calculate AC based on your specific requirement
-        function calculateAC(sales, target, tc) {
-            if (target > 0 && tc >= 0) {
-                // AC represents how much of the adjusted target you've achieved
-                // Adjusted target = Target × (1 - TC/100)
-                const adjustedTarget = target * (1 - tc/100);
-                const ac = (sales / adjustedTarget) * 100;
+        // NEW: Calculate AC based on your specific requirement: AC = Sales / TC
+        function calculateAC(sales, tc) {
+            if (tc > 0) {
+                // AC = Sales / TC (where TC is in percentage)
+                const ac = sales / tc;
                 return ac;
             }
             return 0;
@@ -608,6 +608,8 @@
             localStorage.setItem(`tcData_${currentMonth}`, JSON.stringify(tcData[currentMonth]));
             localStorage.setItem(`acData_${currentMonth}`, JSON.stringify(acData[currentMonth]));
             localStorage.setItem(`achievedData_${currentMonth}`, JSON.stringify(achievedData[currentMonth]));
+            localStorage.setItem(`growthData_${currentMonth}`, JSON.stringify(growthData[currentMonth]));
+            localStorage.setItem(`averageData_${currentMonth}`, JSON.stringify(averageData[currentMonth]));
         }
 
         // Generate the table rows for 30 days
@@ -628,7 +630,7 @@
                         <td><input type="number" class="sales-input" id="target-${i}" value="${target}" placeholder="0"></td>
                         <td><input type="number" class="sales-input" id="lastYear-${i}" value="${lastYear}" placeholder="0"></td>
                         <td><input type="number" class="sales-input" id="tc-${i}" value="${tc}" placeholder="0" min="0" max="100"></td>
-                        <td class="result-cell" id="ac-${i}">0%</td>
+                        <td class="result-cell" id="ac-${i}">0</td>
                         <td class="result-cell" id="achieved-${i}">0%</td>
                         <td class="result-cell" id="growth-${i}">0%</td>
                         <td class="result-cell" id="average-${i}">0%</td>
@@ -651,9 +653,9 @@
             let validDays = 0;
             let today = new Date().getDate();
             
-            // Reset arrays
-            growthData.length = 0;
-            averageData.length = 0;
+            // Reset arrays for current month
+            growthData[currentMonth] = [];
+            averageData[currentMonth] = [];
 
             for (let i = 1; i <= 30; i++) {
                 const sales = parseFloat($(`#sales-${i}`).val()) || 0;
@@ -661,8 +663,8 @@
                 const lastYear = parseFloat($(`#lastYear-${i}`).val()) || 0;
                 let tc = parseFloat($(`#tc-${i}`).val()) || 0;
                 
-                // NEW: Calculate AC using the new logic
-                const ac = calculateAC(sales, target, tc);
+                // NEW: Calculate AC using the new logic: AC = Sales / TC
+                const ac = calculateAC(sales, tc);
                 
                 // Calculate ACHIEVED percentage (Sales / Target * 100)
                 const achieved = target > 0 ? (sales / target) * 100 : 0;
@@ -674,16 +676,16 @@
                 const average = (ac + growth) / 2;
 
                 // Update AC and ACHIEVED cells
-                $(`#ac-${i}`).text(ac.toFixed(1) + '%');
+                $(`#ac-${i}`).text(ac.toFixed(1));
                 $(`#achieved-${i}`).text(achieved.toFixed(1) + '%');
                 $(`#growth-${i}`).text(growth.toFixed(1) + '%');
                 $(`#average-${i}`).text(average.toFixed(1) + '%');
 
                 // Color coding based on performance
-                // AC color coding
-                if (ac >= 100) {
+                // AC color coding - since AC is now Sales/TC, higher is better
+                if (ac >= 20) {
                     $(`#ac-${i}`).addClass('text-success').removeClass('text-warning text-danger');
-                } else if (ac >= 80) {
+                } else if (ac >= 10) {
                     $(`#ac-${i}`).addClass('text-warning').removeClass('text-success text-danger');
                 } else {
                     $(`#ac-${i}`).addClass('text-danger').removeClass('text-success text-warning');
@@ -717,16 +719,17 @@
                 }
 
                 // Average color coding
-                if (average >= 100) {
+                if (average >= 20) {
                     $(`#average-${i}`).addClass('text-success').removeClass('text-warning text-danger');
-                } else if (average >= 80) {
+                } else if (average >= 10) {
                     $(`#average-${i}`).addClass('text-warning').removeClass('text-success text-danger');
                 } else {
-                    $(`#average-${i}`).addClass('text-danger').removeClass('text-success text-danger');
+                    $(`#average-${i}`).addClass('text-danger').removeClass('text-success text-warning');
                 }
 
-                growthData.push(growth);
-                averageData.push(average);
+                // Store data for chart
+                growthData[currentMonth][i-1] = growth;
+                averageData[currentMonth][i-1] = average;
 
                 salesData[currentMonth][i - 1] = sales;
                 targetData[currentMonth][i - 1] = target;
@@ -760,7 +763,7 @@
             const avgAverage = validDays > 0 ? (totalAverage / validDays) : 0;
 
             $("#total-tc").text(avgTC.toFixed(1) + '%');
-            $("#total-ac").text(avgAC.toFixed(1) + '%');
+            $("#total-ac").text(avgAC.toFixed(1));
             $("#total-achieved").text(avgAchieved.toFixed(1) + '%');
             $("#total-growth").text(avgGrowth.toFixed(1) + '%');
             $("#total-average").text(avgAverage.toFixed(1) + '%');
@@ -770,9 +773,9 @@
                          .toggleClass('text-warning', avgTC > 0 && avgTC <= 20)
                          .toggleClass('text-danger', avgTC > 20);
                          
-            $("#total-ac").toggleClass('text-success', avgAC >= 100)
-                         .toggleClass('text-warning', avgAC >= 80 && avgAC < 100)
-                         .toggleClass('text-danger', avgAC < 80);
+            $("#total-ac").toggleClass('text-success', avgAC >= 20)
+                         .toggleClass('text-warning', avgAC >= 10 && avgAC < 20)
+                         .toggleClass('text-danger', avgAC < 10);
             
             // ACHIEVED total color coding (new rules)
             $("#total-achieved").toggleClass('text-success', avgAchieved >= 105)
@@ -783,9 +786,9 @@
                              .toggleClass('text-warning', avgGrowth === 0)
                              .toggleClass('text-danger', avgGrowth < 0);
                              
-            $("#total-average").toggleClass('text-success', avgAverage >= 100)
-                              .toggleClass('text-warning', avgAverage >= 80 && avgAverage < 100)
-                              .toggleClass('text-danger', avgAverage < 80);
+            $("#total-average").toggleClass('text-success', avgAverage >= 20)
+                              .toggleClass('text-warning', avgAverage >= 10 && avgAverage < 20)
+                              .toggleClass('text-danger', avgAverage < 10);
 
             // Calculate MTD values (only up to today's date)
             let mtdSales = 0;
@@ -795,47 +798,53 @@
             let mtdAC = 0;
             let mtdAchieved = 0;
             let mtdAverage = 0;
+            let mtdValidDays = 0;
             
             for (let i = 1; i <= today && i <= 30; i++) {
-                mtdSales += parseFloat(salesData[currentMonth][i - 1]) || 0;
-                mtdTarget += parseFloat(targetData[currentMonth][i - 1]) || 0;
-                mtdLastYear += parseFloat(lastYearData[currentMonth][i - 1]) || 0;
-                mtdTC += parseFloat(tcData[currentMonth][i - 1]) || 0;
-                mtdAC += parseFloat(acData[currentMonth][i - 1]) || 0;
-                mtdAchieved += parseFloat(achievedData[currentMonth][i - 1]) || 0;
-                
-                // Calculate MTD average for each day
                 const daySales = parseFloat(salesData[currentMonth][i - 1]) || 0;
                 const dayTarget = parseFloat(targetData[currentMonth][i - 1]) || 0;
-                const dayTC = parseFloat(tcData[currentMonth][i - 1]) || 0;
                 const dayLastYear = parseFloat(lastYearData[currentMonth][i - 1]) || 0;
+                const dayTC = parseFloat(tcData[currentMonth][i - 1]) || 0;
                 
-                const dayAC = calculateAC(daySales, dayTarget, dayTC);
-                const dayGrowth = dayLastYear > 0 ? 
-                    ((daySales - dayLastYear) / dayLastYear) * 100 : 0;
+                mtdSales += daySales;
+                mtdTarget += dayTarget;
+                mtdLastYear += dayLastYear;
+                mtdTC += dayTC;
+                
+                const dayAC = calculateAC(daySales, dayTC);
+                mtdAC += dayAC;
+                
+                const dayAchieved = dayTarget > 0 ? (daySales / dayTarget) * 100 : 0;
+                mtdAchieved += dayAchieved;
+                
+                const dayGrowth = dayLastYear > 0 ? ((daySales - dayLastYear) / dayLastYear) * 100 : 0;
                 const dayAverage = (dayAC + dayGrowth) / 2;
                 mtdAverage += dayAverage;
+                
+                if (daySales > 0 || dayTarget > 0 || dayLastYear > 0 || dayTC > 0) {
+                    mtdValidDays++;
+                }
             }
             
             const mtdAchievement = mtdTarget > 0 ? (mtdSales / mtdTarget) * 100 : 0;
-            const mtdGrowth = mtdLastYear > 0 ? ((mtdSales - mtdLastYear) / mtdLastYear) * 100 : 0;
+            const mtdGrowthRate = mtdLastYear > 0 ? ((mtdSales - mtdLastYear) / mtdLastYear) * 100 : 0;
             
             // Update summary cards with English numerals
             $("#mtd-sales").html('<span class="currency-symbol">SAR</span> ' + formatSAR(mtdSales));
             $("#mtd-target").html('<span class="currency-symbol">SAR</span> ' + formatSAR(mtdTarget));
             $("#achievement-rate").text(mtdAchievement.toFixed(1) + '%');
-            $("#growth-rate").text(mtdGrowth.toFixed(1) + '%');
+            $("#growth-rate").text(mtdGrowthRate.toFixed(1) + '%');
             
             // Update progress bars
-            $("#mtd-sales-progress").css('width', Math.min((mtdSales / totalTarget) * 100, 100) + '%');
-            $("#mtd-target-progress").css('width', Math.min((mtdTarget / totalTarget) * 100, 100) + '%');
+            $("#mtd-sales-progress").css('width', Math.min((mtdSales / (totalTarget || 1)) * 100, 100) + '%');
+            $("#mtd-target-progress").css('width', Math.min((mtdTarget / (totalTarget || 1)) * 100, 100) + '%');
             $("#achievement-progress").css('width', Math.min(mtdAchievement, 100) + '%');
-            $("#growth-progress").css('width', Math.min(Math.abs(mtdGrowth), 100) + '%');
+            $("#growth-progress").css('width', Math.min(Math.abs(mtdGrowthRate), 100) + '%');
             
             // Color code growth progress bar
-            if (mtdGrowth > 0) {
+            if (mtdGrowthRate > 0) {
                 $("#growth-progress").css('background-color', 'var(--success-green)');
-            } else if (mtdGrowth < 0) {
+            } else if (mtdGrowthRate < 0) {
                 $("#growth-progress").css('background-color', 'var(--danger-red)');
             } else {
                 $("#growth-progress").css('background-color', 'var(--warning-orange)');
@@ -843,7 +852,7 @@
 
             saveData();
             updateChart();
-            updateNotifications(mtdSales, mtdTarget, mtdLastYear, mtdAchievement, mtdGrowth, today, mtdAchieved, mtdTC, mtdAverage);
+            updateNotifications(mtdSales, mtdTarget, mtdLastYear, mtdAchievement, mtdGrowthRate, today, mtdAC, mtdTC, mtdAverage, mtdValidDays);
         }
 
         // Update the chart
@@ -872,15 +881,11 @@
             gradientAchieved.addColorStop(0, 'rgba(156, 95, 255, 0.8)');
             gradientAchieved.addColorStop(1, 'rgba(156, 95, 255, 0.1)');
             
-            // Prepare AC data for chart using new calculation
-            const acChartData = [];
-            for (let i = 1; i <= 30; i++) {
-                const sales = parseFloat(salesData[currentMonth][i - 1]) || 0;
-                const target = parseFloat(targetData[currentMonth][i - 1]) || 0;
-                const tc = parseFloat(tcData[currentMonth][i - 1]) || 0;
-                const ac = calculateAC(sales, target, tc);
-                acChartData.push(ac);
-            }
+            // Prepare data for chart
+            const acChartData = acData[currentMonth] || Array(30).fill(0);
+            const tcChartData = tcData[currentMonth] || Array(30).fill(0);
+            const achievedChartData = achievedData[currentMonth] || Array(30).fill(0);
+            const growthChartData = growthData[currentMonth] || Array(30).fill(0);
             
             chart = new Chart(ctx, {
                 type: "line",
@@ -888,7 +893,7 @@
                     labels: Array.from({ length: 30 }, (_, i) => `Day ${i + 1}`),
                     datasets: [
                         {
-                            label: "A.C (%)",
+                            label: "A.C (Sales/TC)",
                             data: acChartData,
                             borderColor: "#2c7be5",
                             backgroundColor: gradientAC,
@@ -905,7 +910,7 @@
                         },
                         {
                             label: "Growth (%)",
-                            data: growthData,
+                            data: growthChartData,
                             borderColor: "#00d97e",
                             backgroundColor: gradientGrowth,
                             borderWidth: 2,
@@ -921,7 +926,7 @@
                         },
                         {
                             label: "T.C (%)",
-                            data: tcData[currentMonth],
+                            data: tcChartData,
                             borderColor: "#f6c343",
                             backgroundColor: gradientTC,
                             borderWidth: 2,
@@ -937,7 +942,7 @@
                         },
                         {
                             label: "ACHIEVED (%)",
-                            data: achievedData[currentMonth],
+                            data: achievedChartData,
                             borderColor: "#9c5fff",
                             backgroundColor: gradientAchieved,
                             borderWidth: 2,
@@ -978,7 +983,16 @@
                             mode: 'index',
                             callbacks: {
                                 label: function(context) {
-                                    return context.dataset.label + ': ' + context.parsed.y.toFixed(1) + '%';
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.dataset.label === "A.C (Sales/TC)") {
+                                        label += context.parsed.y.toFixed(1);
+                                    } else {
+                                        label += context.parsed.y.toFixed(1) + '%';
+                                    }
+                                    return label;
                                 }
                             }
                         }
@@ -1003,6 +1017,11 @@
                             ticks: {
                                 color: "#9e9e9e",
                                 callback: function (value) {
+                                    // For AC values, don't add % symbol
+                                    const dataset = this.chart.data.datasets.find(d => d.yAxisID === 'y');
+                                    if (dataset && dataset.label === "A.C (Sales/TC)") {
+                                        return value;
+                                    }
                                     return value + "%";
                                 },
                                 font: {
@@ -1038,17 +1057,17 @@
         }
 
         // Update notifications
-        function updateNotifications(mtdSales, mtdTarget, mtdLastYear, mtdAchievement, mtdGrowth, today, mtdAchieved, mtdTC, mtdAverage) {
+        function updateNotifications(mtdSales, mtdTarget, mtdLastYear, mtdAchievement, mtdGrowth, today, mtdAC, mtdTC, mtdAverage, mtdValidDays) {
             const notificationsContainer = $("#notifications-container");
             notificationsContainer.empty();
             
-            // Today's target notification
+            // Today's data
             const todayTarget = parseFloat(targetData[currentMonth][today - 1]) || 0;
             const todaySales = parseFloat(salesData[currentMonth][today - 1]) || 0;
             const todayLastYear = parseFloat(lastYearData[currentMonth][today - 1]) || 0;
             const todayTC = parseFloat(tcData[currentMonth][today - 1]) || 0;
-            const todayAC = calculateAC(todaySales, todayTarget, todayTC);
-            const todayAchieved = parseFloat(achievedData[currentMonth][today - 1]) || 0;
+            const todayAC = calculateAC(todaySales, todayTC);
+            const todayAchieved = todayTarget > 0 ? (todaySales / todayTarget) * 100 : 0;
             
             let todayGrowth = todayLastYear > 0 ? ((todaySales - todayLastYear) / todayLastYear) * 100 : 0;
             
@@ -1058,29 +1077,29 @@
             const yesterdayTarget = parseFloat(targetData[currentMonth][yesterday - 1]) || 0;
             const yesterdayLastYear = parseFloat(lastYearData[currentMonth][yesterday - 1]) || 0;
             const yesterdayTC = parseFloat(tcData[currentMonth][yesterday - 1]) || 0;
-            const yesterdayAC = calculateAC(yesterdaySales, yesterdayTarget, yesterdayTC);
-            const yesterdayAchieved = parseFloat(achievedData[currentMonth][yesterday - 1]) || 0;
+            const yesterdayAC = calculateAC(yesterdaySales, yesterdayTC);
+            const yesterdayAchieved = yesterdayTarget > 0 ? (yesterdaySales / yesterdayTarget) * 100 : 0;
             
             let yesterdayGrowth = yesterdayLastYear > 0 ? ((yesterdaySales - yesterdayLastYear) / yesterdayLastYear) * 100 : 0;
             
             // Create notifications
             const notifications = [];
             
-            // Today's target
-            if (todayTarget > 0) {
+            // Today's AC
+            if (todayTC > 0) {
                 notifications.push({
-                    text: `Today's target is SAR ${formatSAR(todayTarget)}. You've achieved ${todayAC.toFixed(1)}% so far.`,
-                    type: todayAC >= 100 ? 'success' : (todayAC >= 80 ? 'warning' : 'danger')
+                    text: `Today's AC: ${todayAC.toFixed(1)} (Sales/TC).`,
+                    type: todayAC >= 20 ? 'success' : (todayAC >= 10 ? 'warning' : 'danger')
                 });
             } else {
                 notifications.push({
-                    text: `No target set for today.`,
+                    text: `No TC set for today.`,
                     type: 'warning'
                 });
             }
             
             // Today's achieved percentage
-            if (todayAchieved > 0) {
+            if (todayTarget > 0) {
                 notifications.push({
                     text: `Today's achievement: ${todayAchieved.toFixed(1)}% of target.`,
                     type: todayAchieved >= 105 ? 'success' : (todayAchieved >= 100 ? 'warning' : 'danger')
@@ -1090,8 +1109,8 @@
             // Yesterday's performance
             if (yesterdaySales > 0) {
                 notifications.push({
-                    text: `Yesterday: Achieved ${yesterdayAC.toFixed(1)}% of target and ${yesterdayGrowth >= 0 ? 'grew' : 'declined'} by ${Math.abs(yesterdayGrowth).toFixed(1)}% vs last year.`,
-                    type: yesterdayAC >= 100 ? 'success' : (yesterdayAC >= 80 ? 'warning' : 'danger')
+                    text: `Yesterday: AC ${yesterdayAC.toFixed(1)} and ${yesterdayGrowth >= 0 ? 'grew' : 'declined'} by ${Math.abs(yesterdayGrowth).toFixed(1)}% vs last year.`,
+                    type: yesterdayAC >= 20 ? 'success' : (yesterdayAC >= 10 ? 'warning' : 'danger')
                 });
             }
             
@@ -1101,29 +1120,25 @@
                 type: mtdAchievement >= 100 ? 'success' : (mtdAchievement >= 80 ? 'warning' : 'danger')
             });
             
-            // NEW: Month to Date T.C notification
-            if (mtdTC > 0) {
-                const mtdTCAvg = mtdTC / today;
-                notifications.push({
-                    text: `Month to Date T.C: ${mtdTCAvg.toFixed(1)}% average.`,
-                    type: mtdTCAvg <= 0 ? 'success' : (mtdTCAvg <= 20 ? 'warning' : 'danger')
-                });
-            }
+            // MTD AC average
+            const mtdACAvg = mtdValidDays > 0 ? (mtdAC / mtdValidDays) : 0;
+            notifications.push({
+                text: `Month to Date AC: ${mtdACAvg.toFixed(1)} average.`,
+                type: mtdACAvg >= 20 ? 'success' : (mtdACAvg >= 10 ? 'warning' : 'danger')
+            });
             
-            // NEW: Month to Date Average notification
-            if (mtdAverage > 0) {
-                const mtdAverageAvg = mtdAverage / today;
-                notifications.push({
-                    text: `Month to Date Average: ${mtdAverageAvg.toFixed(1)}% overall performance.`,
-                    type: mtdAverageAvg >= 100 ? 'success' : (mtdAverageAvg >= 80 ? 'warning' : 'danger')
-                });
-            }
+            // MTD Average performance
+            const mtdAverageAvg = mtdValidDays > 0 ? (mtdAverage / mtdValidDays) : 0;
+            notifications.push({
+                text: `Month to Date Average: ${mtdAverageAvg.toFixed(1)} overall performance.`,
+                type: mtdAverageAvg >= 20 ? 'success' : (mtdAverageAvg >= 10 ? 'warning' : 'danger')
+            });
             
             // Add notifications to container
             notifications.forEach(notification => {
                 const notificationElement = $(`
                     <div class="notification-item ${notification.type}">
-                        <i class="fas fa-${notification.type === 'success' ? 'check-circle' : notification.type === 'warning' ? 'exclamation-triangle' : notification.type === 'achieved' ? 'chart-bar' : 'exclamation-circle'} me-2"></i>
+                        <i class="fas fa-${notification.type === 'success' ? 'check-circle' : notification.type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'} me-2"></i>
                         ${notification.text}
                     </div>
                 `);
@@ -1162,7 +1177,7 @@
             pdf.autoTable({
                 html: '#sales-table-body',
                 startY: 60,
-                head: [['DAY', 'SALES (SAR)', 'TARGET (SAR)', 'LAST YEAR (SAR)', 'T.C (%)', 'A.C (%)', 'ACHIEVED (%)', 'GROWTH (%)', 'AVERAGE (%)']],
+                head: [['DAY', 'SALES (SAR)', 'TARGET (SAR)', 'LAST YEAR (SAR)', 'T.C (%)', 'A.C', 'ACHIEVED (%)', 'GROWTH (%)', 'AVERAGE (%)']],
                 headStyles: {
                     fillColor: [44, 123, 229],
                     textColor: [255, 255, 255],
@@ -1200,6 +1215,8 @@
                 tcData[currentMonth] = Array(30).fill('');
                 acData[currentMonth] = Array(30).fill('');
                 achievedData[currentMonth] = Array(30).fill('');
+                growthData[currentMonth] = Array(30).fill('');
+                averageData[currentMonth] = Array(30).fill('');
                 saveData();
                 generateTable();
                 updateResults();
