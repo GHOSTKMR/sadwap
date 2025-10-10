@@ -452,7 +452,7 @@
             </div>
             <div class="col-md-3">
                 <div class="summary-card">
-                    <div class="label">MONTH TO DATE TARGET</div>
+                    <div class="label">MONTH TO DATE TARGET (UP TO YESTERDAY)</div>
                     <div class="value" id="mtd-target"><span class="currency-symbol">SAR</span> 0</div>
                     <div class="progress">
                         <div class="progress-bar" id="mtd-target-progress" role="progressbar" style="width: 0%"></div>
@@ -790,7 +790,7 @@
                               .toggleClass('text-warning', avgAverage >= 10 && avgAverage < 20)
                               .toggleClass('text-danger', avgAverage < 10);
 
-            // Calculate MTD values (only up to today's date)
+            // Calculate MTD values (only up to yesterday)
             let mtdSales = 0;
             let mtdTarget = 0;
             let mtdLastYear = 0;
@@ -800,7 +800,10 @@
             let mtdAverage = 0;
             let mtdValidDays = 0;
             
-            for (let i = 1; i <= today && i <= 30; i++) {
+            // Calculate yesterday's date
+            const yesterday = today > 1 ? today - 1 : 30;
+            
+            for (let i = 1; i <= yesterday && i <= 30; i++) {
                 const daySales = parseFloat(salesData[currentMonth][i - 1]) || 0;
                 const dayTarget = parseFloat(targetData[currentMonth][i - 1]) || 0;
                 const dayLastYear = parseFloat(lastYearData[currentMonth][i - 1]) || 0;
@@ -826,6 +829,7 @@
                 }
             }
             
+            // Calculate achievement rate based on MTD sales and MTD target (up to yesterday)
             const mtdAchievement = mtdTarget > 0 ? (mtdSales / mtdTarget) * 100 : 0;
             const mtdGrowthRate = mtdLastYear > 0 ? ((mtdSales - mtdLastYear) / mtdLastYear) * 100 : 0;
             
@@ -1082,56 +1086,73 @@
             
             let yesterdayGrowth = yesterdayLastYear > 0 ? ((yesterdaySales - yesterdayLastYear) / yesterdayLastYear) * 100 : 0;
             
+            // Calculate averages
+            const mtdACAvg = mtdValidDays > 0 ? (mtdAC / mtdValidDays) : 0;
+            const mtdTCAvg = mtdValidDays > 0 ? (mtdTC / mtdValidDays) : 0;
+            const mtdAverageAvg = mtdValidDays > 0 ? (mtdAverage / mtdValidDays) : 0;
+            const avgDailySales = mtdValidDays > 0 ? (mtdSales / mtdValidDays) : 0;
+            
+            // Calculate sales trend
+            let salesTrend = "stable";
+            if (todaySales > yesterdaySales && todaySales > avgDailySales) {
+                salesTrend = "increasing";
+            } else if (todaySales < yesterdaySales && todaySales < avgDailySales) {
+                salesTrend = "decreasing";
+            }
+            
             // Create notifications
             const notifications = [];
             
-            // Today's AC
-            if (todayTC > 0) {
+            // Today's target
+            if (todayTarget > 0) {
                 notifications.push({
-                    text: `Today's AC: ${todayAC.toFixed(1)} (Sales/TC).`,
-                    type: todayAC >= 20 ? 'success' : (todayAC >= 10 ? 'warning' : 'danger')
-                });
-            } else {
-                notifications.push({
-                    text: `No TC set for today.`,
+                    text: `Today's target: SAR ${formatSAR(todayTarget)}.`,
                     type: 'warning'
                 });
             }
             
-            // Today's achieved percentage
-            if (todayTarget > 0) {
+            // Yesterday's achieved
+            if (yesterdayTarget > 0) {
                 notifications.push({
-                    text: `Today's achievement: ${todayAchieved.toFixed(1)}% of target.`,
-                    type: todayAchieved >= 105 ? 'success' : (todayAchieved >= 100 ? 'warning' : 'danger')
+                    text: `Yesterday's achievement: ${yesterdayAchieved.toFixed(1)}% of target.`,
+                    type: yesterdayAchieved >= 105 ? 'success' : (yesterdayAchieved >= 100 ? 'warning' : 'danger')
                 });
             }
             
-            // Yesterday's performance
-            if (yesterdaySales > 0) {
-                notifications.push({
-                    text: `Yesterday: AC ${yesterdayAC.toFixed(1)} and ${yesterdayGrowth >= 0 ? 'grew' : 'declined'} by ${Math.abs(yesterdayGrowth).toFixed(1)}% vs last year.`,
-                    type: yesterdayAC >= 20 ? 'success' : (yesterdayAC >= 10 ? 'warning' : 'danger')
-                });
-            }
+            // Average daily sales
+            notifications.push({
+                text: `Average daily sales: SAR ${formatSAR(avgDailySales)}.`,
+                type: avgDailySales >= (mtdTarget / mtdValidDays) ? 'success' : 'warning'
+            });
+            
+            // Average AC
+            notifications.push({
+                text: `Average AC: ${mtdACAvg.toFixed(1)}.`,
+                type: mtdACAvg >= 20 ? 'success' : (mtdACAvg >= 10 ? 'warning' : 'danger')
+            });
+            
+            // Average TC
+            notifications.push({
+                text: `Average TC: ${mtdTCAvg.toFixed(1)}%.`,
+                type: mtdTCAvg <= 0 ? 'success' : (mtdTCAvg <= 20 ? 'warning' : 'danger')
+            });
+            
+            // Average Average
+            notifications.push({
+                text: `Overall performance average: ${mtdAverageAvg.toFixed(1)}.`,
+                type: mtdAverageAvg >= 20 ? 'success' : (mtdAverageAvg >= 10 ? 'warning' : 'danger')
+            });
+            
+            // Sales trend
+            notifications.push({
+                text: `Sales trend: ${salesTrend}. ${salesTrend === "increasing" ? "Expecting high sales today." : salesTrend === "decreasing" ? "Expecting low sales today." : "Sales are stable."}`,
+                type: salesTrend === "increasing" ? 'success' : (salesTrend === "decreasing" ? 'danger' : 'warning')
+            });
             
             // MTD performance
             notifications.push({
                 text: `Month to Date: ${mtdAchievement.toFixed(1)}% of target achieved, ${mtdGrowth >= 0 ? 'growth' : 'decline'} of ${Math.abs(mtdGrowth).toFixed(1)}% vs last year.`,
                 type: mtdAchievement >= 100 ? 'success' : (mtdAchievement >= 80 ? 'warning' : 'danger')
-            });
-            
-            // MTD AC average
-            const mtdACAvg = mtdValidDays > 0 ? (mtdAC / mtdValidDays) : 0;
-            notifications.push({
-                text: `Month to Date AC: ${mtdACAvg.toFixed(1)} average.`,
-                type: mtdACAvg >= 20 ? 'success' : (mtdACAvg >= 10 ? 'warning' : 'danger')
-            });
-            
-            // MTD Average performance
-            const mtdAverageAvg = mtdValidDays > 0 ? (mtdAverage / mtdValidDays) : 0;
-            notifications.push({
-                text: `Month to Date Average: ${mtdAverageAvg.toFixed(1)} overall performance.`,
-                type: mtdAverageAvg >= 20 ? 'success' : (mtdAverageAvg >= 10 ? 'warning' : 'danger')
             });
             
             // Add notifications to container
