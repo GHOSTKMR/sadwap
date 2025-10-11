@@ -8,7 +8,7 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Favicon -->
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/847/847969.png" type="image/x-icon">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/847/847969.png" type="image/x-icon" id="mainFavicon">
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -267,6 +267,62 @@
             white-space: nowrap;
         }
 
+        /* Favicon Video Button */
+        .favicon-video-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .favicon-video-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .favicon-video-btn i {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+        }
+
+        .favicon-video-btn .pulse {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(0.8);
+                opacity: 1;
+            }
+        }
+
         /* Responsive design */
         @media (max-width: 992px) {
             .main-container {
@@ -275,6 +331,17 @@
             
             .login-container, .tips-container {
                 max-width: 500px;
+            }
+
+            .favicon-video-btn {
+                top: 10px;
+                left: 10px;
+                width: 40px;
+                height: 40px;
+            }
+
+            .favicon-video-btn i {
+                font-size: 1.2rem;
             }
         }
 
@@ -336,6 +403,12 @@
 </head>
 
 <body>
+    <!-- Favicon Video Button - Now opens Facebook video in new tab -->
+    <a href="https://www.facebook.com/reel/734654656261593" target="_blank" class="favicon-video-btn" id="videoFavicon" title="Watch SADWAP Introduction">
+        <i class="fas fa-play"></i>
+        <div class="pulse"></div>
+    </a>
+
     <!-- Background Video -->
     <div class="video-background">
         <video autoplay muted loop playsinline>
@@ -514,16 +587,16 @@
                 notificationModal.hide();
             });
 
-            // For mobile devices - ensure video plays
-            const video = document.querySelector('.video-background video');
-            if (video) {
-                video.setAttribute('playsinline', '');
-                video.setAttribute('muted', '');
-                video.setAttribute('autoplay', '');
-                video.setAttribute('loop', '');
+            // For mobile devices - ensure background video plays
+            const backgroundVideo = document.querySelector('.video-background video');
+            if (backgroundVideo) {
+                backgroundVideo.setAttribute('playsinline', '');
+                backgroundVideo.setAttribute('muted', '');
+                backgroundVideo.setAttribute('autoplay', '');
+                backgroundVideo.setAttribute('loop', '');
                 
-                video.addEventListener('loadedmetadata', function() {
-                    video.play().catch(e => console.log("Video play error:", e));
+                backgroundVideo.addEventListener('loadedmetadata', function() {
+                    backgroundVideo.play().catch(e => console.log("Background video play error:", e));
                 });
             }
         });
