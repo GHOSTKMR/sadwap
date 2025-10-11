@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refund & Void Bills Management</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- jsPDF for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #0dcaf0;
+            --light-color: #343a40;
+            --dark-color: #f8f9fa;
+            --body-bg: #121212;
+            --body-color: #e9ecef;
+            --card-bg: #1e1e1e;
+            --card-border: #444;
+            --input-bg: #2d2d2d;
+            --input-border: #555;
+        }
+
+        [data-theme="light"] {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #0dcaf0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --body-bg: #ffffff;
+            --body-color: #212529;
+            --card-bg: #ffffff;
+            --card-border: rgba(0,0,0,.125);
+            --input-bg: #ffffff;
+            --input-border: #ced4da;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--body-color);
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-color: var(--card-border);
+        }
+
+        .form-control, .form-select, .form-textarea {
+            background-color: var(--input-bg);
+            border-color: var(--input-border);
+            color: var(--body-color);
+        }
+
+        .form-control:focus, .form-select:focus, .form-textarea:focus {
+            background-color: var(--input-bg);
+            border-color: var(--primary-color);
+            color: var(--body-color);
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+
+        .stats-card {
+            transition: transform 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .camera-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        #cameraPreview {
+            width: 100%;
+            height: 300px;
+            background-color: var(--input-bg);
+            border: 2px dashed var(--input-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #cameraPreview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #capturedImage {
+            max-width: 100%;
+            max-height: 300px;
+            display: none;
+        }
+
+        .camera-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .camera-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            z-index: 10;
+        }
+
+        .record-image {
+            max-width: 120px;
+            max-height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .saved-records-container {
+            margin-top: 30px;
+        }
+
+        .record-card {
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            border-left: 4px solid;
+        }
+
+        .record-card.refund {
+            border-left-color: var(--warning-color);
+        }
+
+        .record-card.void {
+            border-left-color: var(--danger-color);
+        }
+
+        .record-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .stats-card .fs-1 {
+                font-size: 1.5rem !important;
+            }
+
+            .camera-controls {
+                flex-direction: column;
+            }
+
+            .camera-controls .btn {
+                width: 100%;
+            }
+
+            .record-image {
+                max-width: 80px;
+                max-height: 60px;
+            }
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <!-- Alert Container -->
+        <div class="alert-container" id="alertContainer"></div>
+
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="logo-container">
+                    <i class="bi bi-receipt-cutoff logo"></i>
+                    <div>
+                        <h1 class="h3 mb-0">Refund & Void Bills Management</h1>
+                        <p class="text-muted mb-0">Process refund and void bills with documentation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title text-muted">Total Bills</h5>
+                                <h3 class="mb-0" id="totalBills">0</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-receipt text-primary fs-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title text-muted">Refund Bills</h5>
+                                <h3 class="mb-0" id="refundBills">0</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-arrow-counterclockwise text-warning fs-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title text-muted">Void Bills</h5>
+                                <h3 class="mb-0" id="voidBills">0</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-x-circle text-danger fs-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title text-muted">Total Amount</h5>
+                                <h3 class="mb-0" id="totalAmount">$0.00</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-currency-dollar text-success fs-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bill Processing Form -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Process Refund/Void Bill</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="billForm">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="billType" class="form-label">Bill Type *</label>
+                                    <select class="form-select" id="billType" required>
+                                        <option value="">Select Type</option>
+                                        <option value="refund">Refund</option>
+                                        <option value="void">Void</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="billNumber" class="form-label">Bill Number *</label>
+                                    <input type="text" class="form-control" id="billNumber" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="billAmount" class="form-label">Bill Amount ($) *</label>
+                                    <input type="number" class="form-control" id="billAmount" min="0.01" step="0.01" required>
+                                </div>
+                                <div class="col-md-6" id="customerMobileField">
+                                    <label for="customerMobile" class="form-label">Customer Mobile Number *</label>
+                                    <input type="tel" class="form-control" id="customerMobile">
+                                </div>
+                                <div class="col-12">
+                                    <label for="reason" class="form-label">Reason *</label>
+                                    <textarea class="form-control form-textarea" id="reason" placeholder="Enter reason for refund or void..." required></textarea>
+                                </div>
+                                
+                                <!-- Camera Section -->
+                                <div class="col-12">
+                                    <label class="form-label">Bill Image *</label>
+                                    <div class="camera-container">
+                                        <div id="cameraPreview">
+                                            <div class="text-center">
+                                                <i class="bi bi-camera fs-1"></i>
+                                                <p class="mt-2">Start camera to capture bill image</p>
+                                            </div>
+                                        </div>
+                                        <div id="cameraIndicator" class="camera-indicator" style="display: none;">
+                                            Camera: Back
+                                        </div>
+                                        <img id="capturedImage" alt="Captured Bill">
+                                        <div class="camera-controls">
+                                            <button type="button" class="btn btn-primary" id="startCamera">
+                                                <i class="bi bi-camera-video me-2"></i>Start Camera
+                                            </button>
+                                            <button type="button" class="btn btn-info" id="switchCamera" disabled>
+                                                <i class="bi bi-arrow-left-right me-2"></i>Switch Camera
+                                            </button>
+                                            <button type="button" class="btn btn-success" id="captureImage" disabled>
+                                                <i class="bi bi-camera me-2"></i>Capture
+                                            </button>
+                                            <button type="button" class="btn btn-warning" id="retakeImage" style="display: none;">
+                                                <i class="bi bi-arrow-clockwise me-2"></i>Retake
+                                            </button>
+                                            <button type="button" class="btn btn-secondary" id="uploadImage">
+                                                <i class="bi bi-upload me-2"></i>Upload Image
+                                            </button>
+                                            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-save me-2"></i>Save Bill Record
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" id="clearForm">
+                                        <i class="bi bi-arrow-clockwise me-2"></i>Clear Form
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Saved Records Section -->
+        <div class="row saved-records-container">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Saved Bill Records</h5>
+                        <div>
+                            <button class="btn btn-success" id="exportPDF">
+                                <i class="bi bi-file-pdf me-2"></i>Export to PDF
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="savedRecordsContainer">
+                            <!-- Records will be loaded here -->
+                        </div>
+                        <div id="noRecordsMessage" class="text-center py-4">
+                            <i class="bi bi-receipt fs-1 text-muted"></i>
+                            <p class="text-muted mt-2">No bills processed yet. Add your first bill above.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Toggle Button -->
+    <button class="btn btn-primary theme-toggle" id="themeToggle">
+        <i class="bi bi-sun"></i>
+    </button>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Initialize jsPDF
+        const { jsPDF } = window.jspdf;
+
+        class BillManager {
+            constructor() {
+                this.bills = JSON.parse(localStorage.getItem('bills')) || [];
+                this.init();
+            }
+
+            init() {
+                this.setupTheme();
+                this.setupEventListeners();
+                this.updateUI();
+            }
+
+            setupTheme() {
+                const themeToggle = document.getElementById('themeToggle');
+                const themeIcon = themeToggle.querySelector('i');
+                const currentTheme = localStorage.getItem('theme') || 'dark';
+                
+                document.documentElement.setAttribute('data-theme', currentTheme);
+                themeIcon.className = currentTheme === 'dark' ? 'bi bi-sun' : 'bi bi-moon';
+                
+                themeToggle.addEventListener('click', () => {
+                    const currentTheme = document.documentElement.getAttribute('data-theme');
+                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                    
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    themeIcon.className = newTheme === 'dark' ? 'bi bi-sun' : 'bi bi-moon';
+                });
+            }
+
+            setupEventListeners() {
+                // Bill type change
+                document.getElementById('billType').addEventListener('change', (e) => {
+                    const mobileField = document.getElementById('customerMobileField');
+                    const mobileInput = document.getElementById('customerMobile');
+                    
+                    if (e.target.value === 'refund') {
+                        mobileField.style.display = 'block';
+                        mobileInput.required = true;
+                    } else {
+                        mobileField.style.display = 'none';
+                        mobileInput.required = false;
+                    }
+                });
+
+                // Form submission
+                document.getElementById('billForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.saveBill();
+                });
+
+                // Clear form
+                document.getElementById('clearForm').addEventListener('click', () => {
+                    this.clearForm();
+                });
+
+                // PDF export
+                document.getElementById('exportPDF').addEventListener('click', () => {
+                    this.exportToPDF();
+                });
+
+                // Initialize camera controls
+                this.setupCamera();
+            }
+
+            setupCamera() {
+                this.stream = null;
+                this.capturedImageData = null;
+                this.currentFacingMode = 'environment';
+
+                const startBtn = document.getElementById('startCamera');
+                const switchBtn = document.getElementById('switchCamera');
+                const captureBtn = document.getElementById('captureImage');
+                const retakeBtn = document.getElementById('retakeImage');
+                const uploadBtn = document.getElementById('uploadImage');
+                const fileInput = document.getElementById('imageUpload');
+
+                startBtn.addEventListener('click', () => this.startCamera());
+                switchBtn.addEventListener('click', () => this.switchCamera());
+                captureBtn.addEventListener('click', () => this.captureImage());
+                retakeBtn.addEventListener('click', () => this.retakeImage());
+                uploadBtn.addEventListener('click', () => fileInput.click());
+                fileInput.addEventListener('change', (e) => this.handleImageUpload(e));
+            }
+
+            async startCamera(facingMode = 'environment') {
+                try {
+                    if (this.stream) {
+                        this.stopCamera();
+                    }
+
+                    const constraints = {
+                        video: { facingMode: facingMode },
+                        audio: false
+                    };
+
+                    this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+                    const preview = document.getElementById('cameraPreview');
+                    preview.innerHTML = '';
+                    
+                    const video = document.createElement('video');
+                    video.srcObject = this.stream;
+                    video.autoplay = true;
+                    video.playsInline = true;
+                    preview.appendChild(video);
+
+                    document.getElementById('captureImage').disabled = false;
+                    document.getElementById('switchCamera').disabled = false;
+                    document.getElementById('startCamera').disabled = true;
+                    
+                    const indicator = document.getElementById('cameraIndicator');
+                    indicator.style.display = 'block';
+                    indicator.textContent = `Camera: ${facingMode === 'environment' ? 'Back' : 'Front'}`;
+                    
+                    this.currentFacingMode = facingMode;
+                } catch (error) {
+                    console.error('Camera error:', error);
+                    this.showAlert('Unable to access camera. Please check permissions.', 'danger');
+                }
+            }
+
+            stopCamera() {
+                if (this.stream) {
+                    this.stream.getTracks().forEach(track => track.stop());
+                    this.stream = null;
+                }
+            }
+
+            async switchCamera() {
+                if (this.stream) {
+                    const newMode = this.currentFacingMode === 'environment' ? 'user' : 'environment';
+                    await this.startCamera(newMode);
+                }
+            }
+
+            captureImage() {
+                if (this.stream) {
+                    const video = document.querySelector('#cameraPreview video');
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0);
+
+                    this.capturedImageData = canvas.toDataURL('image/png');
+                    const capturedImg = document.getElementById('capturedImage');
+                    capturedImg.src = this.capturedImageData;
+                    capturedImg.style.display = 'block';
+
+                    this.stopCamera();
+                    document.getElementById('cameraPreview').style.display = 'none';
+                    document.getElementById('cameraIndicator').style.display = 'none';
+                    document.getElementById('retakeImage').style.display = 'inline-block';
+                    document.getElementById('captureImage').disabled = true;
+                    document.getElementById('switchCamera').disabled = true;
+                    document.getElementById('startCamera').disabled = false;
+                }
+            }
+
+            retakeImage() {
+                this.capturedImageData = null;
+                document.getElementById('capturedImage').style.display = 'none';
+                document.getElementById('cameraPreview').style.display = 'flex';
+                document.getElementById('cameraPreview').innerHTML = `
+                    <div class="text-center">
+                        <i class="bi bi-camera fs-1"></i>
+                        <p class="mt-2">Start camera to capture bill image</p>
+                    </div>
+                `;
+                document.getElementById('retakeImage').style.display = 'none';
+                this.startCamera();
+            }
+
+            handleImageUpload(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    if (this.stream) {
+                        this.stopCamera();
+                        document.getElementById('cameraPreview').style.display = 'none';
+                        document.getElementById('cameraIndicator').style.display = 'none';
+                        document.getElementById('startCamera').disabled = false;
+                        document.getElementById('captureImage').disabled = true;
+                        document.getElementById('switchCamera').disabled = true;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.capturedImageData = e.target.result;
+                        document.getElementById('capturedImage').src = this.capturedImageData;
+                        document.getElementById('capturedImage').style.display = 'block';
+                        document.getElementById('retakeImage').style.display = 'inline-block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            saveBill() {
+                if (!this.capturedImageData) {
+                    this.showAlert('Please capture or upload an image of the bill', 'warning');
+                    return;
+                }
+
+                const formData = new FormData(document.getElementById('billForm'));
+                const billType = document.getElementById('billType').value;
+                
+                const bill = {
+                    id: Date.now(),
+                    date: new Date().toLocaleString(),
+                    billType: billType,
+                    billNumber: document.getElementById('billNumber').value,
+                    billAmount: parseFloat(document.getElementById('billAmount').value),
+                    customerMobile: billType === 'refund' ? document.getElementById('customerMobile').value : 'N/A',
+                    reason: document.getElementById('reason').value,
+                    imageData: this.capturedImageData
+                };
+
+                this.bills.push(bill);
+                localStorage.setItem('bills', JSON.stringify(this.bills));
+                
+                this.updateUI();
+                this.clearForm();
+                this.showAlert(`✅ Bill record #${bill.billNumber} saved successfully!`, 'success');
+            }
+
+            clearForm() {
+                document.getElementById('billForm').reset();
+                this.capturedImageData = null;
+                document.getElementById('capturedImage').style.display = 'none';
+                document.getElementById('cameraPreview').style.display = 'flex';
+                document.getElementById('cameraPreview').innerHTML = `
+                    <div class="text-center">
+                        <i class="bi bi-camera fs-1"></i>
+                        <p class="mt-2">Start camera to capture bill image</p>
+                    </div>
+                `;
+                document.getElementById('retakeImage').style.display = 'none';
+                document.getElementById('cameraIndicator').style.display = 'none';
+                document.getElementById('customerMobileField').style.display = 'none';
+                
+                this.stopCamera();
+                document.getElementById('startCamera').disabled = false;
+                document.getElementById('captureImage').disabled = true;
+                document.getElementById('switchCamera').disabled = true;
+            }
+
+            deleteBill(id) {
+                const bill = this.bills.find(b => b.id === id);
+                if (bill && confirm(`Are you sure you want to delete bill #${bill.billNumber}?`)) {
+                    this.bills = this.bills.filter(b => b.id !== id);
+                    localStorage.setItem('bills', JSON.stringify(this.bills));
+                    this.updateUI();
+                    this.showAlert(`🗑️ Bill record #${bill.billNumber} deleted successfully!`, 'info');
+                }
+            }
+
+            updateUI() {
+                this.updateStats();
+                this.displayRecords();
+            }
+
+            updateStats() {
+                const totalBills = this.bills.length;
+                const refundBills = this.bills.filter(b => b.billType === 'refund').length;
+                const voidBills = this.bills.filter(b => b.billType === 'void').length;
+                const totalAmount = this.bills.reduce((sum, bill) => sum + bill.billAmount, 0);
+
+                document.getElementById('totalBills').textContent = totalBills;
+                document.getElementById('refundBills').textContent = refundBills;
+                document.getElementById('voidBills').textContent = voidBills;
+                document.getElementById('totalAmount').textContent = `$${totalAmount.toFixed(2)}`;
+            }
+
+            displayRecords() {
+                const container = document.getElementById('savedRecordsContainer');
+                const noRecordsMsg = document.getElementById('noRecordsMessage');
+
+                container.innerHTML = '';
+
+                if (this.bills.length === 0) {
+                    noRecordsMsg.style.display = 'block';
+                    return;
+                }
+
+                noRecordsMsg.style.display = 'none';
+
+                // Display in reverse chronological order (newest first)
+                this.bills.slice().reverse().forEach(bill => {
+                    const card = document.createElement('div');
+                    card.className = `card record-card ${bill.billType}`;
+                    
+                    card.innerHTML = `
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <strong class="d-block">${bill.billNumber}</strong>
+                                    <span class="badge ${bill.billType === 'refund' ? 'bg-warning' : 'bg-danger'}">
+                                        ${bill.billType.toUpperCase()}
+                                    </span>
+                                    <small class="text-muted d-block mt-1">ID: ${bill.id}</small>
+                                </div>
+                                <div class="col-md-2">
+                                    <small class="text-muted">Date</small>
+                                    <div>${bill.date}</div>
+                                </div>
+                                <div class="col-md-1">
+                                    <small class="text-muted">Amount</small>
+                                    <div class="fw-bold">$${bill.billAmount.toFixed(2)}</div>
+                                </div>
+                                <div class="col-md-2">
+                                    <small class="text-muted">Mobile</small>
+                                    <div>${bill.customerMobile}</div>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted">Reason</small>
+                                    <div class="text-truncate" title="${bill.reason}">${bill.reason}</div>
+                                </div>
+                                <div class="col-md-1">
+                                    <small class="text-muted">Image</small>
+                                    <div>
+                                        <img src="${bill.imageData}" class="record-image" alt="Bill">
+                                    </div>
+                                </div>
+                                <div class="col-md-1 text-end">
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${bill.id}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    container.appendChild(card);
+                });
+
+                // Add delete event listeners
+                container.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = parseInt(e.target.closest('.delete-btn').dataset.id);
+                        this.deleteBill(id);
+                    });
+                });
+            }
+
+            exportToPDF() {
+                if (this.bills.length === 0) {
+                    this.showAlert('No records to export!', 'warning');
+                    return;
+                }
+
+                const doc = new jsPDF();
+                
+                // Title
+                doc.setFontSize(20);
+                doc.text('Refund & Void Bills Report', 105, 20, { align: 'center' });
+                
+                // Date
+                doc.setFontSize(10);
+                doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 105, 30, { align: 'center' });
+                
+                let yPos = 45;
+                
+                this.bills.forEach((bill, index) => {
+                    if (yPos > 270) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+
+                    // Bill header
+                    doc.setFontSize(12);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text(`Record ${index + 1}: ${bill.billType.toUpperCase()} - #${bill.billNumber}`, 14, yPos);
+                    yPos += 8;
+
+                    // Bill details
+                    doc.setFontSize(9);
+                    doc.text(`Date: ${bill.date}`, 14, yPos);
+                    yPos += 5;
+                    doc.text(`Amount: $${bill.billAmount.toFixed(2)}`, 14, yPos);
+                    yPos += 5;
+                    doc.text(`Mobile: ${bill.customerMobile}`, 14, yPos);
+                    yPos += 5;
+                    
+                    // Reason (with word wrap)
+                    const reasonLines = doc.splitTextToSize(`Reason: ${bill.reason}`, 180);
+                    doc.text(reasonLines, 14, yPos);
+                    yPos += (reasonLines.length * 5) + 5;
+
+                    // Add image if space allows
+                    if (bill.imageData && yPos < 200) {
+                        try {
+                            const imgProps = doc.getImageProperties(bill.imageData);
+                            const width = 80;
+                            const height = (imgProps.height * width) / imgProps.width;
+                            
+                            if (yPos + height < 280) {
+                                doc.addImage(bill.imageData, 'PNG', 14, yPos, width, height);
+                                yPos += height + 10;
+                            }
+                        } catch (error) {
+                            console.error('Image error:', error);
+                        }
+                    }
+
+                    // Separator
+                    if (index < this.bills.length - 1) {
+                        doc.setDrawColor(200, 200, 200);
+                        doc.line(14, yPos, 196, yPos);
+                        yPos += 15;
+                    }
+                });
+
+                doc.save('Bills_Report.pdf');
+                this.showAlert('📄 PDF exported successfully!', 'success');
+            }
+
+            showAlert(message, type) {
+                const container = document.getElementById('alertContainer');
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type} alert-dismissible fade show`;
+                alert.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                
+                container.appendChild(alert);
+                
+                setTimeout(() => {
+                    alert.remove();
+                }, 4000);
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            new BillManager();
+        });
+    </script>
+</body>
+</html>
