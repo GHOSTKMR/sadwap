@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Meal Records System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #0dcaf0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --body-bg: #ffffff;
+            --body-color: #212529;
+            --card-bg: #ffffff;
+            --card-border: rgba(0,0,0,.125);
+            --input-bg: #ffffff;
+            --input-border: #ced4da;
+            --table-bg: #ffffff;
+            --table-border: #dee2e6;
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #0dcaf0;
+            --light-color: #343a40;
+            --dark-color: #f8f9fa;
+            --body-bg: #121212;
+            --body-color: #e9ecef;
+            --card-bg: #1e1e1e;
+            --card-border: #444;
+            --input-bg: #2d2d2d;
+            --input-border: #555;
+            --table-bg: #1e1e1e;
+            --table-border: #444;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--body-color);
+            transition: all 0.3s ease;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-color: var(--card-border);
+        }
+
+        .form-control, .form-select {
+            background-color: var(--input-bg);
+            border-color: var(--input-border);
+            color: var(--body-color);
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--input-bg);
+            border-color: var(--primary-color);
+            color: var(--body-color);
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        .table {
+            background-color: var(--table-bg);
+            color: var(--body-color);
+            border-color: var(--table-border);
+        }
+
+        .table th, .table td {
+            border-color: var(--table-border);
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.075);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+
+        .stats-card {
+            transition: transform 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .meal-record {
+            border-left: 4px solid var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .table-responsive {
+                font-size: 0.875rem;
+            }
+            
+            .btn-sm {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.75rem;
+            }
+            
+            .stats-card .fs-1 {
+                font-size: 1.5rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="logo-container">
+                    <i class="bi bi-egg-fried logo"></i>
+                    <div>
+                        <h1 class="h3 mb-0">Employee Meal Records System</h1>
+                        <p class="text-muted mb-0">Track employee meal consumption and expenses</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title text-muted">Total Records</h5>
+                                <h3 class="mb-0" id="totalRecords">0</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-journal-text text-primary fs-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title text-muted">Total Value</h5>
+                                <h3 class="mb-0" id="totalValue">$0.00</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-currency-dollar text-success fs-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title text-muted">Employees</h5>
+                                <h3 class="mb-0" id="totalEmployees">0</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-people text-warning fs-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5 class="card-title text-muted">Avg. Meal Value</h5>
+                                <h3 class="mb-0" id="avgMealValue">$0.00</h3>
+                            </div>
+                            <div class="align-self-center">
+                                <i class="bi bi-graph-up text-info fs-1"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meal Record Form -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Add New Meal Record</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="mealRecordForm">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="employeeCode" class="form-label">Employee Code</label>
+                                    <input type="text" class="form-control" id="employeeCode" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="employeeName" class="form-label">Employee Name</label>
+                                    <input type="text" class="form-control" id="employeeName" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="checkNumber" class="form-label">Check Number</label>
+                                    <input type="text" class="form-control" id="checkNumber" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="itemName" class="form-label">Item Name</label>
+                                    <input type="text" class="form-control" id="itemName" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="value" class="form-label">Value ($)</label>
+                                    <input type="number" class="form-control" id="value" min="0.01" step="0.01" required>
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="date" class="form-label">Date</label>
+                                    <input type="date" class="form-control" id="date" required>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-plus-circle me-2"></i>Add Record
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" id="clearForm">
+                                        <i class="bi bi-arrow-clockwise me-2"></i>Clear Form
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meal Records Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Meal Records</h5>
+                        <div>
+                            <button class="btn btn-success" id="exportExcel">
+                                <i class="bi bi-file-earmark-excel me-2"></i>Export to Excel
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="mealRecordsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Employee Code</th>
+                                        <th>Employee Name</th>
+                                        <th>Check Number</th>
+                                        <th>Item Name</th>
+                                        <th>Value</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="mealRecordsTableBody">
+                                    <!-- Table rows will be added here dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="noRecordsMessage" class="text-center py-4">
+                            <i class="bi bi-cup-straw fs-1 text-muted"></i>
+                            <p class="text-muted mt-2">No meal records found. Add your first record above.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Toggle Button -->
+    <button class="btn btn-primary theme-toggle" id="themeToggle">
+        <i class="bi bi-moon"></i>
+    </button>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Theme Toggle Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = themeToggle.querySelector('i');
+            
+            // Check for saved theme preference or default to light
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            
+            // Update icon based on current theme
+            if (currentTheme === 'dark') {
+                themeIcon.classList.remove('bi-moon');
+                themeIcon.classList.add('bi-sun');
+            } else {
+                themeIcon.classList.remove('bi-sun');
+                themeIcon.classList.add('bi-moon');
+            }
+            
+            // Toggle theme on button click
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                // Update icon
+                if (newTheme === 'dark') {
+                    themeIcon.classList.remove('bi-moon');
+                    themeIcon.classList.add('bi-sun');
+                } else {
+                    themeIcon.classList.remove('bi-sun');
+                    themeIcon.classList.add('bi-moon');
+                }
+            });
+            
+            // Initialize meal records array from localStorage or empty array
+            let mealRecords = JSON.parse(localStorage.getItem('mealRecords')) || [];
+            
+            // Set default date to today
+            document.getElementById('date').valueAsDate = new Date();
+            
+            // Form submission handler
+            const mealRecordForm = document.getElementById('mealRecordForm');
+            mealRecordForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const employeeCode = document.getElementById('employeeCode').value;
+                const employeeName = document.getElementById('employeeName').value;
+                const checkNumber = document.getElementById('checkNumber').value;
+                const itemName = document.getElementById('itemName').value;
+                const value = parseFloat(document.getElementById('value').value);
+                const date = document.getElementById('date').value;
+                
+                // Create new meal record object
+                const newMealRecord = {
+                    id: Date.now(), // Simple ID generation
+                    date: new Date(date).toLocaleDateString(),
+                    employeeCode,
+                    employeeName,
+                    checkNumber,
+                    itemName,
+                    value
+                };
+                
+                // Add to meal records array
+                mealRecords.push(newMealRecord);
+                
+                // Save to localStorage
+                localStorage.setItem('mealRecords', JSON.stringify(mealRecords));
+                
+                // Update UI
+                updateMealRecordsTable();
+                updateStats();
+                
+                // Reset form (but keep date as today)
+                mealRecordForm.reset();
+                document.getElementById('date').valueAsDate = new Date();
+                
+                // Show success message
+                showAlert('Meal record added successfully!', 'success');
+            });
+            
+            // Clear form button
+            document.getElementById('clearForm').addEventListener('click', function() {
+                mealRecordForm.reset();
+                document.getElementById('date').valueAsDate = new Date();
+            });
+            
+            // Export to Excel functionality
+            document.getElementById('exportExcel').addEventListener('click', function() {
+                if (mealRecords.length === 0) {
+                    showAlert('No data to export!', 'warning');
+                    return;
+                }
+                
+                // Prepare data for export
+                const exportData = mealRecords.map(record => ({
+                    'Date': record.date,
+                    'Employee Code': record.employeeCode,
+                    'Employee Name': record.employeeName,
+                    'Check Number': record.checkNumber,
+                    'Item Name': record.itemName,
+                    'Value': `$${record.value.toFixed(2)}`
+                }));
+                
+                // Create worksheet and workbook
+                const ws = XLSX.utils.json_to_sheet(exportData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Meal Records');
+                
+                // Export to Excel file
+                XLSX.writeFile(wb, 'Employee_Meal_Records.xlsx');
+                
+                showAlert('Data exported successfully!', 'success');
+            });
+            
+            // Function to update meal records table
+            function updateMealRecordsTable() {
+                const tableBody = document.getElementById('mealRecordsTableBody');
+                const noRecordsMessage = document.getElementById('noRecordsMessage');
+                
+                // Clear table body
+                tableBody.innerHTML = '';
+                
+                if (mealRecords.length === 0) {
+                    noRecordsMessage.style.display = 'block';
+                    return;
+                }
+                
+                noRecordsMessage.style.display = 'none';
+                
+                // Add meal records to table
+                mealRecords.forEach(record => {
+                    const row = document.createElement('tr');
+                    row.className = 'meal-record';
+                    
+                    row.innerHTML = `
+                        <td>${record.date}</td>
+                        <td>${record.employeeCode}</td>
+                        <td>${record.employeeName}</td>
+                        <td>${record.checkNumber}</td>
+                        <td>${record.itemName}</td>
+                        <td>$${record.value.toFixed(2)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${record.id}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    
+                    tableBody.appendChild(row);
+                });
+                
+                // Add event listeners to delete buttons
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const id = parseInt(this.getAttribute('data-id'));
+                        deleteMealRecord(id);
+                    });
+                });
+            }
+            
+            // Function to delete a meal record
+            function deleteMealRecord(id) {
+                if (confirm('Are you sure you want to delete this meal record?')) {
+                    mealRecords = mealRecords.filter(record => record.id !== id);
+                    localStorage.setItem('mealRecords', JSON.stringify(mealRecords));
+                    updateMealRecordsTable();
+                    updateStats();
+                    showAlert('Meal record deleted successfully!', 'success');
+                }
+            }
+            
+            // Function to update stats
+            function updateStats() {
+                const totalRecords = mealRecords.length;
+                const totalValue = mealRecords.reduce((sum, record) => sum + record.value, 0);
+                
+                // Count unique employees
+                const uniqueEmployees = new Set(mealRecords.map(r => r.employeeCode)).size;
+                
+                // Calculate average meal value
+                const avgMealValue = totalRecords > 0 ? totalValue / totalRecords : 0;
+                
+                document.getElementById('totalRecords').textContent = totalRecords;
+                document.getElementById('totalValue').textContent = `$${totalValue.toFixed(2)}`;
+                document.getElementById('totalEmployees').textContent = uniqueEmployees;
+                document.getElementById('avgMealValue').textContent = `$${avgMealValue.toFixed(2)}`;
+            }
+            
+            // Function to show alert messages
+            function showAlert(message, type) {
+                // Remove any existing alerts
+                const existingAlert = document.querySelector('.alert');
+                if (existingAlert) {
+                    existingAlert.remove();
+                }
+                
+                // Create alert element
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type} alert-dismissible fade show`;
+                alert.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                
+                // Add alert to page
+                document.querySelector('.container-fluid').prepend(alert);
+                
+                // Auto remove after 3 seconds
+                setTimeout(() => {
+                    if (alert.parentElement) {
+                        alert.remove();
+                    }
+                }, 3000);
+            }
+            
+            // Initialize the page
+            updateMealRecordsTable();
+            updateStats();
+        });
+    </script>
+</body>
+</html>
