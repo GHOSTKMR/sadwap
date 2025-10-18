@@ -39,6 +39,10 @@
             --border-color: #4a5568;
         }
         
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--light-bg);
@@ -46,18 +50,20 @@
             margin: 0;
             padding: 0;
             transition: all 0.3s ease;
+            font-size: 14px;
         }
         
         .container-fluid {
-            padding: 20px;
+            padding: 15px;
             max-width: 1600px;
         }
         
+        /* Header Styles */
         .header {
             background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
             color: white;
-            padding: 20px 0;
-            margin-bottom: 25px;
+            padding: 20px 15px;
+            margin-bottom: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
@@ -65,38 +71,60 @@
         .header h1 {
             font-weight: 600;
             margin-bottom: 5px;
+            font-size: 1.5rem;
         }
         
         .header p {
             opacity: 0.9;
             margin-bottom: 0;
+            font-size: 0.9rem;
         }
         
+        /* Clock and Date - Mobile Optimized */
+        .header-time {
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        #clock {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        #date-display {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        /* Panel Styles */
         .panel {
             background-color: var(--light-bg);
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            padding: 25px;
-            margin-bottom: 25px;
+            padding: 20px 15px;
+            margin-bottom: 20px;
             border: 1px solid var(--border-color);
         }
         
         .panel-title {
             color: var(--accent-blue);
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+            padding-bottom: 12px;
+            margin-bottom: 15px;
             font-weight: 600;
-            font-size: 1.25rem;
+            font-size: 1.1rem;
         }
         
+        /* Form Controls - Mobile Optimized */
         .form-control, .form-select {
-            border-radius: 4px;
+            border-radius: 6px;
             border: 1px solid var(--border-color);
-            padding: 10px 12px;
-            font-size: 0.9rem;
+            padding: 12px 15px;
+            font-size: 16px; /* Prevents zoom on iOS */
             background-color: var(--light-bg);
             color: var(--dark-text);
+            min-height: 44px; /* Touch target size */
         }
         
         .form-control:focus, .form-select:focus {
@@ -104,11 +132,15 @@
             border-color: var(--accent-blue);
         }
         
+        /* Button Styles - Mobile Optimized */
         .btn {
-            border-radius: 4px;
-            padding: 10px 20px;
+            border-radius: 6px;
+            padding: 12px 20px;
             font-weight: 500;
             transition: all 0.2s;
+            min-height: 44px;
+            font-size: 14px;
+            touch-action: manipulation;
         }
         
         .btn-primary {
@@ -144,30 +176,151 @@
             transform: translateY(-1px);
         }
         
+        /* Mobile-First Metrics Cards */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .metric-card {
+            background: var(--light-bg);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--accent-blue);
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+            margin: 10px 0;
+        }
+        
+        .metric-label {
+            color: var(--light-text);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .metric-change {
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+        
+        .metric-change.positive {
+            color: var(--success);
+        }
+        
+        .metric-change.negative {
+            color: var(--danger);
+        }
+        
+        /* Chart Container - Mobile Responsive */
+        .chart-container {
+            position: relative;
+            height: 280px;
+            margin-bottom: 25px;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        /* Sales Targets Panel - Mobile Stacked */
+        .sales-targets-panel {
+            background-color: var(--primary-blue);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--success);
+        }
+        
+        .sales-input-group {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        
+        .sales-input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: white;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        /* Date Selector - Mobile Optimized */
+        .date-selector {
+            background-color: var(--primary-blue);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .date-selector .form-label {
+            color: white;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .selected-date-display {
+            background-color: var(--secondary-blue);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        /* Mobile Table Styles */
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
         table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
+            min-width: 800px; /* Minimum width for horizontal scroll */
         }
         
         th {
             background-color: var(--primary-blue);
             color: white;
             font-weight: 600;
-            padding: 12px 15px;
+            padding: 12px 8px;
             border-bottom: 2px solid var(--border-color);
             position: sticky;
             top: 0;
+            font-size: 0.85rem;
+            white-space: nowrap;
         }
         
         td {
-            padding: 12px 15px;
+            padding: 10px 8px;
             border-bottom: 1px solid var(--border-color);
             vertical-align: middle;
+            font-size: 0.85rem;
+        }
+        
+        td input {
+            width: 80px;
+            padding: 6px 8px;
+            font-size: 14px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
         }
         
         tr:hover {
-            background-color: rgba(0, 0, 0, 0.05);
+            background-color: rgba(0, 0, 0, 0.02);
         }
         
         .variance-positive {
@@ -180,76 +333,13 @@
             font-weight: 600;
         }
         
-        .chart-container {
-            position: relative;
-            height: 320px;
-            margin-bottom: 30px;
-        }
-        
-        .metric-card {
-            background: var(--light-bg);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            border-left: 4px solid var(--accent-blue);
-            margin-bottom: 20px;
-        }
-        
-        .metric-value {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: var(--accent-blue);
-            margin: 10px 0;
-        }
-        
-        .metric-label {
-            color: var(--light-text);
-            font-size: 0.9rem;
-        }
-        
-        .metric-change {
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-        
-        .metric-change.positive {
-            color: var(--success);
-        }
-        
-        .metric-change.negative {
-            color: var(--danger);
-        }
-        
-        .sales-targets-panel {
-            background-color: var(--primary-blue);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            border-left: 4px solid var(--success);
-        }
-        
-        .sales-input-group {
-            margin: 10px;
-            min-width: 200px;
-            flex: 1;
-        }
-        
-        .sales-input-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: white;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-        
+        /* Status Badges */
         .status-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
             font-weight: 500;
+            white-space: nowrap;
         }
         
         .status-ok {
@@ -267,32 +357,17 @@
             color: #742a2a;
         }
         
-        .date-selector {
-            background-color: var(--primary-blue);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .selected-date-display {
-            background-color: var(--secondary-blue);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
-        
+        /* Alert Styles - Mobile Positioned */
         .alert-custom {
             position: fixed;
             top: 20px;
-            right: 20px;
+            left: 15px;
+            right: 15px;
             z-index: 1050;
-            min-width: 300px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             border: none;
             border-left: 4px solid;
+            border-radius: 8px;
         }
         
         .alert-success {
@@ -307,31 +382,32 @@
             border-left-color: var(--danger);
         }
         
-        /* Dark mode toggle */
+        /* Dark Mode Toggle - Mobile Positioned */
         .theme-toggle {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            right: 15px;
             z-index: 1000;
             background: var(--accent-blue);
             color: white;
             border: none;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
+            font-size: 1rem;
         }
         
         .theme-toggle:hover {
             transform: scale(1.1);
         }
         
-        /* Welcome Modal */
+        /* Welcome Modal - Mobile Optimized */
         .welcome-modal {
             position: fixed;
             top: 0;
@@ -343,14 +419,15 @@
             align-items: center;
             justify-content: center;
             z-index: 2000;
+            padding: 20px;
         }
         
         .welcome-content {
             background: var(--light-bg);
             border-radius: 10px;
-            padding: 30px;
-            max-width: 600px;
-            width: 90%;
+            padding: 25px;
+            width: 100%;
+            max-width: 500px;
             max-height: 80vh;
             overflow-y: auto;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -361,6 +438,16 @@
             margin-bottom: 15px;
             border-radius: 8px;
             border-left: 4px solid;
+        }
+        
+        .notification-item h4 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+        
+        .notification-item p {
+            font-size: 0.85rem;
+            margin-bottom: 5px;
         }
         
         .notification-salary {
@@ -383,10 +470,49 @@
             background: rgba(159, 122, 234, 0.1);
         }
         
-        /* Responsive adjustments */
+        /* Mobile Specific Styles */
         @media (max-width: 768px) {
-            .date-selector > * {
-                margin-bottom: 10px;
+            .container-fluid {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 15px 10px;
+                text-align: center;
+            }
+            
+            .header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .panel {
+                padding: 15px 10px;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .metric-card {
+                padding: 15px;
+            }
+            
+            .metric-value {
+                font-size: 1.5rem;
+            }
+            
+            .chart-container {
+                height: 250px;
+                padding: 10px;
+            }
+            
+            .sales-targets-panel {
+                padding: 15px;
+            }
+            
+            .date-selector {
+                padding: 15px;
             }
             
             .btn {
@@ -394,34 +520,167 @@
                 margin-bottom: 10px;
             }
             
-            .chart-container {
-                height: 250px;
+            .btn:last-child {
+                margin-bottom: 0;
             }
             
-            .sales-targets-panel {
-                flex-direction: column;
+            th {
+                padding: 8px 4px;
+                font-size: 0.75rem;
             }
             
-            .sales-input-group {
-                width: 100%;
+            td {
+                padding: 8px 4px;
+                font-size: 0.8rem;
             }
             
-            .metric-card {
-                text-align: center;
+            td input {
+                width: 70px;
+                padding: 4px 6px;
+                font-size: 13px;
             }
             
             .theme-toggle {
-                top: 10px;
-                right: 10px;
                 width: 40px;
                 height: 40px;
+                top: 10px;
+                right: 10px;
             }
+            
+            .welcome-content {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .notification-item {
+                padding: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.1rem;
+            }
+            
+            .header p {
+                font-size: 0.8rem;
+            }
+            
+            .panel-title {
+                font-size: 1rem;
+            }
+            
+            .metric-value {
+                font-size: 1.3rem;
+            }
+            
+            .metric-label {
+                font-size: 0.75rem;
+            }
+            
+            .chart-container {
+                height: 200px;
+            }
+            
+            td input {
+                width: 60px;
+                font-size: 12px;
+            }
+            
+            .status-badge {
+                font-size: 0.65rem;
+                padding: 3px 6px;
+            }
+        }
+        
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .btn:hover {
+                transform: none;
+            }
+            
+            .theme-toggle:hover {
+                transform: none;
+            }
+            
+            tr:hover {
+                background-color: transparent;
+            }
+        }
+        
+        /* Landscape orientation adjustments */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .header {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .chart-container {
+                height: 200px;
+            }
+            
+            .welcome-content {
+                max-height: 70vh;
+            }
+        }
+        
+        /* High DPI displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .theme-toggle {
+                box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+            }
+        }
+        
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* Focus styles for keyboard navigation */
+        .btn:focus,
+        .form-control:focus,
+        .form-select:focus {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+        
+        /* Loading state for buttons */
+        .btn.loading {
+            position: relative;
+            color: transparent;
+        }
+        
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <!-- Dark Mode Toggle -->
-    <button class="theme-toggle" id="themeToggle">
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
         <i class="fas fa-moon" id="themeIcon"></i>
     </button>
 
@@ -450,8 +709,6 @@
                 <p class="mb-0"><strong>Impact:</strong> 30% sales boost expected during campaign periods</p>
             </div>
             
-           
-            
             <div class="mt-4 text-center">
                 <button class="btn btn-primary btn-lg" id="closeWelcome">
                     <i class="fas fa-check me-2"></i> Continue to Dashboard
@@ -463,51 +720,45 @@
     <div class="container-fluid">
         <div class="header">
             <div class="row align-items-center">
-                <div class="col-md-8">
+                <div class="col-12 col-md-8">
                     <h1><i class="fas fa-boxes me-2"></i>Inventory Control System v4.7</h1>
                     <p>Real-time inventory tracking and variance analysis</p>
                 </div>
-                <div class="col-md-4 text-md-end">
-                    <div id="clock" class="h4 mb-1"></div>
-                    <div id="date-display" class="text-light opacity-75"></div>
+                <div class="col-12 col-md-4">
+                    <div class="header-time">
+                        <div id="clock" class="h4 mb-1"></div>
+                        <div id="date-display" class="text-light opacity-75"></div>
+                    </div>
                 </div>
             </div>
         </div>
         
         <!-- Key Metrics Row -->
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <div class="metric-card">
-                    <div class="metric-label">TOTAL ITEMS</div>
-                    <div class="metric-value" id="total-items">0</div>
-                    <div class="metric-change positive"><i class="fas fa-arrow-up me-1"></i> 5.2% from last month</div>
-                </div>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">TOTAL ITEMS</div>
+                <div class="metric-value" id="total-items">0</div>
+                <div class="metric-change positive"><i class="fas fa-arrow-up me-1"></i> 5.2% from last month</div>
             </div>
-            <div class="col-md-3">
-                <div class="metric-card">
-                    <div class="metric-label">OVERALL VARIANCE</div>
-                    <div class="metric-value" id="overall-variance">0%</div>
-                    <div class="metric-change negative"><i class="fas fa-arrow-down me-1"></i> 2.1% from target</div>
-                </div>
+            <div class="metric-card">
+                <div class="metric-label">OVERALL VARIANCE</div>
+                <div class="metric-value" id="overall-variance">0%</div>
+                <div class="metric-change negative"><i class="fas fa-arrow-down me-1"></i> 2.1% from target</div>
             </div>
-            <div class="col-md-3">
-                <div class="metric-card">
-                    <div class="metric-label">ITEMS TO REPLENISH</div>
-                    <div class="metric-value" id="items-to-replenish">0</div>
-                    <div class="metric-change positive"><i class="fas fa-arrow-down me-1"></i> 12% from last week</div>
-                </div>
+            <div class="metric-card">
+                <div class="metric-label">ITEMS TO REPLENISH</div>
+                <div class="metric-value" id="items-to-replenish">0</div>
+                <div class="metric-change positive"><i class="fas fa-arrow-down me-1"></i> 12% from last week</div>
             </div>
-            <div class="col-md-3">
-                <div class="metric-card">
-                    <div class="metric-label">MONTH TO DATE SALES</div>
-                    <div class="metric-value" id="mtd-sales-value">SAR 0</div>
-                    <div class="metric-change positive"><i class="fas fa-arrow-up me-1"></i> 8.5% from target</div>
-                </div>
+            <div class="metric-card">
+                <div class="metric-label">MONTH TO DATE SALES</div>
+                <div class="metric-value" id="mtd-sales-value">SAR 0</div>
+                <div class="metric-change positive"><i class="fas fa-arrow-up me-1"></i> 8.5% from target</div>
             </div>
         </div>
         
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-12">
                 <div class="panel">
                     <h3 class="panel-title"><i class="fas fa-chart-bar me-2"></i>Variance Analytics</h3>
                     <div class="chart-container">
@@ -518,13 +769,13 @@
         </div>
         
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-12">
                 <div class="panel">
                     <div class="row mb-3">
-                        <div class="col-md-8">
+                        <div class="col-12 col-md-8">
                             <h3 class="panel-title"><i class="fas fa-clipboard-list me-2"></i>Inventory Management</h3>
                         </div>
-                        <div class="col-md-4 text-md-end">
+                        <div class="col-12 col-md-4 text-md-end">
                             <button id="export-excel" class="btn btn-success">
                                 <i class="fas fa-file-excel me-2"></i> Export to Excel
                             </button>
@@ -533,39 +784,49 @@
                     
                     <!-- Sales Targets Section -->
                     <div class="sales-targets-panel">
-                        <div class="sales-input-group">
-                            <label for="month-to-date-sales">Month to Date Sales (SAR)</label>
-                            <input type="number" id="month-to-date-sales" class="form-control" placeholder="Enter amount" value="10900">
-                        </div>
-                        <div class="sales-input-group">
-                            <label for="average-daily-sales">Average Daily Sales (SAR)</label>
-                            <input type="number" id="average-daily-sales" class="form-control" placeholder="Calculated" readonly>
-                        </div>
-                        <div class="sales-input-group">
-                            <label for="forecast-days">Forecast Days</label>
-                            <select id="forecast-days" class="form-select">
-                                <option value="1">1 Day</option>
-                                <option value="2">2 Days</option>
-                                <option value="3" selected>3 Days</option>
-                                <option value="4">4 Days</option>
-                                <option value="5">5 Days</option>
-                                <option value="6">6 Days</option>
-                                <option value="7">7 Days</option>
-                                <option value="8">8 Days</option>
-                                <option value="9">9 Days</option>
-                                <option value="10">10 Days</option>
-                            </select>
-                        </div>
-                        <div class="sales-input-group">
-                            <label for="sales-forecast">Sales Forecast (SAR)</label>
-                            <input type="number" id="sales-forecast" class="form-control" placeholder="Calculated" readonly>
+                        <div class="row">
+                            <div class="col-12 col-md-6 col-lg-3">
+                                <div class="sales-input-group">
+                                    <label for="month-to-date-sales">Month to Date Sales (SAR)</label>
+                                    <input type="number" id="month-to-date-sales" class="form-control" placeholder="Enter amount" value="10900">
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-lg-3">
+                                <div class="sales-input-group">
+                                    <label for="average-daily-sales">Average Daily Sales (SAR)</label>
+                                    <input type="number" id="average-daily-sales" class="form-control" placeholder="Calculated" readonly>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-lg-3">
+                                <div class="sales-input-group">
+                                    <label for="forecast-days">Forecast Days</label>
+                                    <select id="forecast-days" class="form-select">
+                                        <option value="1">1 Day</option>
+                                        <option value="2">2 Days</option>
+                                        <option value="3" selected>3 Days</option>
+                                        <option value="4">4 Days</option>
+                                        <option value="5">5 Days</option>
+                                        <option value="6">6 Days</option>
+                                        <option value="7">7 Days</option>
+                                        <option value="8">8 Days</option>
+                                        <option value="9">9 Days</option>
+                                        <option value="10">10 Days</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-lg-3">
+                                <div class="sales-input-group">
+                                    <label for="sales-forecast">Sales Forecast (SAR)</label>
+                                    <input type="number" id="sales-forecast" class="form-control" placeholder="Calculated" readonly>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Date Selection -->
                     <div class="date-selector">
                         <div class="row mb-3">
-                            <div class="col-md-3">
+                            <div class="col-12 col-md-3 mb-2">
                                 <label for="month-select" class="form-label">Month</label>
                                 <select id="month-select" class="form-select">
                                     <option value="">Select Month</option>
@@ -583,19 +844,19 @@
                                     <option value="12">December</option>
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-12 col-md-3 mb-2">
                                 <label for="day-select" class="form-label">Day</label>
                                 <select id="day-select" class="form-select">
                                     <option value="">Select Day</option>
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-12 col-md-3 mb-2">
                                 <label for="year-select" class="form-label">Year</label>
                                 <select id="year-select" class="form-select">
                                     <option value="">Select Year</option>
                                 </select>
                             </div>
-                            <div class="col-md-3 d-flex align-items-end">
+                            <div class="col-12 col-md-3 d-flex align-items-end mb-2">
                                 <button id="load-btn" class="btn btn-primary w-100">
                                     <i class="fas fa-search me-2"></i> Load Inventory
                                 </button>
@@ -603,12 +864,12 @@
                         </div>
                         
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6 mb-2">
                                 <button id="new-day-btn" class="btn btn-outline-primary w-100">
                                     <i class="fas fa-plus-circle me-2"></i> New Day
                                 </button>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-12 col-md-6">
                                 <button id="save-btn" class="btn btn-primary w-100">
                                     <i class="fas fa-save me-2"></i> Save Inventory
                                 </button>
@@ -620,7 +881,7 @@
                         Select date to begin
                     </div>
                     
-                    <div class="table-responsive">
+                    <div class="table-container">
                         <table class="table" id="inventory-table">
                             <thead>
                                 <tr>
@@ -789,6 +1050,17 @@
                 }
             }
             
+            // Add loading state to buttons
+            function setButtonLoading(button, loading) {
+                if (loading) {
+                    button.classList.add('loading');
+                    button.disabled = true;
+                } else {
+                    button.classList.remove('loading');
+                    button.disabled = false;
+                }
+            }
+            
             // Theme management
             function setTheme(theme) {
                 document.body.setAttribute('data-theme', theme);
@@ -811,6 +1083,7 @@
                     // Item Name (fixed)
                     const itemNameCell = document.createElement('td');
                     itemNameCell.textContent = item;
+                    itemNameCell.style.fontWeight = '500';
                     row.appendChild(itemNameCell);
                     
                     // System Count
@@ -821,6 +1094,7 @@
                     systemCountInput.value = '0';
                     systemCountInput.step = '0.01';
                     systemCountInput.min = '0';
+                    systemCountInput.inputMode = 'decimal';
                     systemCountCell.appendChild(systemCountInput);
                     row.appendChild(systemCountCell);
                     
@@ -832,6 +1106,7 @@
                     onHandInput.value = '0';
                     onHandInput.step = '0.01';
                     onHandInput.min = '0';
+                    onHandInput.inputMode = 'decimal';
                     onHandCell.appendChild(onHandInput);
                     row.appendChild(onHandCell);
                     
@@ -848,6 +1123,7 @@
                     mtdConsumptionInput.value = '0';
                     mtdConsumptionInput.step = '0.01';
                     mtdConsumptionInput.min = '0';
+                    mtdConsumptionInput.inputMode = 'decimal';
                     mtdConsumptionCell.appendChild(mtdConsumptionInput);
                     row.appendChild(mtdConsumptionCell);
                     
@@ -922,15 +1198,15 @@
                     };
                     
                     // Add event listeners to inputs that trigger calculations
-                    systemCountInput.addEventListener('change', function() {
+                    systemCountInput.addEventListener('input', function() {
                         calculateValues();
                         updateMetrics();
                     });
-                    onHandInput.addEventListener('change', function() {
+                    onHandInput.addEventListener('input', function() {
                         calculateValues();
                         updateMetrics();
                     });
-                    mtdConsumptionInput.addEventListener('change', function() {
+                    mtdConsumptionInput.addEventListener('input', function() {
                         calculateValues();
                         saveMTDConsumptionData(); // Save MTD consumption when changed
                         updateMetrics();
@@ -998,9 +1274,9 @@
                     
                     // Trigger calculation for each row
                     if (systemCountInput && onHandInput && mtdConsumptionInput) {
-                        systemCountInput.dispatchEvent(new Event('change'));
-                        onHandInput.dispatchEvent(new Event('change'));
-                        mtdConsumptionInput.dispatchEvent(new Event('change'));
+                        systemCountInput.dispatchEvent(new Event('input'));
+                        onHandInput.dispatchEvent(new Event('input'));
+                        mtdConsumptionInput.dispatchEvent(new Event('input'));
                     }
                 });
             }
@@ -1117,13 +1393,18 @@
                     return;
                 }
                 
-                currentDate = `${year}/${month}/${day}`;
-                // Save this date as the last selected date
-                localStorage.setItem('lastSelectedDate', currentDate);
-                updateSelectedDateDisplay(month, day, year);
+                setButtonLoading(loadBtn, true);
                 
-                // Load data from localStorage
-                loadInventoryData(currentDate);
+                setTimeout(() => {
+                    currentDate = `${year}/${month}/${day}`;
+                    // Save this date as the last selected date
+                    localStorage.setItem('lastSelectedDate', currentDate);
+                    updateSelectedDateDisplay(month, day, year);
+                    
+                    // Load data from localStorage
+                    loadInventoryData(currentDate);
+                    setButtonLoading(loadBtn, false);
+                }, 500);
             }
             
             function startNewDay() {
@@ -1136,26 +1417,31 @@
                     return;
                 }
                 
-                currentDate = `${year}/${month}/${day}`;
-                // Save this date as the last selected date
-                localStorage.setItem('lastSelectedDate', currentDate);
-                updateSelectedDateDisplay(month, day, year);
+                setButtonLoading(newDayBtn, true);
                 
-                // Reset system count and on hand inputs to 0
-                const systemCountInputs = inventoryBody.querySelectorAll('td:nth-child(2) input');
-                const onHandInputs = inventoryBody.querySelectorAll('td:nth-child(3) input');
-                
-                systemCountInputs.forEach(input => {
-                    input.value = '0';
-                    input.dispatchEvent(new Event('change'));
-                });
-                
-                onHandInputs.forEach(input => {
-                    input.value = '0';
-                    input.dispatchEvent(new Event('change'));
-                });
-                
-                showAlert('New day inventory ready', 'success');
+                setTimeout(() => {
+                    currentDate = `${year}/${month}/${day}`;
+                    // Save this date as the last selected date
+                    localStorage.setItem('lastSelectedDate', currentDate);
+                    updateSelectedDateDisplay(month, day, year);
+                    
+                    // Reset system count and on hand inputs to 0
+                    const systemCountInputs = inventoryBody.querySelectorAll('td:nth-child(2) input');
+                    const onHandInputs = inventoryBody.querySelectorAll('td:nth-child(3) input');
+                    
+                    systemCountInputs.forEach(input => {
+                        input.value = '0';
+                        input.dispatchEvent(new Event('input'));
+                    });
+                    
+                    onHandInputs.forEach(input => {
+                        input.value = '0';
+                        input.dispatchEvent(new Event('input'));
+                    });
+                    
+                    showAlert('New day inventory ready', 'success');
+                    setButtonLoading(newDayBtn, false);
+                }, 500);
             }
             
             function saveInventory() {
@@ -1164,43 +1450,48 @@
                     return;
                 }
                 
-                const inventoryData = [];
-                const rows = inventoryBody.querySelectorAll('tr');
+                setButtonLoading(saveBtn, true);
                 
-                currentData = [];
-                rows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    const itemName = cells[0].textContent;
-                    const systemCount = cells[1].querySelector('input')?.value;
-                    const onHand = cells[2].querySelector('input')?.value;
-                    const variance = cells[3].textContent;
-                    const mtdConsumption = cells[4].querySelector('input')?.value;
-                    const avgConsumption = cells[5].textContent;
-                    const consumptionPer1000 = cells[6].textContent;
-                    const toOrder = cells[7].textContent;
-                    const status = cells[8].querySelector('.status-badge')?.textContent;
+                setTimeout(() => {
+                    const inventoryData = [];
+                    const rows = inventoryBody.querySelectorAll('tr');
                     
-                    const itemData = {
-                        itemName,
-                        systemCount: parseFloat(systemCount) || 0,
-                        onHand: parseFloat(onHand) || 0,
-                        variance: parseFloat(variance) || 0,
-                        mtdConsumption: parseFloat(mtdConsumption) || 0,
-                        avgConsumption: parseFloat(avgConsumption) || 0,
-                        consumptionPer1000: parseFloat(consumptionPer1000) || 0,
-                        toOrder: parseFloat(toOrder) || 0,
-                        status
-                    };
-                    inventoryData.push(itemData);
-                    currentData.push(itemData);
-                });
-                
-                // Save to localStorage with date-specific key
-                localStorage.setItem(`inventory_${currentDate}`, JSON.stringify(inventoryData));
-                showAlert(`Inventory saved for ${currentDate}`, 'success');
-                
-                // Update chart
-                updateVarianceChart();
+                    currentData = [];
+                    rows.forEach(row => {
+                        const cells = row.querySelectorAll('td');
+                        const itemName = cells[0].textContent;
+                        const systemCount = cells[1].querySelector('input')?.value;
+                        const onHand = cells[2].querySelector('input')?.value;
+                        const variance = cells[3].textContent;
+                        const mtdConsumption = cells[4].querySelector('input')?.value;
+                        const avgConsumption = cells[5].textContent;
+                        const consumptionPer1000 = cells[6].textContent;
+                        const toOrder = cells[7].textContent;
+                        const status = cells[8].querySelector('.status-badge')?.textContent;
+                        
+                        const itemData = {
+                            itemName,
+                            systemCount: parseFloat(systemCount) || 0,
+                            onHand: parseFloat(onHand) || 0,
+                            variance: parseFloat(variance) || 0,
+                            mtdConsumption: parseFloat(mtdConsumption) || 0,
+                            avgConsumption: parseFloat(avgConsumption) || 0,
+                            consumptionPer1000: parseFloat(consumptionPer1000) || 0,
+                            toOrder: parseFloat(toOrder) || 0,
+                            status
+                        };
+                        inventoryData.push(itemData);
+                        currentData.push(itemData);
+                    });
+                    
+                    // Save to localStorage with date-specific key
+                    localStorage.setItem(`inventory_${currentDate}`, JSON.stringify(inventoryData));
+                    showAlert(`Inventory saved for ${currentDate}`, 'success');
+                    
+                    // Update chart
+                    updateVarianceChart();
+                    setButtonLoading(saveBtn, false);
+                }, 500);
             }
             
             function exportToExcel() {
@@ -1209,38 +1500,43 @@
                     return;
                 }
                 
-                // Prepare data for export
-                const exportData = [
-                    ['ITEM NAME', 'SYSTEM COUNT', 'ON HAND', 'VARIANCE', 'MTD CONSUMPTION', 
-                     'AVG CONSUMPTION', 'C/1000', 'TO ORDER', 'STATUS'],
-                    ...currentData.map(item => [
-                        item.itemName,
-                        item.systemCount,
-                        item.onHand,
-                        item.variance,
-                        item.mtdConsumption,
-                        item.avgConsumption,
-                        item.consumptionPer1000,
-                        item.toOrder,
-                        item.status
-                    ]),
-                    [],
-                    ['MONTH TO DATE SALES:', `SAR ${salesData.mtdSales}`],
-                    ['AVERAGE DAILY SALES:', `SAR ${salesData.avgDailySales}`],
-                    ['FORECAST DAYS:', salesData.forecastDays],
-                    ['SALES FORECAST:', `SAR ${salesData.salesForecast}`]
-                ];
+                setButtonLoading(exportBtn, true);
                 
-                // Create workbook
-                const wb = XLSX.utils.book_new();
-                const ws = XLSX.utils.aoa_to_sheet(exportData);
-                XLSX.utils.book_append_sheet(wb, ws, 'Inventory');
-                
-                // Generate file and download
-                const dateStr = currentDate.replace(/\//g, '-');
-                XLSX.writeFile(wb, `Inventory_${dateStr}.xlsx`);
-                
-                showAlert('Exported to Excel', 'success');
+                setTimeout(() => {
+                    // Prepare data for export
+                    const exportData = [
+                        ['ITEM NAME', 'SYSTEM COUNT', 'ON HAND', 'VARIANCE', 'MTD CONSUMPTION', 
+                         'AVG CONSUMPTION', 'C/1000', 'TO ORDER', 'STATUS'],
+                        ...currentData.map(item => [
+                            item.itemName,
+                            item.systemCount,
+                            item.onHand,
+                            item.variance,
+                            item.mtdConsumption,
+                            item.avgConsumption,
+                            item.consumptionPer1000,
+                            item.toOrder,
+                            item.status
+                        ]),
+                        [],
+                        ['MONTH TO DATE SALES:', `SAR ${salesData.mtdSales}`],
+                        ['AVERAGE DAILY SALES:', `SAR ${salesData.avgDailySales}`],
+                        ['FORECAST DAYS:', salesData.forecastDays],
+                        ['SALES FORECAST:', `SAR ${salesData.salesForecast}`]
+                    ];
+                    
+                    // Create workbook
+                    const wb = XLSX.utils.book_new();
+                    const ws = XLSX.utils.aoa_to_sheet(exportData);
+                    XLSX.utils.book_append_sheet(wb, ws, 'Inventory');
+                    
+                    // Generate file and download
+                    const dateStr = currentDate.replace(/\//g, '-');
+                    XLSX.writeFile(wb, `Inventory_${dateStr}.xlsx`);
+                    
+                    showAlert('Exported to Excel', 'success');
+                    setButtonLoading(exportBtn, false);
+                }, 500);
             }
             
             function updateVarianceChart() {
@@ -1350,7 +1646,7 @@
                 
                 alertDiv.innerHTML = `
                     ${icon} ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 `;
                 
                 document.body.appendChild(alertDiv);
@@ -1471,6 +1767,21 @@
                 closeWelcome.addEventListener('click', function() {
                     welcomeModal.style.display = 'none';
                 });
+                
+                // Close modal when clicking outside
+                welcomeModal.addEventListener('click', function(e) {
+                    if (e.target === welcomeModal) {
+                        welcomeModal.style.display = 'none';
+                    }
+                });
+                
+                // Prevent form submission on Enter key in number inputs
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && e.target.type === 'number') {
+                        e.preventDefault();
+                        e.target.blur();
+                    }
+                });
             }
             
             // Initialize the app
@@ -1479,5 +1790,3 @@
     </script>
 </body>
 </html>
-
-
