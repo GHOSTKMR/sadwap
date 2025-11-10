@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>Tank War - Tank Battle</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600&display=swap');
@@ -15,6 +15,11 @@
     /* Tank Colors */
     --tank-player-color-1: #2563EB; /* Blue for Kudu left half */
     --tank-player-color-2: #FBBF24; /* Yellow for Kudu right half */
+    --tank-enemy-color-kfc: #DC2626;
+    --tank-enemy-color-hardees: #F59E0B;
+    --tank-enemy-color-burgerking: #10B981;
+    --tank-enemy-color-hery: #8B5CF6;
+    --tank-enemy-color-elite: #7C3AED;
 
     /* Boss Tank Colors */
     --boss-area-manager: #FF5733;
@@ -44,50 +49,78 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     user-select: none;
     overflow: hidden;
+    position: relative;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Background image for the game */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iIzJhMmEyYSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzFhMWExYSIvPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjcGF0dGVybikiLz48L3N2Zz4=');
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
   }
 
   #game-container {
     max-width: 1200px;
     width: 90vw;
-    background: var(--card-bg);
-    padding: 48px 64px;
+    background: rgba(249, 250, 251, 0.9);
+    padding: 24px 32px;
     border-radius: 0.75rem;
     box-shadow: 0 12px 24px var(--shadow-light);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+    z-index: 1;
   }
 
   #game {
-    width: 850px;
-    height: 480px;
+    width: 100%;
+    height: 60vh;
+    max-height: 500px;
     border-radius: 0.75rem;
     background: #1a1a1a;
     box-shadow: inset 0 0 30px #000;
     position: relative;
     overflow: hidden;
+    max-width: 100%;
+    touch-action: none;
   }
 
   #info-bar {
-    margin-top: 32px;
+    margin-top: 16px;
     width: 100%;
     display: flex;
     justify-content: space-between;
     font-weight: 700;
-    font-size: 20px;
+    font-size: 18px;
     color: var(--text-color);
+    flex-wrap: wrap;
+    gap: 10px;
   }
 
   .label {
     letter-spacing: 0.05em;
+    flex: 1;
+    text-align: center;
+    min-width: 100px;
   }
 
   #restart-btn {
-    margin-top: 32px;
+    margin-top: 24px;
     background: var(--tank-player-color-1);
     color: white;
     font-size: 18px;
@@ -98,6 +131,7 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
     box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    touch-action: manipulation;
   }
   #restart-btn:hover,
   #restart-btn:focus {
@@ -117,6 +151,7 @@
     opacity: 0;
     transition: opacity 0.5s;
     pointer-events: none;
+    z-index: 10;
   }
 
   #boss-warning {
@@ -132,6 +167,7 @@
     transition: opacity 0.5s;
     pointer-events: none;
     animation: pulse 1s infinite;
+    z-index: 10;
   }
 
   @keyframes pulse {
@@ -150,12 +186,13 @@
     background: rgba(0,0,0,0.5);
     border-radius: 10px;
     overflow: hidden;
+    z-index: 10;
   }
 
   #health-bar {
     height: 100%;
     width: 100%;
-    background: linear-gradient(to right, #FF0000, #00FF00);
+    background: linear-gradient(to right, #FF0000, #FFA500, #00FF00);
     transition: width 0.3s;
   }
 
@@ -163,6 +200,294 @@
     position: absolute;
     border-radius: 50%;
     pointer-events: none;
+  }
+
+  /* Touch Controls */
+  #touch-controls {
+    display: flex;
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-sizing: border-box;
+    z-index: 20;
+    touch-action: manipulation;
+  }
+
+  #movement-controls {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10px;
+    width: 150px;
+    height: 150px;
+    touch-action: none;
+  }
+
+  #shoot-control {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-self: flex-end;
+    margin-bottom: 10px;
+  }
+
+  .control-btn {
+    width: 50px;
+    height: 50px;
+    background: rgba(59, 130, 246, 0.8);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    touch-action: manipulation;
+    user-select: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s, background-color 0.1s;
+  }
+
+  .control-btn:active {
+    background: rgba(37, 99, 235, 0.9);
+    transform: scale(0.95);
+  }
+
+  #up-btn {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  #left-btn {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  #down-btn {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  #right-btn {
+    grid-column: 3;
+    grid-row: 2;
+  }
+
+  #shoot-btn {
+    width: 80px;
+    height: 80px;
+    background: rgba(220, 38, 38, 0.8);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  #shoot-btn:active {
+    background: rgba(185, 28, 28, 0.9);
+  }
+
+  /* Machine Gun Status */
+  #machine-gun-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 10;
+    min-width: 150px;
+  }
+
+  #machine-gun-status div {
+    margin: 5px 0;
+  }
+
+  /* Stats Panel */
+  #stats-panel {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 10;
+    min-width: 150px;
+  }
+
+  #stats-panel div {
+    margin: 5px 0;
+  }
+
+  /* Mobile-specific styles */
+  @media (max-width: 768px) {
+    #game-container {
+      padding: 16px;
+      width: 95vw;
+      height: 95vh;
+      max-height: 100vh;
+      justify-content: flex-start;
+    }
+    
+    #game {
+      width: 100%;
+      height: 50vh;
+      max-height: 400px;
+    }
+    
+    #info-bar {
+      margin-top: 12px;
+      font-size: 16px;
+    }
+    
+    .label {
+      min-width: 80px;
+    }
+    
+    #restart-btn {
+      margin-top: 16px;
+      padding: 12px 24px;
+      font-size: 16px;
+    }
+    
+    #touch-controls {
+      bottom: 10px;
+      padding: 0 10px;
+    }
+    
+    #movement-controls {
+      width: 130px;
+      height: 130px;
+    }
+    
+    .control-btn {
+      width: 40px;
+      height: 40px;
+      font-size: 16px;
+    }
+    
+    #shoot-control {
+      width: 80px;
+      height: 80px;
+    }
+    
+    #shoot-btn {
+      width: 60px;
+      height: 60px;
+      font-size: 12px;
+    }
+    
+    #stats-panel, #machine-gun-status {
+      font-size: 12px;
+      padding: 5px;
+      min-width: 120px;
+    }
+    
+    #level-display {
+      font-size: 20px;
+    }
+    
+    #boss-warning {
+      font-size: 22px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    #game-container {
+      padding: 12px;
+    }
+    
+    #game {
+      height: 45vh;
+    }
+    
+    #info-bar {
+      font-size: 14px;
+    }
+    
+    .label {
+      min-width: 70px;
+    }
+    
+    #restart-btn {
+      padding: 10px 20px;
+      font-size: 14px;
+    }
+    
+    #movement-controls {
+      width: 110px;
+      height: 110px;
+    }
+    
+    .control-btn {
+      width: 35px;
+      height: 35px;
+      font-size: 14px;
+    }
+    
+    #shoot-control {
+      width: 70px;
+      height: 70px;
+    }
+    
+    #shoot-btn {
+      width: 50px;
+      height: 50px;
+      font-size: 10px;
+    }
+    
+    #stats-panel, #machine-gun-status {
+      font-size: 10px;
+      min-width: 100px;
+    }
+    
+    #level-display {
+      font-size: 18px;
+    }
+    
+    #boss-warning {
+      font-size: 18px;
+    }
+  }
+
+  /* Landscape orientation adjustments */
+  @media (max-height: 500px) and (orientation: landscape) {
+    #game-container {
+      padding: 10px;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    
+    #game {
+      height: 80vh;
+      max-height: 300px;
+      flex: 2;
+    }
+    
+    #info-bar {
+      flex-direction: column;
+      margin-top: 0;
+      flex: 1;
+    }
+    
+    #restart-btn {
+      margin-top: 10px;
+    }
+    
+    #touch-controls {
+      bottom: 5px;
+    }
   }
 </style>
 </head>
@@ -174,6 +499,16 @@
   <div id="player-health">
     <div id="health-bar"></div>
   </div>
+  <div id="stats-panel">
+    <div id="score-display">Score: 0</div>
+    <div id="hits-display">Hits: 0</div>
+    <div id="bosses-defeated">Bosses: 0</div>
+    <div id="level-display-stats">Level: 1</div>
+  </div>
+  <div id="machine-gun-status">
+    <div>Machine Gun: <span id="machine-gun-active">ACTIVE</span></div>
+    <div>Targets: <span id="target-count">0</span></div>
+  </div>
   <div id="info-bar" aria-live="polite" aria-atomic="true">
     <div class="label" id="score-label">Score: 0</div>
     <div class="label" id="lives-label">Lives: 3</div>
@@ -182,27 +517,87 @@
   <button id="restart-btn" aria-label="Restart game" role="button">Restart Game</button>
 </div>
 
-<audio id="shoot-sound" src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU..."></audio>
-<audio id="explosion-sound" src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU..."></audio>
-<audio id="hit-sound" src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU..."></audio>
-<audio id="powerup-sound" src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU..."></audio>
-<audio id="boss-sound" src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU..."></audio>
+<!-- Touch controls -->
+<div id="touch-controls">
+  <div id="movement-controls">
+    <button id="up-btn" class="control-btn">↑</button>
+    <button id="left-btn" class="control-btn">←</button>
+    <button id="down-btn" class="control-btn">↓</button>
+    <button id="right-btn" class="control-btn">→</button>
+  </div>
+  <div id="shoot-control">
+    <button id="shoot-btn" class="control-btn">SHOOT</button>
+  </div>
+</div>
+
+<!-- Audio elements -->
+<audio id="shoot-sound" preload="auto">
+  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
+</audio>
+<audio id="machine-gun-sound" preload="auto" loop>
+  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
+</audio>
+<audio id="explosion-sound" preload="auto">
+  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
+</audio>
+<audio id="hit-sound" preload="auto">
+  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
+</audio>
+<audio id="powerup-sound" preload="auto">
+  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
+</audio>
+<audio id="boss-sound" preload="auto">
+  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
+</audio>
+<audio id="level-start-sound" preload="auto">
+  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
+</audio>
+<audio id="tank-move-sound" preload="auto" loop>
+  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
+</audio>
+<!-- Background Music -->
+<audio id="bgm-1" preload="auto" loop>
+  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
+</audio>
 
 <script>
 (() => {
   // Audio elements
   const shootSound = document.getElementById('shoot-sound');
+  const machineGunSound = document.getElementById('machine-gun-sound');
   const explosionSound = document.getElementById('explosion-sound');
   const hitSound = document.getElementById('hit-sound');
   const powerupSound = document.getElementById('powerup-sound');
   const bossSound = document.getElementById('boss-sound');
+  const levelStartSound = document.getElementById('level-start-sound');
+  const tankMoveSound = document.getElementById('tank-move-sound');
+  const bgm1 = document.getElementById('bgm-1');
+  
+  // Track if BGM is already playing
+  let bgmPlaying = false;
+  let currentBGM = null;
   
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
+  
+  // Make canvas responsive
+  function resizeCanvas() {
+    const container = document.getElementById('game-container');
+    const maxWidth = Math.min(850, container.clientWidth - 40);
+    const aspectRatio = 850 / 480;
+    canvas.width = maxWidth;
+    canvas.height = maxWidth / aspectRatio;
+  }
+  
+  // Initial resize and event listener
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+  
   const W = canvas.width;
   const H = canvas.height;
 
-  const TANK_SIZE = 36;
+  // Adjust tank size based on screen size
+  const TANK_SIZE = Math.max(30, Math.min(36, W / 25));
   let currentLevel = 1;
   let maxEnemies = 8;
   let levelDisplay = document.getElementById('level-display');
@@ -233,18 +628,28 @@
   let playerUpgrades = 0;
   let bossDefeated = false;
   let levelTransition = false;
+  let hits = 0;
+  let bossesDefeated = 0;
 
-  // List of boss names and colors - Made easier!
+  // Machine gun properties
+  let machineGunActive = true;
+  let machineGunTargets = [];
+  let machineGunCooldown = 0;
+  const MACHINE_GUN_RANGE = 0.4; // 40% of screen
+  const MACHINE_GUN_COOLDOWN_TIME = 200; // ms between bursts
+  const MACHINE_GUN_BULLETS_PER_BURST = 4;
+
+  // List of boss names and colors
   const BOSS_TANKS = [
-    { name: "Area Manager", color: "--boss-area-manager", size: 45, health: 5, speed: 1.2 },
-    { name: "Operations Manager", color: "--boss-operations-manager", size: 42, health: 4, speed: 1.3 },
-    { name: "Internal Audit", color: "--boss-internal-audit", size: 40, health: 5, speed: 1.1 },
-    { name: "C.F.S", color: "--boss-cfs", size: 44, health: 4, speed: 1.4 },
-    { name: "Muhammad Hafiz", color: "--boss-muhammad-hafiz", size: 46, health: 5, speed: 1.3 },
-    { name: "Mohammad Yousuf", color: "--boss-mohammad-yousuf", size: 43, health: 4, speed: 1.4 },
-    { name: "Director", color: "--boss-director", size: 50, health: 6, speed: 1.0 },
-    { name: "Training Manager", color: "--boss-training-manager", size: 41, health: 4, speed: 1.5 },
-    { name: "Kudu Boss", color: "--boss-kudu", size: 48, health: 5, speed: 1.2 }
+    { name: "Area Manager", color: "--boss-area-manager", size: 45, health: 4, speed: 0.8, shootDelay: 1500 },
+    { name: "Operations Manager", color: "--boss-operations-manager", size: 42, health: 3, speed: 0.9, shootDelay: 1400 },
+    { name: "Internal Audit", color: "--boss-internal-audit", size: 40, health: 4, speed: 0.7, shootDelay: 1600 },
+    { name: "C.F.S", color: "--boss-cfs", size: 44, health: 3, speed: 1.0, shootDelay: 1300 },
+    { name: "Muhammad Hafiz", color: "--boss-muhammad-hafiz", size: 46, health: 4, speed: 0.8, shootDelay: 1500 },
+    { name: "Mohammad Yousuf", color: "--boss-mohammad-yousuf", size: 43, health: 3, speed: 0.9, shootDelay: 1400 },
+    { name: "Director", color: "--boss-director", size: 50, health: 5, speed: 0.6, shootDelay: 1800 },
+    { name: "Training Manager", color: "--boss-training-manager", size: 41, health: 3, speed: 1.0, shootDelay: 1300 },
+    { name: "Kudu Boss", color: "--boss-kudu", size: 48, health: 4, speed: 0.8, shootDelay: 1500 }
   ];
 
   function clamp(val, min, max) {
@@ -254,6 +659,16 @@
   // Helper to get CSS variable value
   function getCssVar(varName) {
     return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  }
+
+  // Update stats display
+  function updateStats() {
+    document.getElementById('score-display').textContent = `Score: ${score}`;
+    document.getElementById('hits-display').textContent = `Hits: ${hits}`;
+    document.getElementById('bosses-defeated').textContent = `Bosses: ${bossesDefeated}`;
+    document.getElementById('level-display-stats').textContent = `Level: ${currentLevel}`;
+    document.getElementById('machine-gun-active').textContent = machineGunActive ? "ACTIVE" : "INACTIVE";
+    document.getElementById('target-count').textContent = machineGunTargets.length;
   }
 
   // Particle system for effects
@@ -308,25 +723,39 @@
   const particles = new ParticleSystem();
 
   class Bullet {
-    constructor(x, y, dir, owner) {
+    constructor(x, y, dir, owner, isMachineGun = false) {
       this.x = x;
       this.y = y;
-      this.size = 8;
-      // Made boss bullets slower (4 instead of 6)
-      this.speed = owner.isBoss ? 4 : (6 + (owner.isPlayer ? 2 + (playerUpgrades * 1) : 0));
+      this.size = isMachineGun ? 4 : 8;
+      this.speed = isMachineGun ? 8 : (owner.isBoss ? 3 : (6 + (owner.isPlayer ? 2 + (playerUpgrades * 1) : 0)));
       this.dir = dir;
       this.owner = owner;
       this.active = true;
       this.trail = [];
-      this.maxTrail = 5;
-      this.color = owner.isPlayer ? 
+      this.maxTrail = isMachineGun ? 3 : 5;
+      this.isMachineGun = isMachineGun;
+      
+      // Set color based on bullet type
+      if (isMachineGun) {
+        this.color = '#FFA500'; // Orange for machine gun
+      } else {
+        this.color = owner.isPlayer ? 
                    (playerUpgrades > 0 ? '#FFD700' : '#2563EB') : 
                    (owner.isBoss ? getCssVar(owner.color) : '#DC2626');
+      }
       
-      // Play shoot sound
+      // Play appropriate sound
       if (owner.isPlayer) {
+        if (isMachineGun) {
+          // Machine gun sound is handled separately for continuous firing
+        } else {
+          shootSound.currentTime = 0;
+          shootSound.volume = 0.3;
+          shootSound.play().catch(e => console.log("Audio play failed:", e));
+        }
+      } else if (owner.isBoss) {
         shootSound.currentTime = 0;
-        shootSound.volume = 0.3;
+        shootSound.volume = 0.4;
         shootSound.play().catch(e => console.log("Audio play failed:", e));
       }
     }
@@ -349,11 +778,11 @@
         particles.addParticles(
           clamp(this.x, 0, W), 
           clamp(this.y, 0, H), 
-          '#ffffff', 
-          5, 
+          this.isMachineGun ? '#FFA500' : '#ffffff', 
           3, 
           2, 
-          20
+          2, 
+          15
         );
       }
     }
@@ -364,10 +793,12 @@
       
       // Draw trail
       if (this.trail.length > 1) {
-        ctx.strokeStyle = this.owner.isPlayer ? 
+        ctx.strokeStyle = this.isMachineGun ? 
+                         'rgba(255, 165, 0, 0.5)' : 
+                         (this.owner.isPlayer ? 
                          (playerUpgrades > 0 ? 'rgba(255, 215, 0, 0.5)' : 'rgba(59, 130, 246, 0.5)') : 
-                         (this.owner.isBoss ? `${getCssVar(this.owner.color)}80` : 'rgba(220, 38, 38, 0.5)');
-        ctx.lineWidth = 3;
+                         (this.owner.isBoss ? `${getCssVar(this.owner.color)}80` : 'rgba(220, 38, 38, 0.5)'));
+        ctx.lineWidth = this.isMachineGun ? 2 : 3;
         ctx.beginPath();
         ctx.moveTo(this.trail[0].x, this.trail[0].y);
         for (let i = 1; i < this.trail.length; i++) {
@@ -382,14 +813,19 @@
         this.x, this.y, this.size/2
       );
       
-      gradient.addColorStop(0, this.owner.isPlayer ? 
-                          (playerUpgrades > 0 ? '#FFECB3' : '#93C5FD') : 
-                          (this.owner.isBoss ? `${getCssVar(this.owner.color)}` : '#FCA5A5'));
-      gradient.addColorStop(1, this.color);
+      if (this.isMachineGun) {
+        gradient.addColorStop(0, '#FFECB3');
+        gradient.addColorStop(1, this.color);
+      } else {
+        gradient.addColorStop(0, this.owner.isPlayer ? 
+                            (playerUpgrades > 0 ? '#FFECB3' : '#93C5FD') : 
+                            (this.owner.isBoss ? `${getCssVar(this.owner.color)}` : '#FCA5A5'));
+        gradient.addColorStop(1, this.color);
+      }
       
       ctx.fillStyle = gradient;
       ctx.shadowColor = this.color;
-      ctx.shadowBlur = 10;
+      ctx.shadowBlur = this.isMachineGun ? 5 : 10;
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.size / 2, 0, Math.PI * 2);
       ctx.fill();
@@ -414,9 +850,10 @@
       this.isPlayer = isPlayer;
       this.isBoss = isBoss;
       this.bullets = [];
-      // Made boss reload time longer (1000ms instead of 600ms)
+      this.machineGunBullets = [];
+      // Made boss reload time longer (bossData.shootDelay instead of 600ms)
       this.reloadTime = isPlayer ? (400 - (playerUpgrades * 50)) : 
-                    (isBoss ? 1000 : 
+                    (isBoss ? bossData.shootDelay : 
                     (type === 'fast' ? 600 : 
                     (type === 'heavy' ? 1200 : 800)));
       this.canShoot = true;
@@ -437,6 +874,7 @@
       this.smokeTimer = 0;
       this.color = colorPrimary;
       this.bossData = bossData;
+      this.isMoving = false;
     }
     
     update(deltaTime) {
@@ -482,6 +920,19 @@
             30,
             0.05
           );
+        }
+      }
+      
+      // Handle tank movement sound for player
+      if (this.isPlayer) {
+        if ((this.moveDirVector.x !== 0 || this.moveDirVector.y !== 0) && !this.isMoving) {
+          this.isMoving = true;
+          tankMoveSound.currentTime = 0;
+          tankMoveSound.volume = 0.3;
+          tankMoveSound.play().catch(e => console.log("Audio play failed:", e));
+        } else if ((this.moveDirVector.x === 0 && this.moveDirVector.y === 0) && this.isMoving) {
+          this.isMoving = false;
+          tankMoveSound.pause();
         }
       }
     }
@@ -531,15 +982,15 @@
       }
       
       // Shoot at player - less frequently now
-      if (this.shootTimer > 1200) { // Increased from 800 to 1200
+      if (this.shootTimer > this.bossData.shootDelay) {
         this.shoot();
         this.shootTimer = 0;
         
         // Less frequent multiple shots
-        if (Math.random() < 0.3) { // Reduced from 0.4 to 0.3
+        if (Math.random() < 0.2) {
           setTimeout(() => {
             if (this.alive) this.shoot();
-          }, 300); // Increased delay from 200 to 300
+          }, 400);
         }
       }
     }
@@ -660,7 +1111,7 @@
         case 'right': bulletX += this.size / 2; break;
       }
       
-      this.bullets.push(new Bullet(bulletX, bulletY, dirVector, this));
+      this.bullets.push(new Bullet(bulletX, bulletY, dirVector, this, false));
       
       // Muzzle flash effect
       particles.addParticles(
@@ -674,18 +1125,59 @@
       this.reloadTimeElapsed = 0;
       
       // Boss and elite tanks sometimes shoot multiple bullets
-      if ((this.isBoss || this.type === 'elite') && Math.random() < 0.3) {
+      if ((this.isBoss || this.type === 'elite') && Math.random() < 0.2) {
         setTimeout(() => {
           if (this.alive) {
-            this.bullets.push(new Bullet(bulletX, bulletY, dirVector, this));
+            this.bullets.push(new Bullet(bulletX, bulletY, dirVector, this, false));
           }
-        }, 300); // Increased delay from 150 to 300
+        }, 400);
       }
+    }
+    
+    shootMachineGun(targetX, targetY) {
+      if (!this.alive) return;
+      
+      const centerX = this.x + this.size / 2;
+      const centerY = this.y + this.size / 2;
+      
+      // Calculate direction to target
+      const dx = targetX - centerX;
+      const dy = targetY - centerY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const dirVector = {x: dx / distance, y: dy / distance};
+      
+      // Shoot multiple bullets with slight spread
+      for (let i = 0; i < MACHINE_GUN_BULLETS_PER_BURST; i++) {
+        // Add slight spread to machine gun bullets
+        const spreadX = (Math.random() - 0.5) * 0.2;
+        const spreadY = (Math.random() - 0.5) * 0.2;
+        const spreadDir = {
+          x: dirVector.x + spreadX,
+          y: dirVector.y + spreadY
+        };
+        
+        // Normalize direction vector
+        const length = Math.sqrt(spreadDir.x * spreadDir.x + spreadDir.y * spreadDir.y);
+        spreadDir.x /= length;
+        spreadDir.y /= length;
+        
+        this.machineGunBullets.push(new Bullet(centerX, centerY, spreadDir, this, true));
+      }
+      
+      // Muzzle flash effect for machine gun
+      particles.addParticles(
+        centerX, centerY,
+        '#FFA500',
+        8, 4, 2, 8
+      );
     }
     
     updateBullets(deltaTime) {
       this.bullets.forEach(b => { if(b.active) b.update(); });
       this.bullets = this.bullets.filter(b => b.active);
+      
+      this.machineGunBullets.forEach(b => { if(b.active) b.update(); });
+      this.machineGunBullets = this.machineGunBullets.filter(b => b.active);
     }
     
     draw(ctx) {
@@ -795,8 +1287,44 @@
       ctx.stroke();
       ctx.closePath();
 
+      // Machine gun turret (smaller, on top for player)
+      if (this.isPlayer) {
+        ctx.fillStyle = '#A0A0A0';
+        ctx.strokeStyle = '#606060';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        
+        const machineGunLength = this.size * 0.4;
+        let machineGunEndX = centerX;
+        let machineGunEndY = centerY;
+        
+        // Draw machine gun pointing at nearest target if available
+        if (machineGunTargets.length > 0) {
+          const target = machineGunTargets[0];
+          const dx = target.x - centerX;
+          const dy = target.y - centerY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          machineGunEndX = centerX + (dx / distance) * machineGunLength;
+          machineGunEndY = centerY + (dy / distance) * machineGunLength;
+        } else {
+          // Default direction (same as main turret)
+          switch (this.dir) {
+            case 'up': machineGunEndY -= machineGunLength; break;
+            case 'down': machineGunEndY += machineGunLength; break;
+            case 'left': machineGunEndX -= machineGunLength; break;
+            case 'right': machineGunEndX += machineGunLength; break;
+          }
+        }
+        
+        ctx.moveTo(centerX, centerY);
+        ctx.lineTo(machineGunEndX, machineGunEndY);
+        ctx.stroke();
+        ctx.closePath();
+      }
+
       // Draw bullets
       this.bullets.forEach(b => b.draw(ctx));
+      this.machineGunBullets.forEach(b => b.draw(ctx));
 
       // Draw tank name and health
       if (this.name) {
@@ -832,21 +1360,24 @@
       return {x: this.x, y: this.y, w: this.size, h: this.size};
     }
     
-    hit() {
-      this.health--;
+    hit(damage = 1, isMachineGun = false) {
+      this.health -= damage;
+      hits++;
+      updateStats();
+      
       hitSound.currentTime = 0;
-      hitSound.volume = 0.2;
+      hitSound.volume = isMachineGun ? 0.1 : 0.2;
       hitSound.play().catch(e => console.log("Audio play failed:", e));
       
       // Hit effect
       particles.addParticles(
         this.x + this.size/2,
         this.y + this.size/2,
-        '#FFFFFF',
-        10,
-        3,
-        2,
-        30
+        isMachineGun ? '#FFA500' : '#FFFFFF',
+        isMachineGun ? 5 : 10,
+        isMachineGun ? 2 : 3,
+        isMachineGun ? 1 : 2,
+        isMachineGun ? 15 : 30
       );
       
       if (this.health <= 0) {
@@ -879,6 +1410,8 @@
         if (this.isBoss) {
           bossDefeated = true;
           bossActive = false;
+          bossesDefeated++;
+          updateStats();
           
           // Power up player
           playerUpgrades++;
@@ -1012,6 +1545,60 @@
       r2.y + r2.h < r1.y);
   }
 
+  // Find targets for machine gun
+  function updateMachineGunTargets() {
+    if (!player || !player.alive) return;
+    
+    machineGunTargets = [];
+    const playerCenterX = player.x + player.size / 2;
+    const playerCenterY = player.y + player.size / 2;
+    
+    // Calculate detection area (40% of screen)
+    const detectionWidth = W * MACHINE_GUN_RANGE;
+    const detectionHeight = H * MACHINE_GUN_RANGE;
+    const detectionLeft = playerCenterX - detectionWidth / 2;
+    const detectionTop = playerCenterY - detectionHeight / 2;
+    
+    // Find enemies within detection area
+    for (let enemy of enemyTanks) {
+      if (!enemy.alive) continue;
+      
+      const enemyCenterX = enemy.x + enemy.size / 2;
+      const enemyCenterY = enemy.y + enemy.size / 2;
+      
+      if (enemyCenterX >= detectionLeft && enemyCenterX <= detectionLeft + detectionWidth &&
+          enemyCenterY >= detectionTop && enemyCenterY <= detectionTop + detectionHeight) {
+        machineGunTargets.push({
+          x: enemyCenterX,
+          y: enemyCenterY,
+          enemy: enemy
+        });
+      }
+    }
+  }
+
+  // Fire machine gun at targets
+  function fireMachineGun(deltaTime) {
+    if (!player || !player.alive || !machineGunActive) return;
+    
+    machineGunCooldown -= deltaTime;
+    
+    if (machineGunCooldown <= 0 && machineGunTargets.length > 0) {
+      // Fire at all targets
+      for (let target of machineGunTargets) {
+        player.shootMachineGun(target.x, target.y);
+      }
+      
+      // Play machine gun sound
+      machineGunSound.currentTime = 0;
+      machineGunSound.volume = 0.2;
+      machineGunSound.play().catch(e => console.log("Audio play failed:", e));
+      
+      // Reset cooldown
+      machineGunCooldown = MACHINE_GUN_COOLDOWN_TIME;
+    }
+  }
+
   // Game variables
   const explosions = [];
   const enemyTanks = [];
@@ -1023,7 +1610,23 @@
     bossActive = false;
     bossDefeated = false;
     
-    // Every 5 levels is a boss level
+    // Play level start sound
+    levelStartSound.currentTime = 0;
+    levelStartSound.volume = 0.7;
+    levelStartSound.play().catch(e => console.log("Audio play failed:", e));
+    
+    // Start background music only if it's not already playing
+    levelStartSound.onended = function() {
+      if (!bgmPlaying) {
+        currentBGM = bgm1;
+        currentBGM.currentTime = 0;
+        currentBGM.volume = 0.3;
+        currentBGM.play().catch(e => console.log("Audio play failed:", e));
+        bgmPlaying = true;
+      }
+    };
+    
+    // Every 2 levels is a boss level
     if (currentLevel % 2 === 0) {
       spawnBoss();
       return;
@@ -1162,24 +1765,46 @@
         if (!enemy.alive) continue;
         if (rectsOverlap(b.getRect(), enemy.getRect())) {
           b.active = false;
-          enemy.hit();
+          enemy.hit(1, false);
           if (!enemy.alive) {
             score += enemy.isBoss ? 1000 : 
                    enemy.type === 'elite' ? 300 : 
                    enemy.type === 'heavy' ? 200 : 
                    enemy.type === 'fast' ? 150 : 100;
+            updateStats();
           }
           break;
         }
       }
     }
+    
+    // Player machine gun bullets hit enemies
+    for (let b of player.machineGunBullets) {
+      if (!b.active) continue;
+      for (let enemy of enemyTanks) {
+        if (!enemy.alive) continue;
+        if (rectsOverlap(b.getRect(), enemy.getRect())) {
+          b.active = false;
+          enemy.hit(0.5, true); // Machine gun does half damage
+          if (!enemy.alive) {
+            score += enemy.isBoss ? 1000 : 
+                   enemy.type === 'elite' ? 300 : 
+                   enemy.type === 'heavy' ? 200 : 
+                   enemy.type === 'fast' ? 150 : 100;
+            updateStats();
+          }
+          break;
+        }
+      }
+    }
+    
     // Enemy bullets hit player
     for (let enemy of enemyTanks) {
       for (let b of enemy.bullets) {
         if (!b.active) continue;
         if (player.alive && rectsOverlap(b.getRect(), player.getRect())) {
           b.active = false;
-          player.hit();
+          player.hit(1, false);
           updateHealthBar();
           if (player.health <= 0) {
             lives--;
@@ -1189,6 +1814,9 @@
               }, 1000);
             } else {
               gameOver = true;
+              // Stop background music on game over
+              if (currentBGM) currentBGM.pause();
+              bgmPlaying = false;
             }
           }
         }
@@ -1307,6 +1935,9 @@
     });
 
     if (!levelTransition) {
+      // Update machine gun
+      updateMachineGunTargets();
+      fireMachineGun(deltaTime);
       checkBullets();
     }
     
@@ -1422,6 +2053,60 @@
     }
   });
 
+  // Tablet touch control handlers
+  function setupTouchControls() {
+    const upBtn = document.getElementById('up-btn');
+    const downBtn = document.getElementById('down-btn');
+    const leftBtn = document.getElementById('left-btn');
+    const rightBtn = document.getElementById('right-btn');
+    const shootBtn = document.getElementById('shoot-btn');
+    
+    // Touch start events
+    upBtn.addEventListener('touchstart', (e) => { keys.ArrowUp = true; e.preventDefault(); });
+    downBtn.addEventListener('touchstart', (e) => { keys.ArrowDown = true; e.preventDefault(); });
+    leftBtn.addEventListener('touchstart', (e) => { keys.ArrowLeft = true; e.preventDefault(); });
+    rightBtn.addEventListener('touchstart', (e) => { keys.ArrowRight = true; e.preventDefault(); });
+    shootBtn.addEventListener('touchstart', (e) => { keys.Space = true; e.preventDefault(); });
+    
+    // Touch end events
+    upBtn.addEventListener('touchend', (e) => { keys.ArrowUp = false; e.preventDefault(); });
+    downBtn.addEventListener('touchend', (e) => { keys.ArrowDown = false; e.preventDefault(); });
+    leftBtn.addEventListener('touchend', (e) => { keys.ArrowLeft = false; e.preventDefault(); });
+    rightBtn.addEventListener('touchend', (e) => { keys.ArrowRight = false; e.preventDefault(); });
+    shootBtn.addEventListener('touchend', (e) => { keys.Space = false; e.preventDefault(); });
+    
+    // Mouse events for testing on desktop
+    upBtn.addEventListener('mousedown', () => keys.ArrowUp = true);
+    downBtn.addEventListener('mousedown', () => keys.ArrowDown = true);
+    leftBtn.addEventListener('mousedown', () => keys.ArrowLeft = true);
+    rightBtn.addEventListener('mousedown', () => keys.ArrowRight = true);
+    shootBtn.addEventListener('mousedown', () => keys.Space = true);
+    
+    upBtn.addEventListener('mouseup', () => keys.ArrowUp = false);
+    downBtn.addEventListener('mouseup', () => keys.ArrowDown = false);
+    leftBtn.addEventListener('mouseup', () => keys.ArrowLeft = false);
+    rightBtn.addEventListener('mouseup', () => keys.ArrowRight = false);
+    shootBtn.addEventListener('mouseup', () => keys.Space = false);
+    
+    // Prevent default on all control buttons
+    const controlButtons = document.querySelectorAll('.control-btn');
+    controlButtons.forEach(btn => {
+      btn.addEventListener('touchstart', e => e.preventDefault());
+      btn.addEventListener('touchend', e => e.preventDefault());
+    });
+  }
+
+  // Check if device is touch capable
+  function isTouchDevice() {
+    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  }
+
+  // Show touch controls on touch devices
+  if (isTouchDevice()) {
+    document.getElementById('touch-controls').style.display = 'flex';
+    setupTouchControls();
+  }
+
   // Restart button handling
   const restartBtn = document.getElementById('restart-btn');
   restartBtn.addEventListener('click', () => {
@@ -1438,11 +2123,20 @@
     bossActive = false;
     bossDefeated = false;
     playerUpgrades = 0;
+    hits = 0;
+    bossesDefeated = 0;
     explosions.length = 0;
     particles.particles = [];
     levelTransition = false;
+    machineGunActive = true;
+    machineGunTargets = [];
+    machineGunCooldown = 0;
+    // Stop any playing sounds
+    if (currentBGM) currentBGM.pause();
+    bgmPlaying = false;
     createPlayer();
     createEnemies();
+    updateStats();
     showLevel();
     lastTime = 0;
     requestAnimationFrame(gameLoop);
