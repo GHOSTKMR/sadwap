@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link rel="icon" href="https://public-frontend-cos.metadl.com/mgx/img/favicon.png" type="image/png">
     <title>Restaurant Cleaning Task Manager</title>
     
-    <!-- Bootstrap 2025 CSS -->
+    <!-- Bootstrap 5.3.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     
@@ -14,9 +14,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        /* Restaurant Cleaning Task Manager - Enhanced Styles */
-
-        /* CSS Custom Properties */
+        /* Restaurant Cleaning Task Manager - Single File Styles */
         :root {
             --bs-primary: #0d6efd;
             --bs-secondary: #6c757d;
@@ -34,9 +32,9 @@
             --border-radius: 0.75rem;
             --border-radius-sm: 0.375rem;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --touch-target: 44px;
         }
 
-        /* Dark Theme Variables */
         [data-bs-theme="dark"] {
             --bs-body-bg: #0d1117;
             --bs-body-color: #f0f6fc;
@@ -48,7 +46,6 @@
             --bs-restaurant-light: #3d2d2d;
         }
 
-        /* Base Styles */
         * {
             box-sizing: border-box;
         }
@@ -61,33 +58,43 @@
             transition: var(--transition);
             padding-bottom: 100px;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Custom Scrollbar */
+        /* Custom scrollbars */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 12px;
+            height: 12px;
         }
 
         ::-webkit-scrollbar-track {
             background: var(--bs-secondary-bg);
-            border-radius: 4px;
+            border-radius: 6px;
         }
 
         ::-webkit-scrollbar-thumb {
             background: var(--bs-secondary);
-            border-radius: 4px;
+            border-radius: 6px;
             transition: var(--transition);
+            min-height: 40px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
             background: var(--bs-primary);
         }
 
-        /* Firefox Scrollbar */
         * {
-            scrollbar-width: thin;
+            scrollbar-width: auto;
             scrollbar-color: var(--bs-secondary) var(--bs-secondary-bg);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
 
         /* Loading Overlay */
@@ -144,6 +151,7 @@
             background-color: rgba(255, 255, 255, 0.9);
             border: none;
             color: var(--bs-dark);
+            min-height: var(--touch-target);
         }
 
         .store-info .form-control:focus {
@@ -180,10 +188,15 @@
         .stats-card {
             transition: var(--transition);
             cursor: pointer;
+            min-height: 120px;
         }
 
         .stats-card:hover {
             transform: translateY(-4px) scale(1.02);
+        }
+
+        .stats-card .card-body {
+            padding: 1rem;
         }
 
         .stats-icon {
@@ -195,7 +208,7 @@
         }
 
         .stats-number {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 700;
             margin-bottom: 0.25rem;
             transition: var(--transition);
@@ -211,7 +224,7 @@
         .camera-container {
             position: relative;
             width: 100%;
-            height: 250px;
+            height: 280px;
             background: linear-gradient(135deg, var(--bs-secondary-bg), var(--bs-tertiary-bg));
             border-radius: var(--border-radius);
             overflow: hidden;
@@ -223,11 +236,12 @@
             border-color: var(--bs-primary);
         }
 
-        #videoElement, #capturedImage {
+        #videoElement {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: none;
+            border-radius: var(--border-radius);
         }
 
         #canvasElement {
@@ -241,10 +255,137 @@
             justify-content: center;
             height: 100%;
             transition: var(--transition);
+            padding: 1rem;
+            text-align: center;
         }
 
+        /* Photo Progress Indicator */
+        .photo-progress {
+            background: var(--bs-secondary-bg);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .progress-text {
+            font-weight: 600;
+            color: var(--bs-primary);
+        }
+
+        .min-photos-text {
+            font-size: 0.875rem;
+            color: var(--bs-secondary);
+        }
+
+        .progress-bar-container {
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        /* Camera Controls */
         .camera-controls {
-            margin-top: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .camera-controls .btn {
+            min-height: var(--touch-target);
+            font-weight: 500;
+            border-radius: var(--border-radius-sm);
+        }
+
+        /* Photo Gallery */
+        .photo-gallery {
+            background: var(--bs-secondary-bg);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .photo-thumbnails {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .photo-thumbnail {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: var(--border-radius-sm);
+            overflow: hidden;
+            border: 2px solid var(--bs-border-color);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .photo-thumbnail:hover {
+            transform: scale(1.05);
+            border-color: var(--bs-primary);
+        }
+
+        .photo-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-thumbnail .photo-number {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: var(--bs-primary);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .photo-thumbnail .delete-photo {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: var(--bs-danger);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .photo-thumbnail .delete-photo:hover {
+            transform: scale(1.1);
         }
 
         /* Task Cards */
@@ -271,17 +412,26 @@
             box-shadow: var(--shadow-lg);
         }
 
+        .task-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
         .task-image {
             width: 100%;
-            max-height: 150px;
+            height: 60px;
             object-fit: cover;
             border-radius: var(--border-radius-sm);
             transition: var(--transition);
             cursor: pointer;
+            border: 1px solid var(--bs-border-color);
         }
 
         .task-image:hover {
-            transform: scale(1.02);
+            transform: scale(1.05);
+            border-color: var(--bs-primary);
         }
 
         /* Task List */
@@ -308,6 +458,7 @@
             font-weight: 500;
             transition: var(--transition);
             box-shadow: var(--shadow-sm);
+            min-height: 32px;
         }
 
         .crew-member:hover, .team-member:hover {
@@ -330,6 +481,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            min-height: var(--touch-target);
+            min-width: var(--touch-target);
         }
 
         .crew-member .remove-crew:hover,
@@ -364,6 +517,9 @@
             cursor: pointer;
             border-bottom: 1px solid var(--bs-border-color);
             transition: var(--transition);
+            min-height: var(--touch-target);
+            display: flex;
+            align-items: center;
         }
 
         .suggestion-item:hover {
@@ -403,6 +559,10 @@
             transition: var(--transition);
             position: relative;
             overflow: hidden;
+            min-height: var(--touch-target);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn::before {
@@ -501,6 +661,7 @@
             border: 1px solid var(--bs-border-color);
             border-radius: var(--border-radius-sm);
             transition: var(--transition);
+            min-height: var(--touch-target);
         }
 
         .form-control:focus, .form-select:focus {
@@ -508,6 +669,27 @@
             color: var(--bs-body-color);
             border-color: var(--bs-primary);
             box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        /* Validation Alert */
+        .alert {
+            border-radius: var(--border-radius-sm);
+            border: none;
+        }
+
+        /* Photo Modal */
+        .photo-carousel {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .carousel-photo {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: var(--border-radius-sm);
+            border: 1px solid var(--bs-border-color);
         }
 
         /* Animations */
@@ -539,7 +721,23 @@
             }
         }
 
-        /* Responsive Design */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(13, 110, 253, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+            }
+        }
+
+        /* Mobile Responsive Design */
         @media (max-width: 768px) {
             body {
                 padding-bottom: 80px;
@@ -555,7 +753,7 @@
             }
             
             .camera-container {
-                height: 200px;
+                height: 240px;
             }
             
             .stats-number {
@@ -563,6 +761,11 @@
             }
             
             .stats-card {
+                padding: 0.75rem;
+                min-height: 100px;
+            }
+            
+            .stats-card .card-body {
                 padding: 0.75rem;
             }
             
@@ -586,6 +789,14 @@
                 font-size: 0.8rem;
                 padding: 0.375rem 0.75rem;
             }
+
+            .photo-thumbnails {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .task-images {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         @media (max-width: 576px) {
@@ -598,7 +809,7 @@
             }
             
             .camera-container {
-                height: 180px;
+                height: 200px;
             }
             
             .task-card {
@@ -609,6 +820,60 @@
                 font-size: 0.8rem;
                 padding: 0.25rem 0.5rem;
                 margin: 0.125rem;
+            }
+
+            .photo-progress {
+                padding: 0.75rem;
+            }
+
+            .stats-number {
+                font-size: 1.25rem;
+            }
+
+            .stats-label {
+                font-size: 0.8rem;
+            }
+
+            .photo-thumbnails {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+
+            .task-images {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+
+            .task-image {
+                height: 50px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .camera-container {
+                height: 180px;
+            }
+
+            .photo-thumbnails {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .task-images {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+            .camera-container {
+                height: 160px;
+            }
+
+            .stats-card {
+                min-height: 80px;
+            }
+
+            .photo-progress {
+                padding: 0.5rem;
             }
         }
 
@@ -632,174 +897,6 @@
             }
         }
 
-        /* PDF Export Styles */
-        .pdf-content {
-            background-color: white;
-            color: black;
-            padding: 30px;
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-        }
-
-        .pdf-header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 3px solid var(--bs-restaurant);
-            padding-bottom: 20px;
-        }
-
-        .pdf-logo {
-            font-size: 28px;
-            color: var(--bs-restaurant);
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-
-        .pdf-store-info {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            border-left: 4px solid var(--bs-restaurant);
-        }
-
-        .pdf-summary {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 30px 0;
-            border: 1px solid #dee2e6;
-        }
-
-        .pdf-task-card {
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            page-break-inside: avoid;
-            background-color: white;
-        }
-
-        .pdf-task-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .pdf-task-image {
-            max-width: 100%;
-            max-height: 250px;
-            margin: 15px 0;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            object-fit: cover;
-        }
-
-        .pdf-priority-high {
-            color: #dc3545;
-            font-weight: bold;
-            background-color: #f8d7da;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-
-        .pdf-priority-medium {
-            color: #856404;
-            font-weight: bold;
-            background-color: #fff3cd;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-
-        .pdf-priority-low {
-            color: #155724;
-            font-weight: bold;
-            background-color: #d4edda;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-
-        .pdf-status-pending {
-            color: #6c757d;
-            background-color: #f8f9fa;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-
-        .pdf-status-progress {
-            color: #004085;
-            background-color: #cce7ff;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-
-        .pdf-status-completed {
-            color: #155724;
-            background-color: #d4edda;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-
-        .pdf-crew-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .pdf-crew-member {
-            background-color: #e3f2fd;
-            color: #1976d2;
-            padding: 4px 12px;
-            border-radius: 16px;
-            font-size: 14px;
-            border: 1px solid #bbdefb;
-        }
-
-        .pdf-task-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .pdf-detail-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .pdf-detail-label {
-            font-weight: bold;
-            color: #495057;
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .pdf-detail-value {
-            color: #212529;
-            font-size: 14px;
-        }
-
-        /* Accessibility Improvements */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-
-        /* Focus Styles */
-        .btn:focus,
-        .form-control:focus,
-        .form-select:focus {
-            outline: 2px solid var(--bs-primary);
-            outline-offset: 2px;
-        }
-
         /* High Contrast Mode */
         @media (prefers-contrast: high) {
             .card {
@@ -808,6 +905,42 @@
             
             .btn {
                 border: 2px solid currentColor;
+            }
+
+            .photo-thumbnail {
+                border-width: 3px;
+            }
+        }
+
+        /* Focus Styles for Accessibility */
+        .btn:focus,
+        .form-control:focus,
+        .form-select:focus,
+        .photo-thumbnail:focus {
+            outline: 2px solid var(--bs-primary);
+            outline-offset: 2px;
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .card:hover {
+                transform: none;
+            }
+            
+            .stats-card:hover {
+                transform: none;
+            }
+            
+            .task-card:hover {
+                transform: none;
+            }
+            
+            .photo-thumbnail:hover {
+                transform: none;
+            }
+            
+            .task-image:hover {
+                transform: none;
             }
         }
     </style>
@@ -988,48 +1121,91 @@
                     </div>
                     <div class="card-body">
                         <form id="taskForm">
-                            <!-- Camera Section -->
+                            <!-- Before Pictures Section -->
                             <div class="mb-4">
                                 <label class="form-label fw-bold">
-                                    <i class="bi bi-camera me-1"></i>Take Picture
+                                    <i class="bi bi-camera me-1"></i>Take Before Pictures
+                                    <span class="text-danger">*</span>
                                 </label>
+                                
+                                <!-- Photo Progress Indicator -->
+                                <div class="photo-progress mb-3">
+                                    <div class="progress-info">
+                                        <div class="progress-text" id="photoProgressText">0 Photos Taken</div>
+                                        <div class="min-photos-text">Minimum 3 required</div>
+                                    </div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress">
+                                            <div class="progress-bar bg-success" id="photoProgress" role="progressbar" 
+                                                 style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Camera Container -->
                                 <div class="camera-container">
                                     <video id="videoElement" autoplay playsinline></video>
                                     <canvas id="canvasElement"></canvas>
-                                    <img id="capturedImage" src="" alt="Captured Image">
                                     <div id="cameraPlaceholder" class="camera-placeholder">
                                         <i class="bi bi-camera display-1 text-muted"></i>
-                                        <p class="mt-2 text-muted">No image captured</p>
+                                        <p class="mt-2 text-muted">Camera not started</p>
+                                        <p class="small text-muted">Take at least 3 before pictures</p>
                                     </div>
                                 </div>
-                                <div class="camera-controls mt-2">
-                                    <div class="btn-group w-100" role="group">
-                                        <button type="button" id="startCamera" class="btn btn-outline-primary">
-                                            <i class="bi bi-camera-video"></i>
-                                            <span class="d-none d-sm-inline ms-1">Start Camera</span>
+
+                                <!-- Camera Controls -->
+                                <div class="camera-controls mt-3">
+                                    <div class="row g-2">
+                                        <div class="col-4">
+                                            <button type="button" id="startCamera" class="btn btn-outline-primary w-100">
+                                                <i class="bi bi-camera-video"></i>
+                                                <span class="d-none d-sm-inline ms-1">Start</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-4">
+                                            <button type="button" id="captureButton" class="btn btn-success w-100" disabled>
+                                                <i class="bi bi-camera"></i>
+                                                <span class="d-none d-sm-inline ms-1">Capture</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-4">
+                                            <button type="button" id="stopCamera" class="btn btn-warning w-100" disabled>
+                                                <i class="bi bi-stop-circle"></i>
+                                                <span class="d-none d-sm-inline ms-1">Stop</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Photo Gallery -->
+                                <div class="photo-gallery mt-3" id="photoGallery" style="display: none;">
+                                    <div class="gallery-header">
+                                        <h6 class="mb-2">Before Pictures</h6>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" id="clearAllPhotos">
+                                            <i class="bi bi-trash"></i> Clear All
                                         </button>
-                                        <button type="button" id="captureButton" class="btn btn-success" disabled>
-                                            <i class="bi bi-camera"></i>
-                                            <span class="d-none d-sm-inline ms-1">Capture</span>
-                                        </button>
-                                        <button type="button" id="retakeButton" class="btn btn-warning" disabled>
-                                            <i class="bi bi-arrow-clockwise"></i>
-                                            <span class="d-none d-sm-inline ms-1">Retake</span>
-                                        </button>
+                                    </div>
+                                    <div class="photo-thumbnails" id="photoThumbnails">
+                                        <!-- Photo thumbnails will be inserted here -->
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Task Details -->
                             <div class="mb-3">
-                                <label for="taskDescription" class="form-label fw-bold">Task Description</label>
+                                <label for="taskDescription" class="form-label fw-bold">
+                                    Task Description <span class="text-danger">*</span>
+                                </label>
                                 <textarea class="form-control" id="taskDescription" rows="3" 
-                                          placeholder="Describe the cleaning task..." required></textarea>
+                                          placeholder="Describe the cleaning task in detail..." required></textarea>
                             </div>
 
                             <!-- Crew Assignment -->
                             <div class="mb-3">
-                                <label for="crewInput" class="form-label fw-bold">Assign to Team Members</label>
+                                <label for="crewInput" class="form-label fw-bold">
+                                    Assign to Team Members <span class="text-danger">*</span>
+                                </label>
                                 <div class="crew-input-container">
                                     <input type="text" class="form-control" id="crewInput" 
                                            placeholder="Type crew member name">
@@ -1042,7 +1218,9 @@
                             <!-- Priority and Area -->
                             <div class="row g-3 mb-3">
                                 <div class="col-sm-6">
-                                    <label for="priority" class="form-label fw-bold">Priority</label>
+                                    <label for="priority" class="form-label fw-bold">
+                                        Priority <span class="text-danger">*</span>
+                                    </label>
                                     <select class="form-select" id="priority" required>
                                         <option value="" selected disabled>Select priority</option>
                                         <option value="Low">Low</option>
@@ -1051,7 +1229,9 @@
                                     </select>
                                 </div>
                                 <div class="col-sm-6">
-                                    <label for="area" class="form-label fw-bold">Area</label>
+                                    <label for="area" class="form-label fw-bold">
+                                        Area <span class="text-danger">*</span>
+                                    </label>
                                     <select class="form-select" id="area" required>
                                         <option value="" selected disabled>Select area</option>
                                         <option value="Kitchen">Kitchen</option>
@@ -1060,6 +1240,8 @@
                                         <option value="Storage">Storage</option>
                                         <option value="Entrance">Entrance</option>
                                         <option value="Parking">Parking</option>
+                                        <option value="Bar Area">Bar Area</option>
+                                        <option value="Office">Office</option>
                                     </select>
                                 </div>
                             </div>
@@ -1067,7 +1249,9 @@
                             <!-- Dates and Status -->
                             <div class="row g-3 mb-3">
                                 <div class="col-sm-6">
-                                    <label for="dueDate" class="form-label fw-bold">Due Date</label>
+                                    <label for="dueDate" class="form-label fw-bold">
+                                        Due Date <span class="text-danger">*</span>
+                                    </label>
                                     <input type="date" class="form-control" id="dueDate" required>
                                 </div>
                                 <div class="col-sm-6">
@@ -1077,7 +1261,9 @@
                             </div>
 
                             <div class="mb-4">
-                                <label for="status" class="form-label fw-bold">Status</label>
+                                <label for="status" class="form-label fw-bold">
+                                    Status <span class="text-danger">*</span>
+                                </label>
                                 <select class="form-select" id="status" required>
                                     <option value="Pending" selected>Pending</option>
                                     <option value="In Progress">In Progress</option>
@@ -1085,7 +1271,13 @@
                                 </select>
                             </div>
 
-                            <button type="submit" class="btn btn-restaurant w-100 py-2 fw-bold">
+                            <!-- Validation Messages -->
+                            <div class="alert alert-warning d-none" id="validationAlert">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                <span id="validationMessage"></span>
+                            </div>
+
+                            <button type="submit" class="btn btn-restaurant w-100 py-3 fw-bold" id="submitTaskBtn">
                                 <i class="bi bi-plus-circle me-2"></i>Add Task
                             </button>
                         </form>
@@ -1141,7 +1333,7 @@
                             <div class="empty-state" id="emptyTaskMessage">
                                 <i class="bi bi-clipboard-x display-1 text-muted"></i>
                                 <h5 class="mt-3">No tasks yet</h5>
-                                <p class="text-muted">Add your first cleaning task to get started</p>
+                                <p class="text-muted">Add your first cleaning task with before pictures to get started</p>
                             </div>
                         </div>
                     </div>
@@ -1155,6 +1347,26 @@
         <button class="btn btn-danger fab" id="exportPdf" title="Export as PDF">
             <i class="bi bi-file-pdf fs-5"></i>
         </button>
+    </div>
+
+    <!-- Photo Modal -->
+    <div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="photoModalLabel">Before Pictures</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="photo-carousel" id="photoCarousel">
+                        <!-- Photos will be inserted here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Toast Container -->
@@ -1177,18 +1389,18 @@
         <span>Data saved successfully!</span>
     </div>
 
-    <!-- Bootstrap 2025 JS -->
+    <!-- Bootstrap 5.3.3 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Restaurant Cleaning Task Manager - Enhanced JavaScript
-
+        // Restaurant Cleaning Task Manager - Single File JavaScript
         class TaskManager {
             constructor() {
                 this.tasks = [];
                 this.teamMembers = [];
                 this.assignedCrew = [];
-                this.currentImageData = null;
+                this.capturedPhotos = []; // Array to store before pictures
+                this.minPhotos = 3;
                 this.stream = null;
                 this.storeName = "Fine Dining Restaurant";
                 this.storeLocation = "123 Main Street, City";
@@ -1197,6 +1409,7 @@
                 this.initializeEventListeners();
                 this.loadData();
                 this.updateUI();
+                this.setupTouchEvents();
             }
             
             initializeElements() {
@@ -1222,14 +1435,20 @@
                     finishDate: document.getElementById('finishDate'),
                     status: document.getElementById('status'),
                     
-                    // Camera
+                    // Camera and Photos
                     videoElement: document.getElementById('videoElement'),
                     canvasElement: document.getElementById('canvasElement'),
-                    capturedImage: document.getElementById('capturedImage'),
                     cameraPlaceholder: document.getElementById('cameraPlaceholder'),
                     startCameraBtn: document.getElementById('startCamera'),
                     captureButton: document.getElementById('captureButton'),
-                    retakeButton: document.getElementById('retakeButton'),
+                    stopCameraBtn: document.getElementById('stopCamera'),
+                    
+                    // Photo Progress
+                    photoProgress: document.getElementById('photoProgress'),
+                    photoProgressText: document.getElementById('photoProgressText'),
+                    photoGallery: document.getElementById('photoGallery'),
+                    photoThumbnails: document.getElementById('photoThumbnails'),
+                    clearAllPhotos: document.getElementById('clearAllPhotos'),
                     
                     // Lists and displays
                     taskList: document.getElementById('taskList'),
@@ -1256,10 +1475,19 @@
                     storeNameInput: document.getElementById('storeName'),
                     storeLocationInput: document.getElementById('storeLocation'),
                     
+                    // Validation
+                    validationAlert: document.getElementById('validationAlert'),
+                    validationMessage: document.getElementById('validationMessage'),
+                    submitTaskBtn: document.getElementById('submitTaskBtn'),
+                    
                     // Notifications
                     dataStatus: document.getElementById('dataStatus'),
                     liveToast: document.getElementById('liveToast'),
-                    toastMessage: document.getElementById('toastMessage')
+                    toastMessage: document.getElementById('toastMessage'),
+                    
+                    // Modal
+                    photoModal: document.getElementById('photoModal'),
+                    photoCarousel: document.getElementById('photoCarousel')
                 };
             }
             
@@ -1286,8 +1514,9 @@
                 
                 // Camera controls
                 this.elements.startCameraBtn.addEventListener('click', () => this.startCamera());
-                this.elements.captureButton.addEventListener('click', () => this.captureImage());
-                this.elements.retakeButton.addEventListener('click', () => this.retakeImage());
+                this.elements.captureButton.addEventListener('click', () => this.capturePhoto());
+                this.elements.stopCameraBtn.addEventListener('click', () => this.stopCamera());
+                this.elements.clearAllPhotos.addEventListener('click', () => this.clearAllPhotos());
                 
                 // List controls
                 this.elements.showListBtn.addEventListener('click', () => this.showTaskList());
@@ -1317,6 +1546,33 @@
                         this.navigateToSection(section);
                     });
                 });
+
+                // Form validation on input
+                this.elements.taskForm.addEventListener('input', () => this.validateForm());
+            }
+
+            setupTouchEvents() {
+                // Add touch event support for better mobile interaction
+                let touchStartX = 0;
+                let touchStartY = 0;
+
+                this.elements.photoThumbnails.addEventListener('touchstart', (e) => {
+                    touchStartX = e.touches[0].clientX;
+                    touchStartY = e.touches[0].clientY;
+                });
+
+                this.elements.photoThumbnails.addEventListener('touchend', (e) => {
+                    const touchEndX = e.changedTouches[0].clientX;
+                    const touchEndY = e.changedTouches[0].clientY;
+                    const deltaX = touchEndX - touchStartX;
+                    const deltaY = touchEndY - touchStartY;
+
+                    // Detect swipe gestures
+                    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+                        // Handle swipe if needed
+                        this.updatePhotoGallery();
+                    }
+                });
             }
             
             // Data Management
@@ -1327,7 +1583,7 @@
                     if (savedTeamMembers) {
                         this.teamMembers = JSON.parse(savedTeamMembers);
                     } else {
-                        this.teamMembers = ['John Smith', 'Maria Garcia', 'David Johnson', 'Sarah Wilson'];
+                        this.teamMembers = ['John Smith', 'Maria Garcia', 'David Johnson', 'Sarah Wilson', 'Emily Chen', 'Michael Brown'];
                         this.saveTeamMembers();
                     }
                     
@@ -1370,6 +1626,14 @@
                 const tomorrow = new Date(today);
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 
+                // Create sample before photos (placeholder data)
+                const sampleBeforePhotos = [
+                    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5CZWZvcmUgMTwvdGV4dD48L3N2Zz4=',
+                    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjYmJiIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5CZWZvcmUgMjwvdGV4dD48L3N2Zz4=',
+                    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjOTk5Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5CZWZvcmUgMzwvdGV4dD48L3N2Zz4=',
+                    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjNzc3Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtc2l6ZT0iMTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5CZWZvcmUgNDwvdGV4dD48L3N2Zz4='
+                ];
+                
                 this.tasks = [
                     {
                         id: Date.now(),
@@ -1380,7 +1644,7 @@
                         dueDate: today.toISOString().split('T')[0],
                         finishDate: "",
                         status: "Pending",
-                        image: null,
+                        beforePhotos: sampleBeforePhotos,
                         createdAt: new Date().toISOString()
                     },
                     {
@@ -1392,7 +1656,7 @@
                         dueDate: tomorrow.toISOString().split('T')[0],
                         finishDate: "",
                         status: "In Progress",
-                        image: null,
+                        beforePhotos: sampleBeforePhotos.slice(0, 3), // Only 3 photos for this task
                         createdAt: new Date().toISOString()
                     }
                 ];
@@ -1559,6 +1823,7 @@
                     if (this.teamMembers.includes(name)) {
                         this.assignedCrew.push(name);
                         this.renderCrewMembers();
+                        this.validateForm();
                     } else {
                         this.showToast(`"${name}" is not in your team. Add them to your team first.`, 'warning');
                     }
@@ -1570,6 +1835,7 @@
             removeCrewMember(name) {
                 this.assignedCrew = this.assignedCrew.filter(member => member !== name);
                 this.renderCrewMembers();
+                this.validateForm();
             }
             
             renderCrewMembers() {
@@ -1596,6 +1862,12 @@
             async startCamera() {
                 try {
                     this.showLoading();
+                    
+                    // Stop any existing stream
+                    if (this.stream) {
+                        this.stream.getTracks().forEach(track => track.stop());
+                    }
+                    
                     this.stream = await navigator.mediaDevices.getUserMedia({ 
                         video: { 
                             facingMode: 'environment',
@@ -1607,13 +1879,16 @@
                     this.elements.videoElement.srcObject = this.stream;
                     this.elements.videoElement.style.display = 'block';
                     this.elements.cameraPlaceholder.style.display = 'none';
-                    this.elements.capturedImage.style.display = 'none';
                     
                     this.elements.startCameraBtn.disabled = true;
                     this.elements.captureButton.disabled = false;
-                    this.elements.retakeButton.disabled = true;
+                    this.elements.stopCameraBtn.disabled = false;
+                    
+                    // Add pulse effect to indicate active camera
+                    this.elements.videoElement.classList.add('pulse');
                     
                     this.hideLoading();
+                    this.showToast('Camera started successfully!', 'success');
                 } catch (err) {
                     this.hideLoading();
                     console.error('Camera error:', err);
@@ -1621,7 +1896,7 @@
                 }
             }
             
-            captureImage() {
+            capturePhoto() {
                 try {
                     const context = this.elements.canvasElement.getContext('2d');
                     this.elements.canvasElement.width = this.elements.videoElement.videoWidth;
@@ -1631,43 +1906,185 @@
                         this.elements.canvasElement.width, this.elements.canvasElement.height);
                     
                     // Convert to data URL with compression
-                    this.currentImageData = this.elements.canvasElement.toDataURL('image/jpeg', 0.8);
-                    this.elements.capturedImage.src = this.currentImageData;
-                    this.elements.capturedImage.style.display = 'block';
-                    this.elements.videoElement.style.display = 'none';
+                    const photoData = this.elements.canvasElement.toDataURL('image/jpeg', 0.8);
+                    this.capturedPhotos.push(photoData);
                     
-                    // Stop camera stream
-                    if (this.stream) {
-                        this.stream.getTracks().forEach(track => track.stop());
-                        this.stream = null;
+                    this.updatePhotoProgress();
+                    this.updatePhotoGallery();
+                    this.validateForm();
+                    
+                    const photoNumber = this.capturedPhotos.length;
+                    this.showToast(`Before picture ${photoNumber} captured successfully!`, 'success');
+                    
+                    // Show message when minimum photos reached
+                    if (this.capturedPhotos.length >= this.minPhotos) {
+                        this.showToast(`Minimum ${this.minPhotos} photos captured! You can now save the task or take more photos.`, 'success');
                     }
-                    
-                    this.elements.captureButton.disabled = true;
-                    this.elements.retakeButton.disabled = false;
-                    this.elements.startCameraBtn.disabled = false;
-                    
-                    this.showToast('Image captured successfully!', 'success');
                 } catch (error) {
                     console.error('Capture error:', error);
-                    this.showToast('Error capturing image', 'danger');
+                    this.showToast('Error capturing photo', 'danger');
                 }
             }
             
-            retakeImage() {
-                this.elements.capturedImage.style.display = 'none';
+            stopCamera() {
+                if (this.stream) {
+                    this.stream.getTracks().forEach(track => track.stop());
+                    this.stream = null;
+                }
+                
+                this.elements.videoElement.style.display = 'none';
+                this.elements.videoElement.classList.remove('pulse');
                 this.elements.cameraPlaceholder.style.display = 'flex';
-                this.currentImageData = null;
-                this.elements.retakeButton.disabled = true;
-                this.elements.captureButton.disabled = true;
+                
                 this.elements.startCameraBtn.disabled = false;
+                this.elements.captureButton.disabled = true;
+                this.elements.stopCameraBtn.disabled = true;
+                
+                this.showToast('Camera stopped', 'info');
+            }
+            
+            updatePhotoProgress() {
+                const progress = Math.min((this.capturedPhotos.length / this.minPhotos) * 100, 100);
+                this.elements.photoProgress.style.width = `${progress}%`;
+                this.elements.photoProgress.setAttribute('aria-valuenow', progress);
+                this.elements.photoProgressText.textContent = `${this.capturedPhotos.length} Photos Taken`;
+                
+                // Change progress bar color based on minimum requirement
+                if (this.capturedPhotos.length >= this.minPhotos) {
+                    this.elements.photoProgress.className = 'progress-bar bg-success';
+                } else {
+                    this.elements.photoProgress.className = 'progress-bar bg-warning';
+                }
+            }
+            
+            updatePhotoGallery() {
+                if (this.capturedPhotos.length === 0) {
+                    this.elements.photoGallery.style.display = 'none';
+                    return;
+                }
+                
+                this.elements.photoGallery.style.display = 'block';
+                this.elements.photoThumbnails.innerHTML = '';
+                
+                this.capturedPhotos.forEach((photo, index) => {
+                    const thumbnail = document.createElement('div');
+                    thumbnail.className = 'photo-thumbnail fade-in';
+                    thumbnail.innerHTML = `
+                        <img src="${photo}" alt="Before Photo ${index + 1}">
+                        <div class="photo-number">${index + 1}</div>
+                        <button class="delete-photo" title="Delete photo ${index + 1}">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    `;
+                    
+                    // Click to view full size
+                    thumbnail.addEventListener('click', (e) => {
+                        if (!e.target.closest('.delete-photo')) {
+                            this.showPhotoModal(index);
+                        }
+                    });
+                    
+                    // Delete photo
+                    thumbnail.querySelector('.delete-photo').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.deletePhoto(index);
+                    });
+                    
+                    this.elements.photoThumbnails.appendChild(thumbnail);
+                });
+            }
+            
+            deletePhoto(index) {
+                if (confirm(`Are you sure you want to delete photo ${index + 1}?`)) {
+                    this.capturedPhotos.splice(index, 1);
+                    this.updatePhotoProgress();
+                    this.updatePhotoGallery();
+                    this.validateForm();
+                    this.showToast(`Photo ${index + 1} deleted`, 'info');
+                }
+            }
+            
+            clearAllPhotos() {
+                if (this.capturedPhotos.length === 0) return;
+                
+                if (confirm('Are you sure you want to delete all photos?')) {
+                    this.capturedPhotos = [];
+                    this.updatePhotoProgress();
+                    this.updatePhotoGallery();
+                    this.validateForm();
+                    this.showToast('All photos cleared', 'info');
+                }
+            }
+            
+            showPhotoModal(startIndex = 0) {
+                if (this.capturedPhotos.length === 0) return;
+                
+                this.elements.photoCarousel.innerHTML = '';
+                
+                this.capturedPhotos.forEach((photo, index) => {
+                    const photoDiv = document.createElement('div');
+                    photoDiv.className = 'mb-3';
+                    photoDiv.innerHTML = `
+                        <h6>Before Photo ${index + 1} of ${this.capturedPhotos.length}</h6>
+                        <img src="${photo}" class="carousel-photo" alt="Before Photo ${index + 1}">
+                    `;
+                    this.elements.photoCarousel.appendChild(photoDiv);
+                });
+                
+                const modal = new bootstrap.Modal(this.elements.photoModal);
+                modal.show();
+            }
+            
+            // Form Validation
+            validateForm() {
+                const errors = [];
+                
+                // Check photos (minimum 3 required)
+                if (this.capturedPhotos.length < this.minPhotos) {
+                    errors.push(`Please capture at least ${this.minPhotos} before pictures (${this.capturedPhotos.length}/${this.minPhotos} taken)`);
+                }
+                
+                // Check crew assignment
+                if (this.assignedCrew.length === 0) {
+                    errors.push('Please assign at least one team member');
+                }
+                
+                // Check required fields
+                if (!this.elements.taskDescription.value.trim()) {
+                    errors.push('Task description is required');
+                }
+                
+                if (!this.elements.priority.value) {
+                    errors.push('Priority is required');
+                }
+                
+                if (!this.elements.area.value) {
+                    errors.push('Area is required');
+                }
+                
+                if (!this.elements.dueDate.value) {
+                    errors.push('Due date is required');
+                }
+                
+                // Display validation errors
+                if (errors.length > 0) {
+                    this.elements.validationAlert.classList.remove('d-none');
+                    this.elements.validationMessage.innerHTML = errors.map(error => `• ${error}`).join('<br>');
+                    this.elements.submitTaskBtn.disabled = true;
+                    return false;
+                } else {
+                    this.elements.validationAlert.classList.add('d-none');
+                    this.elements.submitTaskBtn.disabled = false;
+                    return true;
+                }
             }
             
             // Task Management
             handleTaskSubmit(e) {
                 e.preventDefault();
                 
-                if (this.assignedCrew.length === 0) {
-                    this.showToast('Please assign at least one crew member!', 'warning');
+                if (!this.validateForm()) {
+                    this.showToast('Please fix the validation errors before submitting', 'warning');
                     return;
                 }
                 
@@ -1680,7 +2097,7 @@
                     dueDate: this.elements.dueDate.value,
                     finishDate: this.elements.finishDate.value,
                     status: this.elements.status.value,
-                    image: this.currentImageData,
+                    beforePhotos: [...this.capturedPhotos], // Store all before photos
                     createdAt: new Date().toISOString()
                 };
                 
@@ -1689,20 +2106,25 @@
                 this.updateUI();
                 this.resetForm();
                 
-                this.showToast('Task added successfully!', 'success');
+                this.showToast(`Task with ${this.capturedPhotos.length} before pictures added successfully!`, 'success');
             }
             
             resetForm() {
                 this.elements.taskForm.reset();
-                this.elements.capturedImage.style.display = 'none';
-                this.elements.cameraPlaceholder.style.display = 'flex';
-                this.currentImageData = null;
+                this.capturedPhotos = [];
                 this.assignedCrew = [];
                 this.renderCrewMembers();
+                this.updatePhotoProgress();
+                this.updatePhotoGallery();
+                this.validateForm();
                 
-                this.elements.retakeButton.disabled = true;
-                this.elements.captureButton.disabled = true;
+                this.elements.cameraPlaceholder.style.display = 'flex';
+                this.elements.videoElement.style.display = 'none';
+                this.elements.videoElement.classList.remove('pulse');
+                
                 this.elements.startCameraBtn.disabled = false;
+                this.elements.captureButton.disabled = true;
+                this.elements.stopCameraBtn.disabled = true;
                 
                 if (this.stream) {
                     this.stream.getTracks().forEach(track => track.stop());
@@ -1733,13 +2155,14 @@
                     this.assignedCrew = [...task.assignedTo];
                     this.renderCrewMembers();
                     
-                    if (task.image) {
-                        this.currentImageData = task.image;
-                        this.elements.capturedImage.src = task.image;
-                        this.elements.capturedImage.style.display = 'block';
-                        this.elements.cameraPlaceholder.style.display = 'none';
-                        this.elements.retakeButton.disabled = false;
+                    // Load before photos
+                    if (task.beforePhotos && task.beforePhotos.length > 0) {
+                        this.capturedPhotos = [...task.beforePhotos];
+                        this.updatePhotoProgress();
+                        this.updatePhotoGallery();
                     }
+                    
+                    this.validateForm();
                     
                     // Remove the task being edited
                     this.tasks = this.tasks.filter(t => t.id !== id);
@@ -1810,6 +2233,21 @@
                 const finishDate = task.finishDate ? new Date(task.finishDate).toLocaleDateString() : 'Not set';
                 const createdDate = new Date(task.createdAt).toLocaleDateString();
                 
+                // Create before photos HTML
+                const photosHTML = task.beforePhotos && task.beforePhotos.length > 0 ? `
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-2">
+                            <i class="bi bi-camera me-1"></i>Before Pictures (${task.beforePhotos.length}):
+                        </small>
+                        <div class="task-images">
+                            ${task.beforePhotos.map((photo, index) => 
+                                `<img src="${photo}" class="task-image" alt="Before Photo ${index + 1}" 
+                                      onclick="taskManager.showTaskPhotoModal(${task.id}, ${index})">`
+                            ).join('')}
+                        </div>
+                    </div>
+                ` : '';
+                
                 taskCard.innerHTML = `
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-3">
@@ -1834,12 +2272,7 @@
                             </div>
                         </div>
                         
-                        ${task.image ? `
-                            <div class="mb-3">
-                                <img src="${task.image}" class="task-image" alt="Task Image" 
-                                     onclick="this.requestFullscreen ? this.requestFullscreen() : this.webkitRequestFullscreen()">
-                            </div>
-                        ` : ''}
+                        ${photosHTML}
                         
                         <div class="d-flex flex-wrap gap-2 mb-3">
                             <span class="badge ${priorityClass} status-badge">${task.priority} Priority</span>
@@ -1891,6 +2324,26 @@
                 });
                 
                 return taskCard;
+            }
+            
+            showTaskPhotoModal(taskId, startIndex = 0) {
+                const task = this.tasks.find(t => t.id === taskId);
+                if (!task || !task.beforePhotos || task.beforePhotos.length === 0) return;
+                
+                this.elements.photoCarousel.innerHTML = '';
+                
+                task.beforePhotos.forEach((photo, index) => {
+                    const photoDiv = document.createElement('div');
+                    photoDiv.className = 'mb-3';
+                    photoDiv.innerHTML = `
+                        <h6>Before Photo ${index + 1} of ${task.beforePhotos.length}</h6>
+                        <img src="${photo}" class="carousel-photo" alt="Before Photo ${index + 1}">
+                    `;
+                    this.elements.photoCarousel.appendChild(photoDiv);
+                });
+                
+                const modal = new bootstrap.Modal(this.elements.photoModal);
+                modal.show();
             }
             
             getPriorityClass(priority) {
@@ -1995,8 +2448,15 @@
                     
                     const element = document.createElement('div');
                     element.className = 'pdf-content';
+                    element.style.cssText = `
+                        background-color: white;
+                        color: black;
+                        padding: 30px;
+                        font-family: Arial, sans-serif;
+                        line-height: 1.6;
+                    `;
                     
-                    // Create enhanced PDF content
+                    // Create PDF content
                     let pdfHTML = this.createPDFHeader();
                     pdfHTML += this.createPDFSummary();
                     pdfHTML += await this.createPDFTasks();
@@ -2037,10 +2497,10 @@
             
             createPDFHeader() {
                 return `
-                    <div class="pdf-header">
-                        <div class="pdf-logo">🍽️ ${this.escapeHtml(this.storeName)}</div>
+                    <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #e63946; padding-bottom: 20px;">
+                        <div style="font-size: 28px; color: #e63946; margin-bottom: 15px; font-weight: bold;">🍽️ ${this.escapeHtml(this.storeName)}</div>
                         <h2>Cleaning Task Report</h2>
-                        <div class="pdf-store-info">
+                        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; border-left: 4px solid #e63946;">
                             <p><strong>Location:</strong> ${this.escapeHtml(this.storeLocation)}</p>
                             <p><strong>Generated:</strong> ${new Date().toLocaleString()}</p>
                             <p><strong>Total Tasks:</strong> ${this.tasks.length}</p>
@@ -2062,9 +2522,10 @@
                 
                 const areas = [...new Set(this.tasks.map(t => t.area))];
                 const teamMembers = [...new Set(this.tasks.flatMap(t => t.assignedTo))];
+                const totalPhotos = this.tasks.reduce((sum, task) => sum + (task.beforePhotos ? task.beforePhotos.length : 0), 0);
                 
                 return `
-                    <div class="pdf-summary">
+                    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px 0; border: 1px solid #dee2e6;">
                         <h3>📊 Summary Statistics</h3>
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0;">
                             <div>
@@ -2075,17 +2536,24 @@
                             </div>
                             <div>
                                 <h4>Priority Levels</h4>
-                                <p class="pdf-priority-high">🔴 High: ${stats.high}</p>
-                                <p class="pdf-priority-medium">🟡 Medium: ${stats.medium}</p>
-                                <p class="pdf-priority-low">🟢 Low: ${stats.low}</p>
+                                <p style="color: #dc3545; font-weight: bold;">🔴 High: ${stats.high}</p>
+                                <p style="color: #856404; font-weight: bold;">🟡 Medium: ${stats.medium}</p>
+                                <p style="color: #155724; font-weight: bold;">🟢 Low: ${stats.low}</p>
+                            </div>
+                            <div>
+                                <h4>Documentation</h4>
+                                <p>📸 Total Before Photos: ${totalPhotos}</p>
+                                <p>📋 Avg Photos/Task: ${(totalPhotos / stats.total || 0).toFixed(1)}</p>
                             </div>
                             <div>
                                 <h4>Areas Covered</h4>
                                 ${areas.map(area => `<p>📍 ${area}</p>`).join('')}
                             </div>
-                            <div>
-                                <h4>Team Members</h4>
-                                ${teamMembers.map(member => `<p>👤 ${this.escapeHtml(member)}</p>`).join('')}
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <h4>Team Members (${teamMembers.length})</h4>
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                ${teamMembers.map(member => `<span style="background-color: #e3f2fd; color: #1976d2; padding: 4px 12px; border-radius: 16px; font-size: 14px; border: 1px solid #bbdefb;">${this.escapeHtml(member)}</span>`).join('')}
                             </div>
                         </div>
                     </div>
@@ -2105,54 +2573,61 @@
                 });
                 
                 sortedTasks.forEach((task, index) => {
-                    const priorityClass = `pdf-priority-${task.priority.toLowerCase()}`;
-                    const statusClass = `pdf-status-${task.status.toLowerCase().replace(' ', '')}`;
-                    
                     const dueDate = new Date(task.dueDate).toLocaleDateString();
                     const finishDate = task.finishDate ? new Date(task.finishDate).toLocaleDateString() : 'Not set';
                     const createdDate = new Date(task.createdAt).toLocaleDateString();
                     
+                    // Create before photos HTML for PDF
+                    const photosHTML = task.beforePhotos && task.beforePhotos.length > 0 ? `
+                        <div style="margin: 15px 0;">
+                            <p style="font-weight: bold; margin-bottom: 10px;">📸 Before Pictures (${task.beforePhotos.length}):</p>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                                ${task.beforePhotos.map((photo, photoIndex) => `
+                                    <div style="text-align: center;">
+                                        <img src="${photo}" style="width: 100%; max-height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;" alt="Before Photo ${photoIndex + 1}">
+                                        <p style="font-size: 12px; color: #666; margin-top: 5px;">Before Photo ${photoIndex + 1}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : '<p style="color: #999; font-style: italic;">No before photos available for this task</p>';
+                    
                     tasksHTML += `
-                        <div class="pdf-task-card">
-                            <div class="pdf-task-header">
+                        <div style="border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin-bottom: 20px; page-break-inside: avoid; background-color: white;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee;">
                                 <h4>Task ${index + 1}: ${this.escapeHtml(task.description)}</h4>
                                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                    <span class="${priorityClass}">${task.priority}</span>
-                                    <span class="${statusClass}">${task.status}</span>
+                                    <span style="color: ${task.priority === 'High' ? '#dc3545' : task.priority === 'Medium' ? '#856404' : '#155724'}; font-weight: bold; background-color: ${task.priority === 'High' ? '#f8d7da' : task.priority === 'Medium' ? '#fff3cd' : '#d4edda'}; padding: 4px 8px; border-radius: 4px;">${task.priority}</span>
+                                    <span style="color: ${task.status === 'Completed' ? '#155724' : task.status === 'In Progress' ? '#004085' : '#6c757d'}; background-color: ${task.status === 'Completed' ? '#d4edda' : task.status === 'In Progress' ? '#cce7ff' : '#f8f9fa'}; padding: 4px 8px; border-radius: 4px;">${task.status}</span>
                                 </div>
                             </div>
                             
-                            ${task.image ? `
-                                <div style="text-align: center; margin: 15px 0;">
-                                    <img src="${task.image}" class="pdf-task-image" alt="Task Image">
-                                    <p style="font-size: 12px; color: #666; margin-top: 5px;">Task Documentation Photo</p>
-                                </div>
-                            ` : ''}
+                            ${photosHTML}
                             
-                            <div class="pdf-task-details">
-                                <div class="pdf-detail-item">
-                                    <span class="pdf-detail-label">📍 Area</span>
-                                    <span class="pdf-detail-value">${task.area}</span>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                                <div>
+                                    <span style="font-weight: bold; color: #495057; font-size: 14px; margin-bottom: 4px; display: block;">📍 Area</span>
+                                    <span style="color: #212529; font-size: 14px;">${task.area}</span>
                                 </div>
-                                <div class="pdf-detail-item">
-                                    <span class="pdf-detail-label">📅 Due Date</span>
-                                    <span class="pdf-detail-value">${dueDate}</span>
+                                <div>
+                                    <span style="font-weight: bold; color: #495057; font-size: 14px; margin-bottom: 4px; display: block;">📅 Due Date</span>
+                                    <span style="color: #212529; font-size: 14px;">${dueDate}</span>
                                 </div>
-                                <div class="pdf-detail-item">
-                                    <span class="pdf-detail-label">✅ Finish Date</span>
-                                    <span class="pdf-detail-value">${finishDate}</span>
+                                <div>
+                                    <span style="font-weight: bold; color: #495057; font-size: 14px; margin-bottom: 4px; display: block;">✅ Finish Date</span>
+                                    <span style="color: #212529; font-size: 14px;">${finishDate}</span>
                                 </div>
-                                <div class="pdf-detail-item">
-                                    <span class="pdf-detail-label">📝 Created</span>
-                                    <span class="pdf-detail-value">${createdDate}</span>
+                                <div>
+                                    <span style="font-weight: bold; color: #495057; font-size: 14px; margin-bottom: 4px; display: block;">📝 Created</span>
+                                    <span style="color: #212529; font-size: 14px;">${createdDate}</span>
                                 </div>
                             </div>
                             
                             <div style="margin-top: 15px;">
-                                <span class="pdf-detail-label">👥 Assigned Team Members:</span>
-                                <div class="pdf-crew-list">
+                                <span style="font-weight: bold; color: #495057; font-size: 14px; margin-bottom: 4px; display: block;">👥 Assigned Team Members:</span>
+                                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
                                     ${task.assignedTo.map(member => 
-                                        `<span class="pdf-crew-member">${this.escapeHtml(member)}</span>`
+                                        `<span style="background-color: #e3f2fd; color: #1976d2; padding: 4px 12px; border-radius: 16px; font-size: 14px; border: 1px solid #bbdefb;">${this.escapeHtml(member)}</span>`
                                     ).join('')}
                                 </div>
                             </div>
@@ -2233,18 +2708,22 @@
             window.taskManager = new TaskManager();
         });
 
-        // Service Worker Registration for PWA capabilities
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch(registrationError => {
-                        console.log('SW registration failed: ', registrationError);
-                    });
-            });
-        }
+        // Handle page visibility changes to manage camera
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && window.taskManager && window.taskManager.stream) {
+                // Stop camera when page is hidden
+                window.taskManager.stopCamera();
+            }
+        });
+
+        // Handle orientation changes on mobile
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                if (window.taskManager) {
+                    window.taskManager.updateUI();
+                }
+            }, 100);
+        });
     </script>
 </body>
 </html>
