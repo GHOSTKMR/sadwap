@@ -1,2149 +1,1498 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Tank War - Tank Battle</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KUDU Assistant - AI Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #10a37f;
+            --primary-hover: #0d8c6d;
+            --sidebar-bg: #1a1b26;
+            --chat-bg: #24283b;
+            --user-msg-bg: #343541;
+            --bot-msg-bg: #414868;
+            --text-color: #c0caf5;
+            --text-secondary: #9aa5ce;
+            --border-color: #414868;
+            --accent-color: #7aa2f7;
+            --danger-color: #f7768e;
+            --warning-color: #e0af68;
+            --success-color: #9ece6a;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
 
-  :root {
-    /* Color Palette */
-    --bg-color: #ffffff;
-    --text-color: #6b7280; /* Neutral Gray */
+        [data-theme="light"] {
+            --primary-color: #10a37f;
+            --primary-hover: #0d8c6d;
+            --sidebar-bg: #f8fafc;
+            --chat-bg: #ffffff;
+            --user-msg-bg: #f1f5f9;
+            --bot-msg-bg: #e2e8f0;
+            --text-color: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --accent-color: #3b82f6;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --success-color: #10b981;
+            --glass-bg: rgba(0, 0, 0, 0.02);
+            --glass-border: rgba(0, 0, 0, 0.05);
+        }
+        
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-color) transparent;
+        }
 
-    /* Tank Colors */
-    --tank-player-color-1: #2563EB; /* Blue for Kudu left half */
-    --tank-player-color-2: #FBBF24; /* Yellow for Kudu right half */
-    --tank-enemy-color-kfc: #DC2626;
-    --tank-enemy-color-hardees: #F59E0B;
-    --tank-enemy-color-burgerking: #10B981;
-    --tank-enemy-color-hery: #8B5CF6;
-    --tank-enemy-color-elite: #7C3AED;
+        *::-webkit-scrollbar {
+            width: 8px;
+        }
 
-    /* Boss Tank Colors */
-    --boss-area-manager: #FF5733;
-    --boss-operations-manager: #33FF57;
-    --boss-internal-audit: #3357FF;
-    --boss-cfs: #F333FF;
-    --boss-muhammad-hafiz: #FF33F3;
-    --boss-mohammad-yousuf: #33FFF3;
-    --boss-director: #FFC733;
-    --boss-training-manager: #8A2BE2;
-    --boss-kudu: #FF6347;
+        *::-webkit-scrollbar-track {
+            background: transparent;
+        }
 
-    /* UI Colors */
-    --card-bg: #F9FAFB;
-    --shadow-light: rgba(0,0,0,0.05);
+        *::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 4px;
+        }
 
-    /* Fonts */
-    --font-family: 'Outfit', sans-serif;
-  }
+        *::-webkit-scrollbar-thumb:hover {
+            background-color: var(--text-secondary);
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--chat-bg) 0%, var(--sidebar-bg) 100%);
+            color: var(--text-color);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-container {
+            height: 100vh;
+            display: flex;
+            backdrop-filter: blur(10px);
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+        }
+        
+        .new-chat-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 18px;
+            width: 100%;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(16, 163, 127, 0.3);
+        }
+        
+        .new-chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 163, 127, 0.4);
+        }
 
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: var(--bg-color);
-    color: var(--text-color);
-    font-family: var(--font-family);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    user-select: none;
-    overflow: hidden;
-    position: relative;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
+        .sidebar-controls {
+            padding: 0 20px 15px;
+            display: flex;
+            gap: 8px;
+        }
 
-  /* Background image for the game */
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
-                url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iIzJhMmEyYSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzFhMWExYSIvPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjcGF0dGVybikiLz48L3N2Zz4=');
-    background-size: cover;
-    background-position: center;
-    z-index: -1;
-  }
+        .control-btn {
+            flex: 1;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
 
-  #game-container {
-    max-width: 1200px;
-    width: 90vw;
-    background: rgba(249, 250, 251, 0.9);
-    padding: 24px 32px;
-    border-radius: 0.75rem;
-    box-shadow: 0 12px 24px var(--shadow-light);
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    z-index: 1;
-  }
+        .control-btn:hover {
+            background: var(--glass-border);
+            color: var(--text-color);
+            transform: translateY(-1px);
+        }
 
-  #game {
-    width: 100%;
-    height: 60vh;
-    max-height: 500px;
-    border-radius: 0.75rem;
-    background: #1a1a1a;
-    box-shadow: inset 0 0 30px #000;
-    position: relative;
-    overflow: hidden;
-    max-width: 100%;
-    touch-action: none;
-  }
+        .control-btn.danger:hover {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 20px;
+        }
+        
+        .chat-item {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--glass-bg);
+            border: 1px solid transparent;
+        }
+        
+        .chat-item:hover {
+            background: var(--glass-border);
+            transform: translateX(4px);
+            border-color: var(--glass-border);
+        }
+        
+        .chat-item.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 163, 127, 0.2);
+        }
 
-  #info-bar {
-    margin-top: 16px;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    font-weight: 700;
-    font-size: 18px;
-    color: var(--text-color);
-    flex-wrap: wrap;
-    gap: 10px;
-  }
+        .chat-item-icon {
+            width: 20px;
+            text-align: center;
+        }
 
-  .label {
-    letter-spacing: 0.05em;
-    flex: 1;
-    text-align: center;
-    min-width: 100px;
-  }
+        .chat-item-text {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-  #restart-btn {
-    margin-top: 24px;
-    background: var(--tank-player-color-1);
-    color: white;
-    font-size: 18px;
-    font-weight: 700;
-    border: none;
-    border-radius: 0.75rem;
-    padding: 14px 36px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-    touch-action: manipulation;
-  }
-  #restart-btn:hover,
-  #restart-btn:focus {
-    background: #1D4ED8;
-    outline: none;
-  }
+        .chat-item-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+        
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--glass-bg);
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
 
-  #level-display {
-    position: absolute;
-    top: 20px;
-    left: 0;
-    right: 0;
-    text-align: center;
-    font-size: 24px;
-    color: white;
-    text-shadow: 0 0 10px rgba(0,0,0,0.8);
-    opacity: 0;
-    transition: opacity 0.5s;
-    pointer-events: none;
-    z-index: 10;
-  }
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
 
-  #boss-warning {
-    position: absolute;
-    top: 60px;
-    left: 0;
-    right: 0;
-    text-align: center;
-    font-size: 28px;
-    color: #FF0000;
-    text-shadow: 0 0 10px rgba(0,0,0,0.8);
-    opacity: 0;
-    transition: opacity 0.5s;
-    pointer-events: none;
-    animation: pulse 1s infinite;
-    z-index: 10;
-  }
+        .theme-toggle:hover {
+            color: var(--text-color);
+            background: var(--glass-bg);
+        }
+        
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--chat-bg);
+        }
+        
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+        }
 
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-  }
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
 
-  #player-health {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 200px;
-    height: 20px;
-    background: rgba(0,0,0,0.5);
-    border-radius: 10px;
-    overflow: hidden;
-    z-index: 10;
-  }
+        .chat-header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
 
-  #health-bar {
-    height: 100%;
-    width: 100%;
-    background: linear-gradient(to right, #FF0000, #FFA500, #00FF00);
-    transition: width 0.3s;
-  }
+        .menu-toggle:hover {
+            background: var(--glass-bg);
+        }
 
-  .particle {
-    position: absolute;
-    border-radius: 50%;
-    pointer-events: none;
-  }
+        .header-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
 
-  /* Touch Controls */
-  #touch-controls {
-    display: flex;
-    position: absolute;
-    bottom: 20px;
-    width: 100%;
-    justify-content: space-between;
-    padding: 0 20px;
-    box-sizing: border-box;
-    z-index: 20;
-    touch-action: manipulation;
-  }
+        .header-btn:hover {
+            background: var(--glass-border);
+            color: var(--text-color);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .message {
+            display: flex;
+            gap: 16px;
+            max-width: 100%;
+            animation: messageSlideIn 0.3s ease-out;
+        }
 
-  #movement-controls {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 10px;
-    width: 150px;
-    height: 150px;
-    touch-action: none;
-  }
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-message .message-avatar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        
+        .bot-message .message-avatar {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        }
+        
+        .message-content {
+            flex: 1;
+            padding-top: 2px;
+        }
 
-  #shoot-control {
-    width: 100px;
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    align-self: flex-end;
-    margin-bottom: 10px;
-  }
+        .message-bubble {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 16px 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
 
-  .control-btn {
-    width: 50px;
-    height: 50px;
-    background: rgba(59, 130, 246, 0.8);
-    border: none;
-    border-radius: 50%;
-    color: white;
-    font-size: 18px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    touch-action: manipulation;
-    user-select: none;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    -webkit-tap-highlight-color: transparent;
-    transition: transform 0.1s, background-color 0.1s;
-  }
+        .user-message .message-bubble {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-color: rgba(102, 126, 234, 0.2);
+        }
 
-  .control-btn:active {
-    background: rgba(37, 99, 235, 0.9);
-    transform: scale(0.95);
-  }
+        .bot-message .message-bubble {
+            background: linear-gradient(135deg, rgba(16, 163, 127, 0.1), rgba(122, 162, 247, 0.1));
+            border-color: rgba(16, 163, 127, 0.2);
+        }
+        
+        .message-text {
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            opacity: 0.8;
+        }
+        
+        .chat-input-container {
+            padding: 25px;
+            border-top: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+        }
+        
+        .chat-input-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .chat-input {
+            width: 100%;
+            background: var(--chat-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 16px 60px 16px 20px;
+            color: var(--text-color);
+            resize: none;
+            max-height: 200px;
+            font-size: 1rem;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.1);
+        }
+        
+        .send-btn {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(16, 163, 127, 0.3);
+        }
+        
+        .send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 163, 127, 0.4);
+        }
 
-  #up-btn {
-    grid-column: 2;
-    grid-row: 1;
-  }
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .welcome-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+        }
 
-  #left-btn {
-    grid-column: 1;
-    grid-row: 2;
-  }
+        .welcome-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(16, 163, 127, 0.3);
+        }
+        
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-  #down-btn {
-    grid-column: 2;
-    grid-row: 3;
-  }
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+        
+        .suggested-questions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+            max-width: 800px;
+            width: 100%;
+        }
 
-  #right-btn {
-    grid-column: 3;
-    grid-row: 2;
-  }
+        .question-chip {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 16px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: left;
+            backdrop-filter: blur(10px);
+        }
 
-  #shoot-btn {
-    width: 80px;
-    height: 80px;
-    background: rgba(220, 38, 38, 0.8);
-    border: none;
-    border-radius: 50%;
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
-  }
+        .question-chip:hover {
+            background: var(--glass-border);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .typing-indicator {
+            display: flex;
+            gap: 6px;
+            padding: 16px 20px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes typing {
+            0%, 80%, 100% { 
+                transform: scale(0.8); 
+                opacity: 0.5; 
+            }
+            40% { 
+                transform: scale(1); 
+                opacity: 1; 
+            }
+        }
 
-  #shoot-btn:active {
-    background: rgba(185, 28, 28, 0.9);
-  }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
 
-  /* Machine Gun Status */
-  #machine-gun-status {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 14px;
-    z-index: 10;
-    min-width: 150px;
-  }
+        .modal.active {
+            display: flex;
+        }
 
-  #machine-gun-status div {
-    margin: 5px 0;
-  }
+        .modal-content {
+            background: var(--sidebar-bg);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
 
-  /* Stats Panel */
-  #stats-panel {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 14px;
-    z-index: 10;
-    min-width: 150px;
-  }
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
 
-  #stats-panel div {
-    margin: 5px 0;
-  }
+        .modal-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
 
-  /* Mobile-specific styles */
-  @media (max-width: 768px) {
-    #game-container {
-      padding: 16px;
-      width: 95vw;
-      height: 95vh;
-      max-height: 100vh;
-      justify-content: flex-start;
-    }
-    
-    #game {
-      width: 100%;
-      height: 50vh;
-      max-height: 400px;
-    }
-    
-    #info-bar {
-      margin-top: 12px;
-      font-size: 16px;
-    }
-    
-    .label {
-      min-width: 80px;
-    }
-    
-    #restart-btn {
-      margin-top: 16px;
-      padding: 12px 24px;
-      font-size: 16px;
-    }
-    
-    #touch-controls {
-      bottom: 10px;
-      padding: 0 10px;
-    }
-    
-    #movement-controls {
-      width: 130px;
-      height: 130px;
-    }
-    
-    .control-btn {
-      width: 40px;
-      height: 40px;
-      font-size: 16px;
-    }
-    
-    #shoot-control {
-      width: 80px;
-      height: 80px;
-    }
-    
-    #shoot-btn {
-      width: 60px;
-      height: 60px;
-      font-size: 12px;
-    }
-    
-    #stats-panel, #machine-gun-status {
-      font-size: 12px;
-      padding: 5px;
-      min-width: 120px;
-    }
-    
-    #level-display {
-      font-size: 20px;
-    }
-    
-    #boss-warning {
-      font-size: 22px;
-    }
-  }
+        .modal-btn.primary {
+            background: var(--danger-color);
+            color: white;
+        }
 
-  @media (max-width: 480px) {
-    #game-container {
-      padding: 12px;
-    }
-    
-    #game {
-      height: 45vh;
-    }
-    
-    #info-bar {
-      font-size: 14px;
-    }
-    
-    .label {
-      min-width: 70px;
-    }
-    
-    #restart-btn {
-      padding: 10px 20px;
-      font-size: 14px;
-    }
-    
-    #movement-controls {
-      width: 110px;
-      height: 110px;
-    }
-    
-    .control-btn {
-      width: 35px;
-      height: 35px;
-      font-size: 14px;
-    }
-    
-    #shoot-control {
-      width: 70px;
-      height: 70px;
-    }
-    
-    #shoot-btn {
-      width: 50px;
-      height: 50px;
-      font-size: 10px;
-    }
-    
-    #stats-panel, #machine-gun-status {
-      font-size: 10px;
-      min-width: 100px;
-    }
-    
-    #level-display {
-      font-size: 18px;
-    }
-    
-    #boss-warning {
-      font-size: 18px;
-    }
-  }
+        .modal-btn.secondary {
+            background: var(--glass-bg);
+            color: var(--text-color);
+            border: 1px solid var(--glass-border);
+        }
 
-  /* Landscape orientation adjustments */
-  @media (max-height: 500px) and (orientation: landscape) {
-    #game-container {
-      padding: 10px;
-      flex-direction: row;
-      align-items: flex-start;
-      gap: 10px;
-    }
-    
-    #game {
-      height: 80vh;
-      max-height: 300px;
-      flex: 2;
-    }
-    
-    #info-bar {
-      flex-direction: column;
-      margin-top: 0;
-      flex: 1;
-    }
-    
-    #restart-btn {
-      margin-top: 10px;
-    }
-    
-    #touch-controls {
-      bottom: 5px;
-    }
-  }
-</style>
+        .modal-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                transform: translateX(-100%);
+                width: 300px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+
+            .chat-header-right {
+                display: none;
+            }
+            
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.6);
+                backdrop-filter: blur(3px);
+                z-index: 999;
+                display: none;
+            }
+            
+            .overlay.active {
+                display: block;
+            }
+
+            .welcome-title {
+                font-size: 2rem;
+            }
+
+            .suggested-questions {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-messages {
+                padding: 20px 15px;
+                gap: 20px;
+            }
+
+            .chat-input-container {
+                padding: 20px 15px;
+            }
+
+            .stats-container {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar {
+                width: 280px;
+            }
+
+            .message {
+                gap: 12px;
+            }
+
+            .message-avatar {
+                width: 32px;
+                height: 32px;
+            }
+
+            .message-bubble {
+                padding: 14px 16px;
+            }
+        }
+    </style>
 </head>
-<body>
-<div id="game-container" role="main" aria-label="Tank War game with enemy tanks">
-  <canvas id="game" width="850" height="480" aria-label="Game canvas where tanks fight"></canvas>
-  <div id="level-display">Level 1</div>
-  <div id="boss-warning">BOSS BATTLE!</div>
-  <div id="player-health">
-    <div id="health-bar"></div>
-  </div>
-  <div id="stats-panel">
-    <div id="score-display">Score: 0</div>
-    <div id="hits-display">Hits: 0</div>
-    <div id="bosses-defeated">Bosses: 0</div>
-    <div id="level-display-stats">Level: 1</div>
-  </div>
-  <div id="machine-gun-status">
-    <div>Machine Gun: <span id="machine-gun-active">ACTIVE</span></div>
-    <div>Targets: <span id="target-count">0</span></div>
-  </div>
-  <div id="info-bar" aria-live="polite" aria-atomic="true">
-    <div class="label" id="score-label">Score: 0</div>
-    <div class="label" id="lives-label">Lives: 3</div>
-    <div class="label" id="level-label">Level: 1</div>
-  </div>
-  <button id="restart-btn" aria-label="Restart game" role="button">Restart Game</button>
-</div>
-
-<!-- Touch controls -->
-<div id="touch-controls">
-  <div id="movement-controls">
-    <button id="up-btn" class="control-btn">↑</button>
-    <button id="left-btn" class="control-btn">←</button>
-    <button id="down-btn" class="control-btn">↓</button>
-    <button id="right-btn" class="control-btn">→</button>
-  </div>
-  <div id="shoot-control">
-    <button id="shoot-btn" class="control-btn">SHOOT</button>
-  </div>
-</div>
-
-<!-- Audio elements -->
-<audio id="shoot-sound" preload="auto">
-  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
-</audio>
-<audio id="machine-gun-sound" preload="auto" loop>
-  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
-</audio>
-<audio id="explosion-sound" preload="auto">
-  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
-</audio>
-<audio id="hit-sound" preload="auto">
-  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
-</audio>
-<audio id="powerup-sound" preload="auto">
-  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
-</audio>
-<audio id="boss-sound" preload="auto">
-  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
-</audio>
-<audio id="level-start-sound" preload="auto">
-  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
-</audio>
-<audio id="tank-move-sound" preload="auto" loop>
-  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
-</audio>
-<!-- Background Music -->
-<audio id="bgm-1" preload="auto" loop>
-  <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAABAAACcQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8AAABQTEFNRTMuMTAwBKkAAAAAAAAAADUgJAO8RQABAAACcQ5WQk0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//tAxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mpeg">
-</audio>
-
-<script>
-(() => {
-  // Audio elements
-  const shootSound = document.getElementById('shoot-sound');
-  const machineGunSound = document.getElementById('machine-gun-sound');
-  const explosionSound = document.getElementById('explosion-sound');
-  const hitSound = document.getElementById('hit-sound');
-  const powerupSound = document.getElementById('powerup-sound');
-  const bossSound = document.getElementById('boss-sound');
-  const levelStartSound = document.getElementById('level-start-sound');
-  const tankMoveSound = document.getElementById('tank-move-sound');
-  const bgm1 = document.getElementById('bgm-1');
-  
-  // Track if BGM is already playing
-  let bgmPlaying = false;
-  let currentBGM = null;
-  
-  const canvas = document.getElementById('game');
-  const ctx = canvas.getContext('2d');
-  
-  // Make canvas responsive
-  function resizeCanvas() {
-    const container = document.getElementById('game-container');
-    const maxWidth = Math.min(850, container.clientWidth - 40);
-    const aspectRatio = 850 / 480;
-    canvas.width = maxWidth;
-    canvas.height = maxWidth / aspectRatio;
-  }
-  
-  // Initial resize and event listener
-  resizeCanvas();
-  window.addEventListener('resize', resizeCanvas);
-  
-  const W = canvas.width;
-  const H = canvas.height;
-
-  // Adjust tank size based on screen size
-  const TANK_SIZE = Math.max(30, Math.min(36, W / 25));
-  let currentLevel = 1;
-  let maxEnemies = 8;
-  let levelDisplay = document.getElementById('level-display');
-  let bossWarning = document.getElementById('boss-warning');
-  let healthBar = document.getElementById('health-bar');
-
-  const DIRS = {
-    up: {x:0, y:-1},
-    down: {x:0, y:1},
-    left: {x:-1, y:0},
-    right: {x:1, y:0}
-  };
-
-  const keys = {
-    ArrowUp: false,
-    ArrowDown: false,
-    ArrowLeft: false,
-    ArrowRight: false,
-    Space: false,
-  };
-
-  let score = 0;
-  let lives = 3;
-  let gameOver = false;
-  let gameWon = false;
-  let bossActive = false;
-  let bossTank = null;
-  let playerUpgrades = 0;
-  let bossDefeated = false;
-  let levelTransition = false;
-  let hits = 0;
-  let bossesDefeated = 0;
-
-  // Machine gun properties
-  let machineGunActive = true;
-  let machineGunTargets = [];
-  let machineGunCooldown = 0;
-  const MACHINE_GUN_RANGE = 0.4; // 40% of screen
-  const MACHINE_GUN_COOLDOWN_TIME = 200; // ms between bursts
-  const MACHINE_GUN_BULLETS_PER_BURST = 4;
-
-  // List of boss names and colors
-  const BOSS_TANKS = [
-    { name: "Area Manager", color: "--boss-area-manager", size: 45, health: 4, speed: 0.8, shootDelay: 1500 },
-    { name: "Operations Manager", color: "--boss-operations-manager", size: 42, health: 3, speed: 0.9, shootDelay: 1400 },
-    { name: "Internal Audit", color: "--boss-internal-audit", size: 40, health: 4, speed: 0.7, shootDelay: 1600 },
-    { name: "C.F.S", color: "--boss-cfs", size: 44, health: 3, speed: 1.0, shootDelay: 1300 },
-    { name: "Muhammad Hafiz", color: "--boss-muhammad-hafiz", size: 46, health: 4, speed: 0.8, shootDelay: 1500 },
-    { name: "Mohammad Yousuf", color: "--boss-mohammad-yousuf", size: 43, health: 3, speed: 0.9, shootDelay: 1400 },
-    { name: "Director", color: "--boss-director", size: 50, health: 5, speed: 0.6, shootDelay: 1800 },
-    { name: "Training Manager", color: "--boss-training-manager", size: 41, health: 3, speed: 1.0, shootDelay: 1300 },
-    { name: "Kudu Boss", color: "--boss-kudu", size: 48, health: 4, speed: 0.8, shootDelay: 1500 }
-  ];
-
-  function clamp(val, min, max) {
-    return Math.min(max, Math.max(min, val));
-  }
-
-  // Helper to get CSS variable value
-  function getCssVar(varName) {
-    return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
-  }
-
-  // Update stats display
-  function updateStats() {
-    document.getElementById('score-display').textContent = `Score: ${score}`;
-    document.getElementById('hits-display').textContent = `Hits: ${hits}`;
-    document.getElementById('bosses-defeated').textContent = `Bosses: ${bossesDefeated}`;
-    document.getElementById('level-display-stats').textContent = `Level: ${currentLevel}`;
-    document.getElementById('machine-gun-active').textContent = machineGunActive ? "ACTIVE" : "INACTIVE";
-    document.getElementById('target-count').textContent = machineGunTargets.length;
-  }
-
-  // Particle system for effects
-  class ParticleSystem {
-    constructor() {
-      this.particles = [];
-    }
-    
-    addParticles(x, y, color, count, size, speed, life, gravity = 0) {
-      for (let i = 0; i < count; i++) {
-        this.particles.push({
-          x, y,
-          vx: (Math.random() - 0.5) * speed,
-          vy: (Math.random() - 0.5) * speed,
-          color,
-          size: Math.random() * size + size/2,
-          life: Math.random() * life + life/2,
-          maxLife: life,
-          gravity
-        });
-      }
-    }
-    
-    update() {
-      for (let i = this.particles.length - 1; i >= 0; i--) {
-        const p = this.particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += p.gravity;
-        p.life--;
+<body data-theme="dark">
+    <div class="chat-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn" id="newChatBtn">
+                    <i class="fas fa-plus"></i> New Chat
+                </button>
+            </div>
+            
+            <div class="sidebar-controls">
+                <button class="control-btn" id="exportBtn" title="Export Chat">
+                    <i class="fas fa-download"></i>
+                </button>
+                <button class="control-btn danger" id="clearHistoryBtn" title="Clear History">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            
+            <div class="chat-history" id="chatHistory">
+                <!-- Chat history will be populated here -->
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="stats-container" id="statsContainer">
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalChats">0</div>
+                        <div class="stat-label">Chats</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number" id="totalMessages">0</div>
+                        <div class="stat-label">Messages</div>
+                    </div>
+                </div>
+                
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600;">KUDU User</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Online</div>
+                    </div>
+                    <button class="theme-toggle" id="themeToggle" title="Toggle Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
         
-        if (p.life <= 0) {
-          this.particles.splice(i, 1);
-        }
-      }
-    }
-    
-    draw(ctx) {
-      ctx.save();
-      for (const p of this.particles) {
-        const alpha = p.life / p.maxLife;
-        ctx.globalAlpha = alpha;
-        ctx.fillStyle = p.color;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size * alpha, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-    }
-  }
-
-  const particles = new ParticleSystem();
-
-  class Bullet {
-    constructor(x, y, dir, owner, isMachineGun = false) {
-      this.x = x;
-      this.y = y;
-      this.size = isMachineGun ? 4 : 8;
-      this.speed = isMachineGun ? 8 : (owner.isBoss ? 3 : (6 + (owner.isPlayer ? 2 + (playerUpgrades * 1) : 0)));
-      this.dir = dir;
-      this.owner = owner;
-      this.active = true;
-      this.trail = [];
-      this.maxTrail = isMachineGun ? 3 : 5;
-      this.isMachineGun = isMachineGun;
-      
-      // Set color based on bullet type
-      if (isMachineGun) {
-        this.color = '#FFA500'; // Orange for machine gun
-      } else {
-        this.color = owner.isPlayer ? 
-                   (playerUpgrades > 0 ? '#FFD700' : '#2563EB') : 
-                   (owner.isBoss ? getCssVar(owner.color) : '#DC2626');
-      }
-      
-      // Play appropriate sound
-      if (owner.isPlayer) {
-        if (isMachineGun) {
-          // Machine gun sound is handled separately for continuous firing
-        } else {
-          shootSound.currentTime = 0;
-          shootSound.volume = 0.3;
-          shootSound.play().catch(e => console.log("Audio play failed:", e));
-        }
-      } else if (owner.isBoss) {
-        shootSound.currentTime = 0;
-        shootSound.volume = 0.4;
-        shootSound.play().catch(e => console.log("Audio play failed:", e));
-      }
-    }
-    
-    update() {
-      if(!this.active) return;
-      
-      // Add current position to trail
-      this.trail.push({x: this.x, y: this.y});
-      if (this.trail.length > this.maxTrail) {
-        this.trail.shift();
-      }
-      
-      this.x += this.dir.x * this.speed;
-      this.y += this.dir.y * this.speed;
-
-      if(this.x < 0 || this.x > W || this.y < 0 || this.y > H) {
-        this.active = false;
-        // Add impact particles
-        particles.addParticles(
-          clamp(this.x, 0, W), 
-          clamp(this.y, 0, H), 
-          this.isMachineGun ? '#FFA500' : '#ffffff', 
-          3, 
-          2, 
-          2, 
-          15
-        );
-      }
-    }
-    
-    draw(ctx) {
-      if(!this.active) return;
-      ctx.save();
-      
-      // Draw trail
-      if (this.trail.length > 1) {
-        ctx.strokeStyle = this.isMachineGun ? 
-                         'rgba(255, 165, 0, 0.5)' : 
-                         (this.owner.isPlayer ? 
-                         (playerUpgrades > 0 ? 'rgba(255, 215, 0, 0.5)' : 'rgba(59, 130, 246, 0.5)') : 
-                         (this.owner.isBoss ? `${getCssVar(this.owner.color)}80` : 'rgba(220, 38, 38, 0.5)'));
-        ctx.lineWidth = this.isMachineGun ? 2 : 3;
-        ctx.beginPath();
-        ctx.moveTo(this.trail[0].x, this.trail[0].y);
-        for (let i = 1; i < this.trail.length; i++) {
-          ctx.lineTo(this.trail[i].x, this.trail[i].y);
-        }
-        ctx.stroke();
-      }
-      
-      // Draw bullet
-      const gradient = ctx.createRadialGradient(
-        this.x, this.y, 0,
-        this.x, this.y, this.size/2
-      );
-      
-      if (this.isMachineGun) {
-        gradient.addColorStop(0, '#FFECB3');
-        gradient.addColorStop(1, this.color);
-      } else {
-        gradient.addColorStop(0, this.owner.isPlayer ? 
-                            (playerUpgrades > 0 ? '#FFECB3' : '#93C5FD') : 
-                            (this.owner.isBoss ? `${getCssVar(this.owner.color)}` : '#FCA5A5'));
-        gradient.addColorStop(1, this.color);
-      }
-      
-      ctx.fillStyle = gradient;
-      ctx.shadowColor = this.color;
-      ctx.shadowBlur = this.isMachineGun ? 5 : 10;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.size / 2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    }
-    
-    getRect() {
-      return {x:this.x - this.size/2, y:this.y - this.size/2, w:this.size, h:this.size};
-    }
-  }
-
-  class Tank {
-    constructor(x, y, colorPrimary, colorSecondary = null, name = '', isPlayer = false, type = 'normal', isBoss = false, bossData = null) {
-      this.x = x;
-      this.y = y;
-      this.size = isBoss ? bossData.size : TANK_SIZE;
-      this.colorPrimary = getCssVar(colorPrimary);
-      this.colorSecondary = colorSecondary ? getCssVar(colorSecondary) : null;
-      this.name = name;
-      this.speed = isPlayer ? 2.5 : (isBoss ? bossData.speed : (type === 'fast' ? 2.2 : (type === 'heavy' ? 1.2 : 1.5)));
-      this.dir = 'up';
-      this.isPlayer = isPlayer;
-      this.isBoss = isBoss;
-      this.bullets = [];
-      this.machineGunBullets = [];
-      // Made boss reload time longer (bossData.shootDelay instead of 600ms)
-      this.reloadTime = isPlayer ? (400 - (playerUpgrades * 50)) : 
-                    (isBoss ? bossData.shootDelay : 
-                    (type === 'fast' ? 600 : 
-                    (type === 'heavy' ? 1200 : 800)));
-      this.canShoot = true;
-      this.health = isPlayer ? 3 : 
-                   (isBoss ? bossData.health : 
-                   (type === 'heavy' ? 5 : 
-                   (type === 'elite' ? 4 : 3)));
-      this.maxHealth = this.health;
-      this.alive = true;
-      this.moveDirVector = {x:0, y:0};
-      this.moveTimer = 0;
-      this.shootTimer = 0;
-      this.reloadTimeElapsed = 0;
-      this.type = type;
-      this.idleTimer = 0;
-      this.idleTime = Math.random() * 2000 + 1000;
-      this.trackOffset = 0;
-      this.smokeTimer = 0;
-      this.color = colorPrimary;
-      this.bossData = bossData;
-      this.isMoving = false;
-    }
-    
-    update(deltaTime) {
-      if(!this.alive) return;
-
-      if(this.isPlayer) {
-        this.handlePlayerInput();
-      } else if (this.isBoss) {
-        this.handleBossAI(deltaTime);
-      } else {
-        this.handleEnemyAI(deltaTime);
-      }
-      
-      this.move(deltaTime);
-      this.updateBullets(deltaTime);
-
-      if(!this.canShoot) {
-        this.reloadTimeElapsed += deltaTime;
-        if(this.reloadTimeElapsed >= this.reloadTime) {
-          this.canShoot = true;
-        }
-      }
-      
-      // Track animation
-      this.trackOffset = (this.trackOffset + 0.1) % 20;
-      
-      // Smoke effect when moving
-      if ((this.moveDirVector.x !== 0 || this.moveDirVector.y !== 0) && !this.isPlayer) {
-        this.smokeTimer += deltaTime;
-        if (this.smokeTimer > 100) {
-          this.smokeTimer = 0;
-          const backX = this.x + this.size/2 + (this.dir === 'left' ? this.size/2 : 
-                        (this.dir === 'right' ? -this.size/2 : 0));
-          const backY = this.y + this.size/2 + (this.dir === 'up' ? this.size/2 : 
-                        (this.dir === 'down' ? -this.size/2 : 0));
-          particles.addParticles(
-            backX, 
-            backY, 
-            '#6B7280', 
-            2, 
-            4, 
-            1, 
-            30,
-            0.05
-          );
-        }
-      }
-      
-      // Handle tank movement sound for player
-      if (this.isPlayer) {
-        if ((this.moveDirVector.x !== 0 || this.moveDirVector.y !== 0) && !this.isMoving) {
-          this.isMoving = true;
-          tankMoveSound.currentTime = 0;
-          tankMoveSound.volume = 0.3;
-          tankMoveSound.play().catch(e => console.log("Audio play failed:", e));
-        } else if ((this.moveDirVector.x === 0 && this.moveDirVector.y === 0) && this.isMoving) {
-          this.isMoving = false;
-          tankMoveSound.pause();
-        }
-      }
-    }
-    
-    handlePlayerInput() {
-      this.moveDirVector = {x: 0, y: 0};
-      if (keys.ArrowUp) {
-        this.dir = 'up';
-        this.moveDirVector.y = -1;
-      } else if (keys.ArrowDown) {
-        this.dir = 'down';
-        this.moveDirVector.y = 1;
-      } else if (keys.ArrowLeft) {
-        this.dir = 'left';
-        this.moveDirVector.x = -1;
-      } else if (keys.ArrowRight) {
-        this.dir = 'right';
-        this.moveDirVector.x = 1;
-      }
-      
-      // Handle shooting with spacebar
-      if (keys.Space && this.canShoot) {
-        this.shoot();
-      }
-    }
-    
-    handleBossAI(deltaTime) {
-      if (!player || !player.alive) return;
-      
-      this.moveTimer += deltaTime;
-      this.shootTimer += deltaTime;
-      
-      // Boss follows player
-      const dx = player.x - this.x;
-      const dy = player.y - this.y;
-      
-      if (Math.abs(dx) > Math.abs(dy)) {
-        this.dir = dx > 0 ? 'right' : 'left';
-      } else {
-        this.dir = dy > 0 ? 'down' : 'up';
-      }
-      
-      // Move toward player
-      if (this.moveTimer > 1000) {
-        this.moveDirVector = DIRS[this.dir];
-        this.moveTimer = 0;
-      }
-      
-      // Shoot at player - less frequently now
-      if (this.shootTimer > this.bossData.shootDelay) {
-        this.shoot();
-        this.shootTimer = 0;
+        <!-- Chat Area -->
+        <div class="chat-area">
+            <div class="chat-header">
+                <div class="chat-header-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div>
+                        <h5 class="mb-0">KUDU Assistant</h5>
+                        <small class="text-muted">AI-Powered Restaurant Assistant</small>
+                    </div>
+                </div>
+                
+                <div class="chat-header-right">
+                    <button class="header-btn" id="shareBtn" title="Share Chat">
+                        <i class="fas fa-share"></i> Share
+                    </button>
+                    <button class="header-btn" id="settingsBtn" title="Settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <!-- Welcome Screen -->
+                <div class="welcome-screen" id="welcomeScreen">
+                    <div class="welcome-logo">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h1 class="welcome-title">Welcome to KUDU Assistant</h1>
+                    <p class="welcome-subtitle">Your intelligent restaurant companion. Ask me anything about KUDU!</p>
+                    
+                    <div class="suggested-questions" id="suggestedQuestions">
+                        <!-- Suggested questions will be added here dynamically -->
+                    </div>
+                </div>
+                
+                <!-- Messages will be added here dynamically -->
+            </div>
+            
+            <div class="chat-input-container">
+                <div class="chat-input-wrapper">
+                    <textarea class="chat-input" id="chatInput" rows="1" placeholder="Ask about KUDU restaurants, menu, history..."></textarea>
+                    <button class="send-btn" id="sendBtn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
         
-        // Less frequent multiple shots
-        if (Math.random() < 0.2) {
-          setTimeout(() => {
-            if (this.alive) this.shoot();
-          }, 400);
-        }
-      }
-    }
-    
-    handleEnemyAI(deltaTime) {
-      this.moveTimer += deltaTime;
-      this.shootTimer += deltaTime;
-      this.idleTimer += deltaTime;
+        <!-- Mobile overlay -->
+        <div class="overlay" id="overlay"></div>
+    </div>
 
-      // Different behavior based on tank type
-      switch(this.type) {
-        case 'fast':
-          if (this.moveTimer > 1000) {
-            const dirs = ['up', 'down', 'left', 'right'];
-            this.dir = dirs[Math.floor(Math.random() * dirs.length)];
-            this.moveDirVector = DIRS[this.dir];
-            this.moveTimer = 0;
-          }
-          if (this.shootTimer > 800 && Math.random() < 0.7) {
-            this.shoot();
-            this.shootTimer = 0;
-          }
-          break;
-          
-        case 'heavy':
-          if (this.idleTimer > this.idleTime) {
-            if (Math.random() < 0.3) {
-              this.moveDirVector = {x:0, y:0};
-              this.idleTime = Math.random() * 1000 + 500;
-            } else {
-              const dirs = ['up', 'down', 'left', 'right'];
-              this.dir = dirs[Math.floor(Math.random() * dirs.length)];
-              this.moveDirVector = DIRS[this.dir];
-              this.idleTime = Math.random() * 2000 + 1000;
-            }
-            this.idleTimer = 0;
-          }
-          if (this.shootTimer > 1500 && Math.random() < 0.8) {
-            this.shoot();
-            this.shootTimer = 0;
-          }
-          break;
-          
-        case 'elite':
-          // Elite tanks try to face player
-          if (player && player.alive) {
-            const dx = player.x - this.x;
-            const dy = player.y - this.y;
-            
-            if (Math.abs(dx) > Math.abs(dy)) {
-              this.dir = dx > 0 ? 'right' : 'left';
-            } else {
-              this.dir = dy > 0 ? 'down' : 'up';
-            }
-            
-            // Move toward or away from player
-            if (this.moveTimer > 1500) {
-              if (Math.random() < 0.7) {
-                this.moveDirVector = DIRS[this.dir];
-              } else {
-                this.moveDirVector = {x:0, y:0};
-              }
-              this.moveTimer = 0;
-            }
-            
-            // Shoot more accurately
-            if (this.shootTimer > 1200 && Math.random() < 0.9) {
-              this.shoot();
-              this.shootTimer = 0;
-            }
-          }
-          break;
-          
-        default: // normal
-          if (this.moveTimer > 2000) {
-            const dirs = ['up', 'down', 'left', 'right', null];
-            const choice = dirs[Math.floor(Math.random() * dirs.length)];
-            if (choice === null) {
-              this.moveDirVector = {x:0, y:0};
-            } else {
-              this.dir = choice;
-              this.moveDirVector = DIRS[this.dir];
-            }
-            this.moveTimer = 0;
-          }
-          if (this.shootTimer > 1000 && Math.random() < 0.5) {
-            this.shoot();
-            this.shootTimer = 0;
-          }
-      }
-    }
-    
-    move(deltaTime) {
-      if (this.moveDirVector.x === 0 && this.moveDirVector.y === 0) return;
+    <!-- Clear History Modal -->
+    <div class="modal" id="clearModal">
+        <div class="modal-content">
+            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--warning-color); margin-bottom: 20px;"></i>
+            <h4>Clear Chat History?</h4>
+            <p style="color: var(--text-secondary); margin-bottom: 0;">This action cannot be undone. All your chat history will be permanently deleted.</p>
+            <div class="modal-buttons">
+                <button class="modal-btn secondary" id="cancelClear">Cancel</button>
+                <button class="modal-btn primary" id="confirmClear">Clear All</button>
+            </div>
+        </div>
+    </div>
 
-      let nextX = this.x + this.moveDirVector.x * this.speed;
-      let nextY = this.y + this.moveDirVector.y * this.speed;
-      nextX = clamp(nextX, 0, W - this.size);
-      nextY = clamp(nextY, 0, H - this.size);
+    <script>
+        // Enhanced knowledge base with more comprehensive information
+        let knowledgeBase = {
+            "kudu history": "The first KUDU restaurant opened in Riyadh on April 16th, 1988. During the following 4 years, 7 more locations were added in Riyadh. In 1992, the first restaurant outside of Riyadh opened in Jeddah. In 1993, expansion continued in the Eastern province of KSA. In the following years, KUDU expanded to cover Abha, Tabuk, Taif, Madinah, and the central province. In 2003, KUDU ventured into the franchise system and opened franchise outlets inside and outside the Kingdom, in Kuwait and UAE. In 2004, KUDU signed a franchise agreement to open its second outlet in Sudan. In 2008, KUDU franchise opened 2 branches in Jordan. Expansion occurred outside of the Kingdom of Saudi Arabia into other countries in the Gulf region. In October 2021, Al Rashed and Al Said group completed a buyout of KUDU Company for Food and Catering.",
+            
+            "brand message": "KUDU's brand message is 'Taste you can see'. It aims to bridge the gap between what KUDU stands for and the young generation, focusing on visual appeal and quality that customers can immediately recognize.",
 
-      this.x = nextX;
-      this.y = nextY;
-    }
-    
-    shoot() {
-      if (!this.canShoot || !this.alive) return;
-      const centerX = this.x + this.size / 2;
-      const centerY = this.y + this.size / 2;
-      let bulletX = centerX;
-      let bulletY = centerY;
-      let dirVector = DIRS[this.dir];
-      
-      // Offset bullet based on direction
-      switch (this.dir) {
-        case 'up': bulletY -= this.size / 2; break;
-        case 'down': bulletY += this.size / 2; break;
-        case 'left': bulletX -= this.size / 2; break;
-        case 'right': bulletX += this.size / 2; break;
-      }
-      
-      this.bullets.push(new Bullet(bulletX, bulletY, dirVector, this, false));
-      
-      // Muzzle flash effect
-      particles.addParticles(
-        bulletX, bulletY,
-        this.isPlayer ? (playerUpgrades > 0 ? '#FFD700' : '#93C5FD') : 
-                       (this.isBoss ? getCssVar(this.color) : '#FCA5A5'),
-        5, 6, 3, 10
-      );
-      
-      this.canShoot = false;
-      this.reloadTimeElapsed = 0;
-      
-      // Boss and elite tanks sometimes shoot multiple bullets
-      if ((this.isBoss || this.type === 'elite') && Math.random() < 0.2) {
-        setTimeout(() => {
-          if (this.alive) {
-            this.bullets.push(new Bullet(bulletX, bulletY, dirVector, this, false));
-          }
-        }, 400);
-      }
-    }
-    
-    shootMachineGun(targetX, targetY) {
-      if (!this.alive) return;
-      
-      const centerX = this.x + this.size / 2;
-      const centerY = this.y + this.size / 2;
-      
-      // Calculate direction to target
-      const dx = targetX - centerX;
-      const dy = targetY - centerY;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      const dirVector = {x: dx / distance, y: dy / distance};
-      
-      // Shoot multiple bullets with slight spread
-      for (let i = 0; i < MACHINE_GUN_BULLETS_PER_BURST; i++) {
-        // Add slight spread to machine gun bullets
-        const spreadX = (Math.random() - 0.5) * 0.2;
-        const spreadY = (Math.random() - 0.5) * 0.2;
-        const spreadDir = {
-          x: dirVector.x + spreadX,
-          y: dirVector.y + spreadY
+
+ "kudu mission": "To be a leading Saudi brand in the field of fast-food restaurants, offering delicious, fresh high-quality foods with a unique experience and a different anddistinctive preparation method",
+
+"kudu vision": "To be a leading Saudi company in the field of restaurants, with a strong international network of multi-formats franchised partnerships.",
+
+"kudu CORE VALUES": "Customer First,Transparency,Teamwork,Excellence",
+
+
+
+
+
+
+
+            
+           
+            
+            "default": "I'm sorry, I don't have specific information about that topic. Please ask the developer to add more information to the database, or try asking about KUDU's history, menu, locations, or services."
         };
+
+        // DOM Elements
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const newChatBtn = document.getElementById('newChatBtn');
+        const chatHistory = document.getElementById('chatHistory');
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.getElementById('overlay');
+        const suggestedQuestions = document.getElementById('suggestedQuestions');
+        const themeToggle = document.getElementById('themeToggle');
+        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const clearModal = document.getElementById('clearModal');
+        const cancelClear = document.getElementById('cancelClear');
+        const confirmClear = document.getElementById('confirmClear');
+        const shareBtn = document.getElementById('shareBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const totalChats = document.getElementById('totalChats');
+        const totalMessages = document.getElementById('totalMessages');
+
+        // Chat state
+        let currentChatId = null;
+        let chats = JSON.parse(localStorage.getItem('kudu_chats')) || {};
+        let currentTheme = localStorage.getItem('kudu_theme') || 'dark';
+        let isTyping = false;
         
-        // Normalize direction vector
-        const length = Math.sqrt(spreadDir.x * spreadDir.x + spreadDir.y * spreadDir.y);
-        spreadDir.x /= length;
-        spreadDir.y /= length;
-        
-        this.machineGunBullets.push(new Bullet(centerX, centerY, spreadDir, this, true));
-      }
-      
-      // Muzzle flash effect for machine gun
-      particles.addParticles(
-        centerX, centerY,
-        '#FFA500',
-        8, 4, 2, 8
-      );
-    }
-    
-    updateBullets(deltaTime) {
-      this.bullets.forEach(b => { if(b.active) b.update(); });
-      this.bullets = this.bullets.filter(b => b.active);
-      
-      this.machineGunBullets.forEach(b => { if(b.active) b.update(); });
-      this.machineGunBullets = this.machineGunBullets.filter(b => b.active);
-    }
-    
-    draw(ctx) {
-      if (!this.alive) return;
-      ctx.save();
-
-      // Draw tank tracks (moving effect)
-      ctx.fillStyle = '#374151';
-      ctx.strokeStyle = '#1F2937';
-      ctx.lineWidth = 2;
-      
-      // Draw tracks based on direction
-      if (this.dir === 'up' || this.dir === 'down') {
-        // Left track
-        roundRect(ctx, 
-          this.x - 4, 
-          this.y + this.trackOffset - 10, 
-          6, 
-          this.size + 20, 
-          3, 
-          true, 
-          true
-        );
-        // Right track
-        roundRect(ctx, 
-          this.x + this.size - 2, 
-          this.y + this.trackOffset - 10, 
-          6, 
-          this.size + 20, 
-          3, 
-          true, 
-          true
-        );
-      } else {
-        // Top track
-        roundRect(ctx, 
-          this.x + this.trackOffset - 10, 
-          this.y - 4, 
-          this.size + 20, 
-          6, 
-          3, 
-          true, 
-          true
-        );
-        // Bottom track
-        roundRect(ctx, 
-          this.x + this.trackOffset - 10, 
-          this.y + this.size - 2, 
-          this.size + 20, 
-          6, 
-          3, 
-          true, 
-          true
-        );
-      }
-
-      // Player tank dual color: left half primary, right half secondary
-      if (this.isPlayer && this.colorSecondary) {
-        // Left half
-        ctx.fillStyle = this.colorPrimary;
-        ctx.shadowColor = this.colorPrimary;
-        ctx.shadowBlur = 12;
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-        roundRect(ctx, this.x, this.y, this.size / 2, this.size, 10, true, true);
-        // Right half
-        ctx.fillStyle = this.colorSecondary;
-        ctx.shadowColor = this.colorSecondary;
-        ctx.shadowBlur = 12;
-        roundRect(ctx, this.x + this.size / 2, this.y, this.size / 2, this.size, 0, true, true);
-      } else {
-        // Single color tank (enemies and bosses)
-        ctx.fillStyle = this.colorPrimary;
-        ctx.shadowColor = this.colorPrimary;
-        ctx.shadowBlur = this.isBoss ? 20 : (this.type === 'elite' ? 15 : 10);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-        
-        // Boss and heavy tanks look different
-        if (this.isBoss || this.type === 'heavy') {
-          roundRect(ctx, this.x-2, this.y-2, this.size+4, this.size+4, 12, true, true);
-        } else {
-          roundRect(ctx, this.x, this.y, this.size, this.size, 10, true, true);
-        }
-      }
-
-      // Turret
-      ctx.fillStyle = this.isBoss ? '#FFFFFF' : (this.type === 'elite' ? '#E5E7EB' : '#FFFFFF');
-      ctx.strokeStyle = this.colorPrimary;
-      ctx.lineWidth = this.isBoss ? 5 : (this.type === 'heavy' ? 4 : 3);
-      ctx.beginPath();
-
-      const centerX = this.x + this.size / 2;
-      const centerY = this.y + this.size / 2;
-      const turretLength = this.size * (this.isBoss ? 0.7 : (this.type === 'heavy' ? 0.5 : 0.6));
-
-      let turretEndX = centerX;
-      let turretEndY = centerY;
-      switch (this.dir) {
-        case 'up': turretEndY -= turretLength; break;
-        case 'down': turretEndY += turretLength; break;
-        case 'left': turretEndX -= turretLength; break;
-        case 'right': turretEndX += turretLength; break;
-      }
-      ctx.moveTo(centerX, centerY);
-      ctx.lineTo(turretEndX, turretEndY);
-      ctx.stroke();
-      ctx.closePath();
-
-      // Machine gun turret (smaller, on top for player)
-      if (this.isPlayer) {
-        ctx.fillStyle = '#A0A0A0';
-        ctx.strokeStyle = '#606060';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        
-        const machineGunLength = this.size * 0.4;
-        let machineGunEndX = centerX;
-        let machineGunEndY = centerY;
-        
-        // Draw machine gun pointing at nearest target if available
-        if (machineGunTargets.length > 0) {
-          const target = machineGunTargets[0];
-          const dx = target.x - centerX;
-          const dy = target.y - centerY;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          machineGunEndX = centerX + (dx / distance) * machineGunLength;
-          machineGunEndY = centerY + (dy / distance) * machineGunLength;
-        } else {
-          // Default direction (same as main turret)
-          switch (this.dir) {
-            case 'up': machineGunEndY -= machineGunLength; break;
-            case 'down': machineGunEndY += machineGunLength; break;
-            case 'left': machineGunEndX -= machineGunLength; break;
-            case 'right': machineGunEndX += machineGunLength; break;
-          }
-        }
-        
-        ctx.moveTo(centerX, centerY);
-        ctx.lineTo(machineGunEndX, machineGunEndY);
-        ctx.stroke();
-        ctx.closePath();
-      }
-
-      // Draw bullets
-      this.bullets.forEach(b => b.draw(ctx));
-      this.machineGunBullets.forEach(b => b.draw(ctx));
-
-      // Draw tank name and health
-      if (this.name) {
-        ctx.fillStyle = 'var(--text-color)';
-        ctx.font = this.isBoss ? 'bold 12px var(--font-family)' : '11px var(--font-family)';
-        ctx.textAlign = 'center';
-        ctx.fillText(this.name, this.x + this.size / 2, this.y + this.size + 14);
-        
-        // Health bar for enemies and bosses
-        if (!this.isPlayer) {
-          const healthWidth = this.size * (this.health / this.maxHealth);
-          ctx.fillStyle = this.isBoss ? '#FF0000' : '#10B981';
-          ctx.fillRect(
-            this.x + (this.size - healthWidth)/2,
-            this.y - 10,
-            healthWidth,
-            4
-          );
-          ctx.strokeStyle = this.isBoss ? '#990000' : '#065F46';
-          ctx.strokeRect(
-            this.x + (this.size - healthWidth)/2,
-            this.y - 10,
-            healthWidth,
-            4
-          );
-        }
-      }
-
-      ctx.restore();
-    }
-    
-    getRect() {
-      return {x: this.x, y: this.y, w: this.size, h: this.size};
-    }
-    
-    hit(damage = 1, isMachineGun = false) {
-      this.health -= damage;
-      hits++;
-      updateStats();
-      
-      hitSound.currentTime = 0;
-      hitSound.volume = isMachineGun ? 0.1 : 0.2;
-      hitSound.play().catch(e => console.log("Audio play failed:", e));
-      
-      // Hit effect
-      particles.addParticles(
-        this.x + this.size/2,
-        this.y + this.size/2,
-        isMachineGun ? '#FFA500' : '#FFFFFF',
-        isMachineGun ? 5 : 10,
-        isMachineGun ? 2 : 3,
-        isMachineGun ? 1 : 2,
-        isMachineGun ? 15 : 30
-      );
-      
-      if (this.health <= 0) {
-        this.alive = false;
-        explosionSound.currentTime = 0;
-        explosionSound.volume = 0.3;
-        explosionSound.play().catch(e => console.log("Audio play failed:", e));
-        
-        // Big explosion for heavy tanks and bosses
-        const particleCount = this.isBoss ? 50 : (this.type === 'heavy' ? 40 : 20);
-        const particleSize = this.isBoss ? 10 : (this.type === 'heavy' ? 8 : 5);
-        
-        explosions.push(new Explosion(this.x + this.size / 2, this.y + this.size / 2, particleCount, particleSize));
-        
-        // Add smoke after explosion
-        setTimeout(() => {
-          particles.addParticles(
-            this.x + this.size/2,
-            this.y + this.size/2,
-            '#6B7280',
-            15,
-            6,
-            1,
-            100,
-            0.02
-          );
-        }, 200);
-        
-        // If boss was defeated
-        if (this.isBoss) {
-          bossDefeated = true;
-          bossActive = false;
-          bossesDefeated++;
-          updateStats();
-          
-          // Power up player
-          playerUpgrades++;
-          powerupSound.currentTime = 0;
-          powerupSound.volume = 0.5;
-          powerupSound.play().catch(e => console.log("Audio play failed:", e));
-          
-          // Visual effect for power up
-          for (let i = 0; i < 30; i++) {
-            particles.addParticles(
-              player.x + player.size/2,
-              player.y + player.size/2,
-              playerUpgrades > 1 ? '#FFD700' : '#2563EB',
-              1,
-              5,
-              3,
-              60
-            );
-          }
-        }
-      }
-    }
-  }
-
-  class Explosion {
-    constructor(x, y, particleCount = 20, particleSize = 5) {
-      this.x = x;
-      this.y = y;
-      this.radius = 0;
-      this.alpha = 1;
-      this.active = true;
-      this.particles = [];
-      this.particleSize = particleSize;
-      
-      // Create explosion particles
-      for (let i = 0; i < particleCount; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 3 + 2;
-        this.particles.push({
-          x: 0, y: 0,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
-          life: Math.random() * 30 + 20
-        });
-      }
-    }
-    
-    update() {
-      this.radius += 1.6;
-      this.alpha -= 0.04;
-      
-      // Update particles
-      for (let i = this.particles.length - 1; i >= 0; i--) {
-        const p = this.particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.1; // gravity
-        p.life--;
-        
-        if (p.life <= 0) {
-          this.particles.splice(i, 1);
-        }
-      }
-      
-      if (this.alpha <= 0 && this.particles.length === 0) this.active = false;
-    }
-    
-    draw(ctx) {
-      if (!this.active) return;
-      
-      // Draw main explosion
-      const gradient = ctx.createRadialGradient(
-        this.x, this.y, this.radius * 0.1, 
-        this.x, this.y, this.radius
-      );
-      gradient.addColorStop(0, `rgba(255, 188, 66, ${this.alpha})`);
-      gradient.addColorStop(0.7, `rgba(245, 158, 11, ${this.alpha * 0.7})`);
-      gradient.addColorStop(1, `rgba(252, 211, 77, 0)`);
-      
-      ctx.save();
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-      ctx.fill();
-      
-      // Draw particles
-      for (const p of this.particles) {
-        const lifeRatio = p.life / 50;
-        ctx.fillStyle = `rgba(255, ${Math.floor(120 + lifeRatio * 100)}, 0, ${lifeRatio})`;
-        ctx.beginPath();
-        ctx.arc(
-          this.x + p.x, 
-          this.y + p.y, 
-          this.particleSize * lifeRatio, 
-          0, 
-          Math.PI * 2
-        );
-        ctx.fill();
-      }
-      
-      ctx.restore();
-    }
-  }
-
-  // rounds rectangle for tank bodies
-  function roundRect(ctx, x, y, w, h, r, fill, stroke) {
-    if (r === undefined) r = 5;
-    if (fill === undefined) fill = true;
-    if (stroke === undefined) stroke = false;
-
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.lineTo(x + w - r, y);
-    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-    ctx.lineTo(x + w, y + h - r);
-    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-    ctx.lineTo(x + r, y + h);
-    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-    ctx.lineTo(x, y + r);
-    ctx.quadraticCurveTo(x, y, x + r, y);
-    ctx.closePath();
-    if (fill) ctx.fill();
-    if (stroke) ctx.stroke();
-  }
-
-  // Axis-Aligned Bounding Box collision detection
-  function rectsOverlap(r1, r2) {
-    return !(r2.x > r1.x + r1.w ||
-      r2.x + r2.w < r1.x ||
-      r2.y > r1.y + r1.h ||
-      r2.y + r2.h < r1.y);
-  }
-
-  // Find targets for machine gun
-  function updateMachineGunTargets() {
-    if (!player || !player.alive) return;
-    
-    machineGunTargets = [];
-    const playerCenterX = player.x + player.size / 2;
-    const playerCenterY = player.y + player.size / 2;
-    
-    // Calculate detection area (40% of screen)
-    const detectionWidth = W * MACHINE_GUN_RANGE;
-    const detectionHeight = H * MACHINE_GUN_RANGE;
-    const detectionLeft = playerCenterX - detectionWidth / 2;
-    const detectionTop = playerCenterY - detectionHeight / 2;
-    
-    // Find enemies within detection area
-    for (let enemy of enemyTanks) {
-      if (!enemy.alive) continue;
-      
-      const enemyCenterX = enemy.x + enemy.size / 2;
-      const enemyCenterY = enemy.y + enemy.size / 2;
-      
-      if (enemyCenterX >= detectionLeft && enemyCenterX <= detectionLeft + detectionWidth &&
-          enemyCenterY >= detectionTop && enemyCenterY <= detectionTop + detectionHeight) {
-        machineGunTargets.push({
-          x: enemyCenterX,
-          y: enemyCenterY,
-          enemy: enemy
-        });
-      }
-    }
-  }
-
-  // Fire machine gun at targets
-  function fireMachineGun(deltaTime) {
-    if (!player || !player.alive || !machineGunActive) return;
-    
-    machineGunCooldown -= deltaTime;
-    
-    if (machineGunCooldown <= 0 && machineGunTargets.length > 0) {
-      // Fire at all targets
-      for (let target of machineGunTargets) {
-        player.shootMachineGun(target.x, target.y);
-      }
-      
-      // Play machine gun sound
-      machineGunSound.currentTime = 0;
-      machineGunSound.volume = 0.2;
-      machineGunSound.play().catch(e => console.log("Audio play failed:", e));
-      
-      // Reset cooldown
-      machineGunCooldown = MACHINE_GUN_COOLDOWN_TIME;
-    }
-  }
-
-  // Game variables
-  const explosions = [];
-  const enemyTanks = [];
-  let player;
-
-  // Create enemies based on current level
-  function createEnemies() {
-    enemyTanks.length = 0;
-    bossActive = false;
-    bossDefeated = false;
-    
-    // Play level start sound
-    levelStartSound.currentTime = 0;
-    levelStartSound.volume = 0.7;
-    levelStartSound.play().catch(e => console.log("Audio play failed:", e));
-    
-    // Start background music only if it's not already playing
-    levelStartSound.onended = function() {
-      if (!bgmPlaying) {
-        currentBGM = bgm1;
-        currentBGM.currentTime = 0;
-        currentBGM.volume = 0.3;
-        currentBGM.play().catch(e => console.log("Audio play failed:", e));
-        bgmPlaying = true;
-      }
-    };
-    
-    // Every 2 levels is a boss level
-    if (currentLevel % 2 === 0) {
-      spawnBoss();
-      return;
-    }
-    
-    const baseCount = 3 + Math.floor(currentLevel / 2);
-    const totalEnemies = Math.min(baseCount, 10); // Max 10 enemies
-    
-    const enemyTypes = ['normal', 'fast', 'heavy', 'elite'];
-    const typeWeights = [
-      0.5,  // normal
-      0.3,  // fast
-      0.15, // heavy
-      0.05  // elite
-    ];
-    
-    // Increase chance of elite tanks in higher levels
-    if (currentLevel > 3) {
-      typeWeights[3] = 0.1 + (currentLevel - 3) * 0.05;
-      typeWeights[0] = 0.5 - (currentLevel - 3) * 0.05;
-    }
-    
-    for (let i = 0; i < totalEnemies; i++) {
-      // Choose random type based on weights
-      let rand = Math.random();
-      let typeIndex = 0;
-      let sum = 0;
-      for (let j = 0; j < typeWeights.length; j++) {
-        sum += typeWeights[j];
-        if (rand <= sum) {
-          typeIndex = j;
-          break;
-        }
-      }
-      const type = enemyTypes[typeIndex];
-      
-      let color, name;
-      switch(type) {
-        case 'fast':
-          color = '--tank-enemy-color-hardees';
-          name = 'Fast ' + ['KFC', 'Hardees', 'Burger King', 'Hery'][i % 4];
-          break;
-        case 'heavy':
-          color = '--tank-enemy-color-burgerking';
-          name = 'Heavy ' + ['KFC', 'Hardees', 'Burger King', 'Hery'][i % 4];
-          break;
-        case 'elite':
-          color = '--tank-enemy-color-elite';
-          name = 'Elite ' + ['KFC', 'Hardees', 'Burger King', 'Hery'][i % 4];
-          break;
-        default:
-          color = ['--tank-enemy-color-kfc', 
-                   '--tank-enemy-color-hardees', 
-                   '--tank-enemy-color-burgerking', 
-                   '--tank-enemy-color-hery'][i % 4];
-          name = ['KFC', 'Hardees', 'Burger King', 'Hery'][i % 4];
-      }
-      
-      // Position enemies in a grid
-      const cols = Math.ceil(Math.sqrt(totalEnemies));
-      const spacing = W / (cols + 1);
-      const row = Math.floor(i / cols);
-      const col = i % cols;
-      
-      enemyTanks.push(new Tank(
-        (col + 1) * spacing - TANK_SIZE/2,
-        50 + row * 60,
-        color,
-        null,
-        name,
-        false,
-        type
-      ));
-    }
-  }
-
-  function spawnBoss() {
-    bossActive = true;
-    
-    // Select a random boss from the list
-    const bossIndex = Math.floor(Math.random() * BOSS_TANKS.length);
-    const bossData = BOSS_TANKS[bossIndex];
-    
-    bossTank = new Tank(
-      W / 2 - bossData.size / 2,
-      50,
-      bossData.color,
-      null,
-      bossData.name,
-      false,
-      'boss',
-      true,
-      bossData
-    );
-    
-    enemyTanks.push(bossTank);
-    
-    // Play boss sound
-    bossSound.currentTime = 0;
-    bossSound.volume = 0.5;
-    bossSound.play().catch(e => console.log("Audio play failed:", e));
-    
-    // Show boss warning
-    bossWarning.textContent = `${bossData.name} APPEARED!`;
-    bossWarning.style.opacity = 1;
-    
-    setTimeout(() => {
-      bossWarning.style.opacity = 0;
-    }, 3000);
-  }
-
-  // Create player tank "Kudu" dual colored
-  function createPlayer() {
-    player = new Tank(W / 2 - TANK_SIZE / 2, H - 70,
-                      '--tank-player-color-1',
-                      '--tank-player-color-2',
-                      'Kudu',
-                      true);
-    
-    // Update health bar
-    updateHealthBar();
-  }
-
-  function updateHealthBar() {
-    if (!player) return;
-    const healthPercent = (player.health / player.maxHealth) * 100;
-    healthBar.style.width = `${healthPercent}%`;
-  }
-
-  // Checks bullet collisions with tanks
-  function checkBullets() {
-    // Player bullets hit enemies
-    for (let b of player.bullets) {
-      if (!b.active) continue;
-      for (let enemy of enemyTanks) {
-        if (!enemy.alive) continue;
-        if (rectsOverlap(b.getRect(), enemy.getRect())) {
-          b.active = false;
-          enemy.hit(1, false);
-          if (!enemy.alive) {
-            score += enemy.isBoss ? 1000 : 
-                   enemy.type === 'elite' ? 300 : 
-                   enemy.type === 'heavy' ? 200 : 
-                   enemy.type === 'fast' ? 150 : 100;
+        // Initialize the app
+        function init() {
+            // Set theme
+            document.body.setAttribute('data-theme', currentTheme);
+            updateThemeIcon();
+            
+            // Load chat history
+            renderChatHistory();
             updateStats();
-          }
-          break;
-        }
-      }
-    }
-    
-    // Player machine gun bullets hit enemies
-    for (let b of player.machineGunBullets) {
-      if (!b.active) continue;
-      for (let enemy of enemyTanks) {
-        if (!enemy.alive) continue;
-        if (rectsOverlap(b.getRect(), enemy.getRect())) {
-          b.active = false;
-          enemy.hit(0.5, true); // Machine gun does half damage
-          if (!enemy.alive) {
-            score += enemy.isBoss ? 1000 : 
-                   enemy.type === 'elite' ? 300 : 
-                   enemy.type === 'heavy' ? 200 : 
-                   enemy.type === 'fast' ? 150 : 100;
-            updateStats();
-          }
-          break;
-        }
-      }
-    }
-    
-    // Enemy bullets hit player
-    for (let enemy of enemyTanks) {
-      for (let b of enemy.bullets) {
-        if (!b.active) continue;
-        if (player.alive && rectsOverlap(b.getRect(), player.getRect())) {
-          b.active = false;
-          player.hit(1, false);
-          updateHealthBar();
-          if (player.health <= 0) {
-            lives--;
-            if (lives > 0) {
-              setTimeout(() => {
-                createPlayer();
-              }, 1000);
-            } else {
-              gameOver = true;
-              // Stop background music on game over
-              if (currentBGM) currentBGM.pause();
-              bgmPlaying = false;
+            
+            // Render suggested questions
+            renderSuggestedQuestions();
+            
+            // Set up event listeners
+            sendBtn.addEventListener('click', sendMessage);
+            chatInput.addEventListener('keydown', handleInputKeydown);
+            chatInput.addEventListener('input', autoResizeTextarea);
+            
+            newChatBtn.addEventListener('click', startNewChat);
+            menuToggle.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', closeSidebar);
+            themeToggle.addEventListener('click', toggleTheme);
+            clearHistoryBtn.addEventListener('click', showClearModal);
+            exportBtn.addEventListener('click', exportChats);
+            shareBtn.addEventListener('click', shareCurrentChat);
+            settingsBtn.addEventListener('click', showSettings);
+            
+            // Modal event listeners
+            cancelClear.addEventListener('click', hideClearModal);
+            confirmClear.addEventListener('click', clearAllHistory);
+            
+            // Close modal when clicking outside
+            clearModal.addEventListener('click', (e) => {
+                if (e.target === clearModal) hideClearModal();
+            });
+            
+            // Load last active chat if exists
+            const lastChatId = localStorage.getItem('kudu_last_chat');
+            if (lastChatId && chats[lastChatId]) {
+                loadChat(lastChatId);
             }
-          }
         }
-      }
-    }
-  }
-
-  // Prevent tanks from moving out of canvas and overlapping each other
-  function blockTankMovement(tank) {
-    if (!tank.alive) return;
-    let rect = tank.getRect();
-
-    // Clamp inside canvas
-    tank.x = clamp(tank.x, 0, W - tank.size);
-    tank.y = clamp(tank.y, 0, H - tank.size);
-
-    // Prevent overlapping tanks
-    if (tank.isPlayer) {
-      for (let enemy of enemyTanks) {
-        if (!enemy.alive) continue;
-        if (rectsOverlap(rect, enemy.getRect())) {
-          tank.x -= tank.moveDirVector.x * tank.speed;
-          tank.y -= tank.moveDirVector.y * tank.speed;
-          break;
+        
+        // Handle input keydown
+        function handleInputKeydown(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (!isTyping) sendMessage();
+            }
         }
-      }
-    } else {
-      if (player.alive && rectsOverlap(rect, player.getRect())) {
-        tank.x -= tank.moveDirVector.x * tank.speed;
-        tank.y -= tank.moveDirVector.y * tank.speed;
-      }
-      for (let other of enemyTanks) {
-        if (other === tank || !other.alive) continue;
-        if (rectsOverlap(rect, other.getRect())) {
-          tank.x -= tank.moveDirVector.x * tank.speed;
-          tank.y -= tank.moveDirVector.y * tank.speed;
-          break;
+        
+        // Toggle theme
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', currentTheme);
+            localStorage.setItem('kudu_theme', currentTheme);
+            updateThemeIcon();
         }
-      }
-    }
-  }
-
-  function drawExplosions(ctx) {
-    explosions.forEach(e => e.draw(ctx));
-  }
-
-  function updateExplosions() {
-    explosions.forEach(e => e.update());
-    for (let i = explosions.length - 1; i >= 0; i--) {
-      if (!explosions[i].active) explosions.splice(i, 1);
-    }
-  }
-
-  // Show level display
-  function showLevel() {
-    levelDisplay.textContent = `Level ${currentLevel}`;
-    levelDisplay.style.opacity = 1;
-    
-    setTimeout(() => {
-      levelDisplay.style.opacity = 0;
-    }, 2000);
-  }
-
-  // Main game loop
-  let lastTime = 0;
-  function gameLoop(timestamp) {
-    if (gameOver) {
-      drawGameOver();
-      return;
-    }
-    if (gameWon) {
-      drawYouWin();
-      return;
-    }
-    
-    const deltaTime = timestamp - lastTime;
-    lastTime = timestamp;
-
-    // Draw battlefield background
-    ctx.fillStyle = '#1a1a1a';
-    ctx.fillRect(0, 0, W, H);
-    
-    // Draw grid lines
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.lineWidth = 1;
-    const gridSize = 40;
-    for (let x = 0; x < W; x += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, H);
-      ctx.stroke();
-    }
-    for (let y = 0; y < H; y += gridSize) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(W, y);
-      ctx.stroke();
-    }
-
-    // Update and draw particles
-    particles.update();
-    particles.draw(ctx);
-
-    if (player.alive && !levelTransition) {
-      player.update(deltaTime);
-      blockTankMovement(player);
-      player.draw(ctx);
-    }
-
-    enemyTanks.forEach(enemy => {
-      if (enemy.alive && !levelTransition) {
-        enemy.update(deltaTime);
-        blockTankMovement(enemy);
-        enemy.draw(ctx);
-      }
-    });
-
-    if (!levelTransition) {
-      // Update machine gun
-      updateMachineGunTargets();
-      fireMachineGun(deltaTime);
-      checkBullets();
-    }
-    
-    drawExplosions(ctx);
-    updateExplosions();
-
-    document.getElementById('score-label').textContent = `Score: ${score}`;
-    document.getElementById('lives-label').textContent = `Lives: ${lives}`;
-    document.getElementById('level-label').textContent = `Level: ${currentLevel}`;
-
-    // Check if all enemies are dead and we're not already transitioning
-    if (!levelTransition && enemyTanks.every(et => !et.alive)) {
-      levelTransition = true;
-      
-      if (bossDefeated) {
-        // Special effect for defeating a boss
-        for (let i = 0; i < 50; i++) {
-          particles.addParticles(
-            W/2, H/2,
-            '#FFFFFF',
-            1,
-            5,
-            Math.random() * 5,
-            60
-          );
+        
+        // Update theme icon
+        function updateThemeIcon() {
+            const icon = themeToggle.querySelector('i');
+            icon.className = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
-      }
-      
-      currentLevel++;
-      showLevel();
-      
-      setTimeout(() => {
-        createEnemies();
-        levelTransition = false;
-      }, 2000);
-    }
-
-    requestAnimationFrame(gameLoop);
-  }
-
-  function drawGameOver() {
-    ctx.save();
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
-    ctx.fillRect(0, 0, W, H);
-    
-    // Add floating particles
-    for (let i = 0; i < 50; i++) {
-      particles.addParticles(
-        Math.random() * W,
-        Math.random() * H,
-        '#DC2626',
-        1,
-        3,
-        0,
-        1000
-      );
-    }
-    
-    ctx.fillStyle = '#DC2626';
-    ctx.font = 'bold 48px var(--font-family)';
-    ctx.textAlign = 'center';
-    ctx.fillText('GAME OVER', W / 2, H / 2 - 20);
-    ctx.font = '24px var(--font-family)';
-    ctx.fillStyle = '#9CA3AF';
-    ctx.fillText(`Final Score: ${score}`, W / 2, H / 2 + 20);
-    ctx.fillText(`Level Reached: ${currentLevel}`, W / 2, H / 2 + 50);
-    ctx.fillText('Click Restart to play again', W / 2, H / 2 + 90);
-    ctx.restore();
-  }
-
-  function drawYouWin() {
-    ctx.save();
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
-    ctx.fillRect(0, 0, W, H);
-    
-    // Add celebration particles
-    for (let i = 0; i < 100; i++) {
-      particles.addParticles(
-        Math.random() * W,
-        Math.random() * H,
-        i % 2 === 0 ? '#2563EB' : '#FBBF24',
-        1,
-        4,
-        0,
-        1000
-      );
-    }
-    
-    ctx.fillStyle = '#10B981';
-    ctx.font = 'bold 48px var(--font-family)';
-    ctx.textAlign = 'center';
-    ctx.fillText('VICTORY!', W / 2, H / 2 - 40);
-    ctx.font = '24px var(--font-family)';
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillText(`Final Score: ${score}`, W / 2, H / 2 + 10);
-    ctx.fillText(`Level Reached: ${currentLevel}`, W / 2, H / 2 + 50);
-    ctx.fillText('Click Restart to play again', W / 2, H / 2 + 90);
-    ctx.restore();
-  }
-
-  // Keyboard event handlers
-  window.addEventListener('keydown', e => {
-    if (keys.hasOwnProperty(e.code)) {
-      keys[e.code] = true;
-      e.preventDefault();
-    }
-  });
-
-  window.addEventListener('keyup', e => {
-    if (keys.hasOwnProperty(e.code)) {
-      keys[e.code] = false;
-      e.preventDefault();
-    }
-  });
-
-  // Tablet touch control handlers
-  function setupTouchControls() {
-    const upBtn = document.getElementById('up-btn');
-    const downBtn = document.getElementById('down-btn');
-    const leftBtn = document.getElementById('left-btn');
-    const rightBtn = document.getElementById('right-btn');
-    const shootBtn = document.getElementById('shoot-btn');
-    
-    // Touch start events
-    upBtn.addEventListener('touchstart', (e) => { keys.ArrowUp = true; e.preventDefault(); });
-    downBtn.addEventListener('touchstart', (e) => { keys.ArrowDown = true; e.preventDefault(); });
-    leftBtn.addEventListener('touchstart', (e) => { keys.ArrowLeft = true; e.preventDefault(); });
-    rightBtn.addEventListener('touchstart', (e) => { keys.ArrowRight = true; e.preventDefault(); });
-    shootBtn.addEventListener('touchstart', (e) => { keys.Space = true; e.preventDefault(); });
-    
-    // Touch end events
-    upBtn.addEventListener('touchend', (e) => { keys.ArrowUp = false; e.preventDefault(); });
-    downBtn.addEventListener('touchend', (e) => { keys.ArrowDown = false; e.preventDefault(); });
-    leftBtn.addEventListener('touchend', (e) => { keys.ArrowLeft = false; e.preventDefault(); });
-    rightBtn.addEventListener('touchend', (e) => { keys.ArrowRight = false; e.preventDefault(); });
-    shootBtn.addEventListener('touchend', (e) => { keys.Space = false; e.preventDefault(); });
-    
-    // Mouse events for testing on desktop
-    upBtn.addEventListener('mousedown', () => keys.ArrowUp = true);
-    downBtn.addEventListener('mousedown', () => keys.ArrowDown = true);
-    leftBtn.addEventListener('mousedown', () => keys.ArrowLeft = true);
-    rightBtn.addEventListener('mousedown', () => keys.ArrowRight = true);
-    shootBtn.addEventListener('mousedown', () => keys.Space = true);
-    
-    upBtn.addEventListener('mouseup', () => keys.ArrowUp = false);
-    downBtn.addEventListener('mouseup', () => keys.ArrowDown = false);
-    leftBtn.addEventListener('mouseup', () => keys.ArrowLeft = false);
-    rightBtn.addEventListener('mouseup', () => keys.ArrowRight = false);
-    shootBtn.addEventListener('mouseup', () => keys.Space = false);
-    
-    // Prevent default on all control buttons
-    const controlButtons = document.querySelectorAll('.control-btn');
-    controlButtons.forEach(btn => {
-      btn.addEventListener('touchstart', e => e.preventDefault());
-      btn.addEventListener('touchend', e => e.preventDefault());
-    });
-  }
-
-  // Check if device is touch capable
-  function isTouchDevice() {
-    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  }
-
-  // Show touch controls on touch devices
-  if (isTouchDevice()) {
-    document.getElementById('touch-controls').style.display = 'flex';
-    setupTouchControls();
-  }
-
-  // Restart button handling
-  const restartBtn = document.getElementById('restart-btn');
-  restartBtn.addEventListener('click', () => {
-    resetGame();
-  });
-
-  // Initialize game state and launch loop
-  function resetGame() {
-    score = 0;
-    lives = 3;
-    currentLevel = 1;
-    gameOver = false;
-    gameWon = false;
-    bossActive = false;
-    bossDefeated = false;
-    playerUpgrades = 0;
-    hits = 0;
-    bossesDefeated = 0;
-    explosions.length = 0;
-    particles.particles = [];
-    levelTransition = false;
-    machineGunActive = true;
-    machineGunTargets = [];
-    machineGunCooldown = 0;
-    // Stop any playing sounds
-    if (currentBGM) currentBGM.pause();
-    bgmPlaying = false;
-    createPlayer();
-    createEnemies();
-    updateStats();
-    showLevel();
-    lastTime = 0;
-    requestAnimationFrame(gameLoop);
-  }
-
-  resetGame();
-})();
-</script>
+        
+        // Show clear modal
+        function showClearModal() {
+            clearModal.classList.add('active');
+        }
+        
+        // Hide clear modal
+        function hideClearModal() {
+            clearModal.classList.remove('active');
+        }
+        
+        // Clear all history
+        function clearAllHistory() {
+            chats = {};
+            currentChatId = null;
+            localStorage.removeItem('kudu_chats');
+            localStorage.removeItem('kudu_last_chat');
+            
+            renderChatHistory();
+            updateStats();
+            showWelcomeScreen();
+            hideClearModal();
+            
+            // Show success message
+            showNotification('Chat history cleared successfully!', 'success');
+        }
+        
+        // Export chats
+        function exportChats() {
+            if (Object.keys(chats).length === 0) {
+                showNotification('No chats to export!', 'warning');
+                return;
+            }
+            
+            const exportData = {
+                chats: chats,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+                type: 'application/json'
+            });
+            
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `kudu-chats-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('Chats exported successfully!', 'success');
+        }
+        
+        // Share current chat
+        function shareCurrentChat() {
+            if (!currentChatId) {
+                showNotification('No active chat to share!', 'warning');
+                return;
+            }
+            
+            const chat = chats[currentChatId];
+            const shareText = `Check out my conversation with KUDU Assistant:\n\n${chat.title}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'KUDU Assistant Chat',
+                    text: shareText,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showNotification('Chat details copied to clipboard!', 'success');
+                });
+            }
+        }
+        
+        // Show settings (placeholder)
+        function showSettings() {
+            showNotification('Settings panel coming soon!', 'info');
+        }
+        
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--${type === 'success' ? 'success' : type === 'warning' ? 'warning' : type === 'error' ? 'danger' : 'primary'}-color);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                z-index: 3000;
+                font-weight: 600;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                animation: slideInRight 0.3s ease-out;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-in forwards';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const chatCount = Object.keys(chats).length;
+            const messageCount = Object.values(chats).reduce((total, chat) => total + chat.messages.length, 0);
+            
+            totalChats.textContent = chatCount;
+            totalMessages.textContent = messageCount;
+        }
+        
+        // Render suggested questions
+        function renderSuggestedQuestions() {
+            suggestedQuestions.innerHTML = '';
+            
+            const questions = [
+                "Tell me about KUDU's history",
+                "What's KUDU's brand message?",
+                "What menu items does KUDU offer?",
+                "Where are KUDU locations?",
+                "What are KUDU's opening hours?",
+                "Does KUDU offer delivery service?"
+            ];
+            
+            questions.forEach(question => {
+                const chip = document.createElement('div');
+                chip.className = 'question-chip';
+                chip.innerHTML = `<i class="fas fa-comment-dots" style="margin-right: 8px; opacity: 0.7;"></i>${question}`;
+                chip.addEventListener('click', () => {
+                    chatInput.value = question;
+                    sendMessage();
+                });
+                suggestedQuestions.appendChild(chip);
+            });
+        }
+        
+        // Auto-resize textarea
+        function autoResizeTextarea() {
+            chatInput.style.height = 'auto';
+            chatInput.style.height = Math.min(chatInput.scrollHeight, 200) + 'px';
+        }
+        
+        // Toggle sidebar on mobile
+        function toggleSidebar() {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+        
+        // Close sidebar on mobile
+        function closeSidebar() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+        
+        // Show welcome screen
+        function showWelcomeScreen() {
+            chatMessages.innerHTML = '';
+            chatMessages.appendChild(welcomeScreen);
+            welcomeScreen.style.display = 'flex';
+        }
+        
+        // Start a new chat
+        function startNewChat() {
+            currentChatId = 'chat_' + Date.now();
+            chats[currentChatId] = {
+                id: currentChatId,
+                title: 'New Chat',
+                messages: [],
+                createdAt: new Date().toISOString()
+            };
+            
+            saveChats();
+            renderChatHistory();
+            updateStats();
+            showWelcomeScreen();
+            closeSidebar();
+            
+            // Focus input
+            chatInput.focus();
+        }
+        
+        // Save chats to localStorage
+        function saveChats() {
+            localStorage.setItem('kudu_chats', JSON.stringify(chats));
+            if (currentChatId) {
+                localStorage.setItem('kudu_last_chat', currentChatId);
+            }
+        }
+        
+        // Render chat history in sidebar
+        function renderChatHistory() {
+            chatHistory.innerHTML = '';
+            
+            const chatIds = Object.keys(chats);
+            if (chatIds.length === 0) {
+                const emptyState = document.createElement('div');
+                emptyState.style.cssText = `
+                    text-align: center;
+                    padding: 40px 20px;
+                    color: var(--text-secondary);
+                    font-size: 0.9rem;
+                `;
+                emptyState.innerHTML = `
+                    <i class="fas fa-comments" style="font-size: 2rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                    <div>No conversations yet</div>
+                    <div style="font-size: 0.8rem; margin-top: 5px;">Start a new chat to begin</div>
+                `;
+                chatHistory.appendChild(emptyState);
+                return;
+            }
+            
+            // Sort chats by creation date (newest first)
+            chatIds.sort((a, b) => new Date(chats[b].createdAt) - new Date(chats[a].createdAt));
+            
+            chatIds.forEach(chatId => {
+                const chat = chats[chatId];
+                const chatItem = document.createElement('div');
+                chatItem.className = `chat-item ${chatId === currentChatId ? 'active' : ''}`;
+                
+                const timeAgo = getTimeAgo(new Date(chat.createdAt));
+                
+                chatItem.innerHTML = `
+                    <div class="chat-item-icon">
+                        <i class="far fa-message"></i>
+                    </div>
+                    <div class="chat-item-text">${chat.title}</div>
+                    <div class="chat-item-time">${timeAgo}</div>
+                `;
+                
+                chatItem.addEventListener('click', () => {
+                    loadChat(chatId);
+                    closeSidebar();
+                });
+                
+                chatHistory.appendChild(chatItem);
+            });
+        }
+        
+        // Get time ago string
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) return 'now';
+            if (diffMins < 60) return `${diffMins}m`;
+            if (diffHours < 24) return `${diffHours}h`;
+            if (diffDays < 7) return `${diffDays}d`;
+            return date.toLocaleDateString();
+        }
+        
+        // Load a specific chat
+        function loadChat(chatId) {
+            currentChatId = chatId;
+            const chat = chats[chatId];
+            
+            // Update active state in sidebar
+            document.querySelectorAll('.chat-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Find and activate the correct chat item
+            const chatItems = document.querySelectorAll('.chat-item');
+            const chatIds = Object.keys(chats).sort((a, b) => new Date(chats[b].createdAt) - new Date(chats[a].createdAt));
+            const chatIndex = chatIds.indexOf(chatId);
+            if (chatItems[chatIndex]) {
+                chatItems[chatIndex].classList.add('active');
+            }
+            
+            // Clear messages and render chat messages
+            chatMessages.innerHTML = '';
+            welcomeScreen.style.display = 'none';
+            
+            if (chat.messages.length === 0) {
+                showWelcomeScreen();
+                return;
+            }
+            
+            chat.messages.forEach(message => {
+                addMessageToChat(message.text, message.sender, message.timestamp, false);
+            });
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            saveChats(); // Save last active chat
+        }
+        
+        // Send a message
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message || isTyping) return;
+            
+            // Clear input and reset height
+            chatInput.value = '';
+            chatInput.style.height = 'auto';
+            
+            // If no active chat, create one
+            if (!currentChatId) {
+                startNewChat();
+            }
+            
+            // Add user message
+            addMessageToChat(message, 'user');
+            
+            // Update chat title if it's the first message
+            if (chats[currentChatId].messages.length === 0) {
+                chats[currentChatId].title = message.length > 40 ? message.substring(0, 40) + '...' : message;
+                saveChats();
+                renderChatHistory();
+            }
+            
+            // Save user message to chat
+            chats[currentChatId].messages.push({
+                text: message,
+                sender: 'user',
+                timestamp: new Date().toISOString()
+            });
+            saveChats();
+            updateStats();
+            
+            // Set typing state
+            isTyping = true;
+            sendBtn.disabled = true;
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Simulate AI response after a delay
+            const responseDelay = 1500 + Math.random() * 1500;
+            setTimeout(() => {
+                removeTypingIndicator();
+                const response = generateResponse(message);
+                addMessageToChat(response, 'bot');
+                
+                // Save bot response to chat
+                chats[currentChatId].messages.push({
+                    text: response,
+                    sender: 'bot',
+                    timestamp: new Date().toISOString()
+                });
+                saveChats();
+                updateStats();
+                
+                // Reset typing state
+                isTyping = false;
+                sendBtn.disabled = false;
+            }, responseDelay);
+        }
+        
+        // Generate AI response with improved matching
+        function generateResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            // Check for exact matches first
+            for (const [question, answer] of Object.entries(knowledgeBase)) {
+                if (question !== 'default' && lowerMessage.includes(question.toLowerCase())) {
+                    return answer;
+                }
+            }
+            
+            // Check for keyword matches
+            const keywords = {
+                'history': 'kudu history',
+                'brand': 'brand message',
+                'menu': 'menu items',
+                'food': 'menu items',
+                'location': 'locations',
+                'where': 'locations',
+                'hours': 'opening hours',
+                'time': 'opening hours',
+                'delivery': 'delivery service',
+                'contact': 'contact information'
+            };
+            
+            for (const [keyword, topic] of Object.entries(keywords)) {
+                if (lowerMessage.includes(keyword) && knowledgeBase[topic]) {
+                    return knowledgeBase[topic];
+                }
+            }
+            
+            // Check for partial matches with better scoring
+            let bestMatch = null;
+            let bestScore = 0;
+            
+            for (const [question, answer] of Object.entries(knowledgeBase)) {
+                if (question === 'default') continue;
+                
+                const questionWords = question.toLowerCase().split(' ');
+                const messageWords = lowerMessage.split(' ');
+                
+                // Count matching words and calculate score
+                const matchingWords = questionWords.filter(word => 
+                    messageWords.some(msgWord => 
+                        msgWord.includes(word) || word.includes(msgWord) || 
+                        levenshteinDistance(word, msgWord) <= 2
+                    )
+                );
+                
+                const score = matchingWords.length / questionWords.length;
+                if (score > bestScore && score > 0.3) {
+                    bestScore = score;
+                    bestMatch = answer;
+                }
+            }
+            
+            return bestMatch || knowledgeBase.default;
+        }
+        
+        // Simple Levenshtein distance for fuzzy matching
+        function levenshteinDistance(str1, str2) {
+            const matrix = [];
+            
+            for (let i = 0; i <= str2.length; i++) {
+                matrix[i] = [i];
+            }
+            
+            for (let j = 0; j <= str1.length; j++) {
+                matrix[0][j] = j;
+            }
+            
+            for (let i = 1; i <= str2.length; i++) {
+                for (let j = 1; j <= str1.length; j++) {
+                    if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1,
+                            matrix[i][j - 1] + 1,
+                            matrix[i - 1][j] + 1
+                        );
+                    }
+                }
+            }
+            
+            return matrix[str2.length][str1.length];
+        }
+        
+        // Add message to chat UI
+        function addMessageToChat(text, sender, timestamp = null, scroll = true) {
+            welcomeScreen.style.display = 'none';
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            
+            const now = timestamp ? new Date(timestamp) : new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">
+                    ${sender === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>'}
+                </div>
+                <div class="message-content">
+                    <div class="message-bubble">
+                        <div class="message-text">${text}</div>
+                        <div class="message-time">${timeString}</div>
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            
+            if (scroll) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+        
+        // Show typing indicator
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot-message';
+            typingDiv.id = 'typing-indicator';
+            
+            typingDiv.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-content">
+                    <div class="message-bubble">
+                        <div class="typing-indicator">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Remove typing indicator
+        function removeTypingIndicator() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+        
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
 </html>
