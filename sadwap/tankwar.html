@@ -810,7 +810,7 @@
             
             <div class="chat-input-container">
                 <div class="chat-input-wrapper">
-                    <textarea class="chat-input" id="chatInput" rows="1" placeholder="Ask about KUDU restaurants, menu, history..."></textarea>
+                    <textarea class="chat-input" id="chatInput" rows="1" placeholder="Ask about KUDU restaurants, menu, history, job profiles..."></textarea>
                     <button class="send-btn" id="sendBtn">
                         <i class="fas fa-paper-plane"></i>
                     </button>
@@ -836,29 +836,52 @@
     </div>
 
     <script>
-        // Enhanced knowledge base with more comprehensive information
+        // Enhanced knowledge base with comprehensive KUDU information including job profiles
         let knowledgeBase = {
+            // Company Information
             "kudu history": "The first KUDU restaurant opened in Riyadh on April 16th, 1988. During the following 4 years, 7 more locations were added in Riyadh. In 1992, the first restaurant outside of Riyadh opened in Jeddah. In 1993, expansion continued in the Eastern province of KSA. In the following years, KUDU expanded to cover Abha, Tabuk, Taif, Madinah, and the central province. In 2003, KUDU ventured into the franchise system and opened franchise outlets inside and outside the Kingdom, in Kuwait and UAE. In 2004, KUDU signed a franchise agreement to open its second outlet in Sudan. In 2008, KUDU franchise opened 2 branches in Jordan. Expansion occurred outside of the Kingdom of Saudi Arabia into other countries in the Gulf region. In October 2021, Al Rashed and Al Said group completed a buyout of KUDU Company for Food and Catering.",
             
             "brand message": "KUDU's brand message is 'Taste you can see'. It aims to bridge the gap between what KUDU stands for and the young generation, focusing on visual appeal and quality that customers can immediately recognize.",
 
+            "kudu mission": "To be a leading Saudi brand in the field of fast-food restaurants, offering delicious, fresh high-quality foods with a unique experience and a different and distinctive preparation method",
 
- "kudu mission": "To be a leading Saudi brand in the field of fast-food restaurants, offering delicious, fresh high-quality foods with a unique experience and a different anddistinctive preparation method",
+            "kudu vision": "To be a leading Saudi company in the field of restaurants, with a strong international network of multi-formats franchised partnerships.",
 
-"kudu vision": "To be a leading Saudi company in the field of restaurants, with a strong international network of multi-formats franchised partnerships.",
+            "kudu core values": "Customer First, Transparency, Teamwork, Excellence",
 
-"kudu CORE VALUES": "Customer First,Transparency,Teamwork,Excellence",
+            // Job Profiles - Complete and Detailed
+            "service crew": "The Service Crew should prepare the food, serve guests and carry out tasks necessary for efficient running of the restaurants including the maintenance of our ambitious standards of cleanliness. They are responsible for generating sales and deliver guest service at its best. Service crew should be able to work solely on all 9 stations existing in our operations: 1. Receiving & Storage, 2. Preparation, 3. Breakfast, 4. Burger Station, 5. Steak Station, 6. Side Items, 7. Dessert, 8. Equipment's, 9. Guest Service. Key responsibilities include: Following KUDU's operation procedures on terms of appearance and personal hygiene, following Quality, Service, Cleanliness & Hospitality procedures, arriving on time and staying until shift completion, receiving and storing supplies properly, cooperating with management in learning new skills, knowing assigned workstations procedures, using equipment and tools safely, greeting guests promptly and asking for feedback, delivering consistent outstanding service, maintaining speed of service targets, recommending meals and deals to guests, responding to guest complaints, following preparation standards, rotating stored food items, assembling and packing orders correctly, assisting colleagues when not busy, and participating in store meetings.",
 
+            "crew leader": "The Crew Leader assists management to execute training plans for service crew and supports the Manager On Duty with delegated operational tasks. They are potential candidates for Shift Manager positions due to their excellent expertise in KUDU Systems. Position Purpose: Assist management to execute training plans for service new and support Manager On Duty as he could delegate few operations tasks to Crew Leader. Key responsibilities include: Supporting service crew training by assisting restaurant management for setting proper training plans, conducting proper in-store induction for new employees, ensuring training materials are updated and available, helping Manager On Duty execute training plans, leading by example through personal hygiene and uniform standards, training staff on equipment handling and chemical usage, reinforcing hand washing procedures, helping service crew execute new operations platforms, reflecting KUDU Values in all actions. Delivering Great Service by working hand-to-hand with service crew to prepare orders, responding quickly to guest complaints, asking for guest feedback, communicating Mystery Shopper results, briefing staff on promotions, ensuring workstations are stocked for rush times. Associate manager duties include receiving delegated operational tasks, ensuring staff follow preparation guides, monitoring and discarding expired products, following up food preparation procedures, helping with daily cleaning tasks, keeping back door locked, being aware of security issues, ensuring PPE availability, maintaining first aid kit, knowing health and safety responsibilities, and reporting hazardous situations immediately.",
 
+            "shift manager": "The Shift Manager leads assigned shifts with smooth and profitable operations, providing great guest experience for KUDU guests consistently through coordination and controlling People, Products, Equipment and other restaurant resources within KUDU standards. Position Purpose: Lead assigned shifts with a smooth and profitable operations and provide great guest experience for KUDU Guests consistently through coordination and controlling People, Products, Equipment and other restaurant resources to within KUDU standards. Key responsibilities include: People management - providing supportive environment for new employees, using KUDU training materials for crew and crew leaders, creating motivational climate, assigning cleaning tasks, conducting staff briefings, ensuring HR policies and safety procedures compliance. Guest Focus - putting guests first in all decisions, demonstrating guest-first service through interaction and feedback, ensuring effective staff positioning for projected sales, completing KUDU Routine tasks within timeframes, monitoring SOS and providing feedback, resolving guest complaints. Sales Building - motivating team to achieve sales targets, ensuring security measures for cash management and assets, training team for promotions and LSM initiatives. Business Results - controlling P&L line items, reporting hazardous situations, ensuring hygiene and safety procedures, maintaining equipment operation and maintenance, taking inventory for ordering and quality control.",
 
+            "assistant restaurant manager": "The Assistant Restaurant Manager assists the restaurant manager to carry out all daily operational functions and duties within KUDU Restaurant. In some cases, they might replace the restaurant manager in their absence to ensure Great Guest Experience is delivered consistently and maximize sales and profits through excellent operations and well-trained restaurant team. Position Purpose: Assist the restaurant manager to carry out all daily operational functions and duties within KUDU Restaurant and in some cases, he might replace the restaurant manager in his absence to ensure Great Guest Experience is delivered consistently and maximize sales and profits through excellent operations and well-trained restaurant team. Key responsibilities include: People management - using KUDU training materials to provide training for crew, crew leaders, and manager trainees, creating motivational climate, supervising staff in cleaning and maintenance, assisting with staff appraisals and development plans, conducting staff briefings, delegating tasks to maximize potential, ensuring HR policies and safety procedures. Guest Focus - putting guests first in all decisions, demonstrating guest-first service, ensuring team readiness for best guest experience, monitoring SOS and providing feedback, resolving guest complaints. Sales Building - monitoring daily sales parameters and comparing with targets, collaborating on sales opportunities through KRBP, ensuring security measures for cash and assets, ensuring proper promotion execution and LSM initiatives. Business Results - assisting restaurant manager to control P&L line items, making operational decisions within policy, ensuring hygiene and safety procedures, maintaining equipment operation and maintenance, taking inventory, assisting with audits and action plans.",
 
+            "restaurant manager": "The Restaurant Manager leads a KUDU Restaurant to ensure Great Guest Experience is delivered consistently and maximize sales and profits through excellent operations and well-trained restaurant team. They consistently demonstrate KUDU's values and leadership behaviours to build positive business relationships. Position Purpose: Lead a KUDU Restaurant to ensure Great Guest Experience is delivered consistently and maximize sales and profits through excellent operations and well-trained restaurant team. Key responsibilities include: People management - leading subordinates by setting clear expectations and providing coaching, ensuring all staff are trained to KUDU standards, providing training and development plans, creating motivational climate to reduce turnover, conducting appraisals and development plans, conducting regular meetings, delegating key tasks, educating on HR policies and ensuring compliance. Guest Focus - putting guests first in all decisions, representing KUDU brand excellently through well-maintained restaurant and high QSC standards, demonstrating guest-first service through observation and corrective actions, ensuring restaurant readiness through KUDU Routine execution, monitoring SOS and enhancing service time, ensuring new promotions/LTOs are served properly, solving guest complaints quickly and effectively. Sales Building - making accurate sales projections and communicating targets, monitoring daily sales parameters, collaborating on sales opportunities through KRBP, ensuring security measures, being aware of competition and local market, executing LSM and national promotions. Business Results - monitoring monthly P&L reports and developing action plans, assigning P&L responsibilities to management team, creating positive work environment, ensuring proper hygiene and safety levels, completing audits and action plans.",
 
+            "area supervisor": "The Area Supervisor provides leadership, coaching, and direction to a batch of restaurants through people development and improved restaurant operations, to maximize the long-term sales and profit of each restaurant. They lead batch of 3 Restaurant Managers to drive priority business opportunities. Position Purpose: To provide leadership, coaching, and direction to his batch of restaurants through people development and improved restaurant operations, to maximize the long-term sales and profit of each restaurant. Key responsibilities include: People management - championing KUDU People Promise through respect, recognition, resources, values, and learning opportunities, ensuring adequate staffing through proper allocations and retention, collaborating on performance targets and reviews, educating on HR policies and ensuring compliance, partnering with Training Department, identifying operational opportunities through data analysis. Guest Focus - putting guests first in all decisions, collaborating to provide input on guest experience drawbacks, protecting KUDU brand by ensuring QSC standards, demonstrating guest-first service through observation and corrective actions. Sales Building - teaching and coaching restaurant managers to execute high QSC initiatives, partnering with experts to complete assessments and develop action plans, ensuring execution of action plans for improved results, ensuring proper execution of LSM and promotions. Business Results - collaborating on annual business plans, using information resources to identify opportunities and threats, creating positive work environment while achieving business results, completing various audits to ensure standard practices.",
 
+            // Additional job-related queries
+            "job profile": "KUDU has several key positions with clear career progression: Service Crew (entry level - food preparation and guest service across 9 stations), Crew Leader (training support and operational assistance), Shift Manager (shift leadership and operations management), Assistant Restaurant Manager (daily operations and management support), Restaurant Manager (overall restaurant leadership and P&L responsibility), and Area Supervisor (multi-restaurant oversight managing 3 restaurants). Each role has specific responsibilities for maintaining KUDU's standards of Quality, Service, and Cleanliness while delivering great guest experiences.",
 
-            
-           
-            
-            "default": "I'm sorry, I don't have specific information about that topic. Please ask the developer to add more information to the database, or try asking about KUDU's history, menu, locations, or services."
+            "career progression": "KUDU offers clear career progression paths: Service Crew → Crew Leader → Shift Manager → Assistant Restaurant Manager → Restaurant Manager → Area Supervisor. Each advancement requires mastering KUDU systems, demonstrating leadership capabilities, maintaining high operational standards, and completing required training through KUDU Academy. Crew Leaders are specifically identified as excellent candidates for Shift Manager positions due to their expertise in KUDU Systems.",
+
+            "training": "KUDU provides comprehensive training through KUDU Academy modules, in-store induction programs, technical training, and ongoing development plans. Training covers operational procedures, equipment handling, food safety, customer service, leadership development, and KUDU's core values. Only managers can certify service crew selfie videos on KUDU Academy. Training includes proper hygiene standards, chemical usage, personal protective equipment, hand washing systems, and new operations platforms.",
+
+            "kudu routine": "KUDU Routine is a comprehensive operational checklist and procedure system that ensures consistent high standards of Quality, Service, and Cleanliness (QSC) across all restaurants. It includes tasks for food preparation, equipment maintenance, cleaning procedures, inventory management, and guest service standards that must be completed within proper timeframes.",
+
+            "kudu academy": "KUDU Academy is the company's training platform that provides educational modules for all positions. It includes technical training, operational procedures, and certification processes. Service crew must complete all KUDU Academy modules, and managers are responsible for certifying completion through selfie videos.",
+
+            "workstations": "KUDU operations include 9 key workstations: 1. Receiving & Storage, 2. Preparation, 3. Breakfast, 4. Burger Station, 5. Steak Station, 6. Side Items, 7. Dessert, 8. Equipment's, 9. Guest Service. Service crew must be able to work effectively at all stations.",
+
+            "qsc standards": "Quality, Service, and Cleanliness (QSC) are KUDU's fundamental operational standards. Quality ensures fresh, high-quality food preparation; Service focuses on excellent guest experience and speed of service (SOS); Cleanliness maintains hygiene, safety, and attractive restaurant environment.",
+
+            "mystery shopper": "Mystery Shopper is KUDU's quality assessment program where anonymous evaluators visit restaurants to assess service quality, food standards, and overall guest experience. Results are communicated to staff to enhance performance and encourage consistent great results.",
+
+            "sos": "Speed of Service (SOS) is a key performance metric measuring how quickly orders are prepared and served to guests. Teams are expected to maintain SOS targets and receive regular feedback on results to enhance service time.",
+
+            "default": "I'm sorry, I don't have specific information about that topic. Please try asking about KUDU's history, mission, vision, values, job profiles (Service Crew, Crew Leader, Shift Manager, Assistant Manager, Restaurant Manager, Area Supervisor), career progression, training, operational procedures, or general restaurant information."
         };
 
         // DOM Elements
@@ -1082,10 +1105,10 @@
             const questions = [
                 "Tell me about KUDU's history",
                 "What's KUDU's brand message?",
-                "What menu items does KUDU offer?",
-                "Where are KUDU locations?",
-                "What are KUDU's opening hours?",
-                "Does KUDU offer delivery service?"
+                "What are KUDU's core values?",
+                "Tell me about Service Crew job profile",
+                "What is a Crew Leader's role?",
+                "Explain the career progression at KUDU"
             ];
             
             questions.forEach(question => {
@@ -1325,18 +1348,38 @@
                 }
             }
             
-            // Check for keyword matches
+            // Enhanced keyword matching for job profiles and company info
             const keywords = {
                 'history': 'kudu history',
                 'brand': 'brand message',
-                'menu': 'menu items',
-                'food': 'menu items',
-                'location': 'locations',
-                'where': 'locations',
-                'hours': 'opening hours',
-                'time': 'opening hours',
-                'delivery': 'delivery service',
-                'contact': 'contact information'
+                'mission': 'kudu mission',
+                'vision': 'kudu vision',
+                'values': 'kudu core values',
+                'core values': 'kudu core values',
+                'service crew': 'service crew',
+                'crew leader': 'crew leader',
+                'shift manager': 'shift manager',
+                'assistant manager': 'assistant restaurant manager',
+                'assistant restaurant manager': 'assistant restaurant manager',
+                'restaurant manager': 'restaurant manager',
+                'area supervisor': 'area supervisor',
+                'job profile': 'job profile',
+                'job profiles': 'job profile',
+                'career': 'career progression',
+                'career progression': 'career progression',
+                'training': 'training',
+                'positions': 'job profile',
+                'roles': 'job profile',
+                'kudu routine': 'kudu routine',
+                'kudu academy': 'kudu academy',
+                'academy': 'kudu academy',
+                'workstations': 'workstations',
+                'stations': 'workstations',
+                'qsc': 'qsc standards',
+                'quality service cleanliness': 'qsc standards',
+                'mystery shopper': 'mystery shopper',
+                'sos': 'sos',
+                'speed of service': 'sos'
             };
             
             for (const [keyword, topic] of Object.entries(keywords)) {
