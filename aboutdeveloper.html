@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mueen ul Islam - Hospitality Manager</title>
+    <title>Mueen ul Islam - AI-Enhanced Hospitality Manager</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -11,18 +11,20 @@
             --primary-color: #3498db;
             --secondary-color: #9b59b6;
             --accent-color: #e74c3c;
-            --dark-bg: #121212;
-            --card-bg: #1e1e1e;
-            --card-hover: #252525;
+            --dark-bg: rgba(18, 18, 18, 0.95);
+            --card-bg: rgba(30, 30, 30, 0.9);
+            --card-hover: rgba(37, 37, 37, 0.95);
             --text-primary: #e0e0e0;
             --text-secondary: #b0b0b0;
             --text-muted: #888888;
-            --border-color: #333333;
+            --border-color: rgba(51, 51, 51, 0.8);
             --success-color: #2ecc71;
             --warning-color: #f39c12;
             --ai-color: #9b59b6;
-            --gradient-start: #1a1a2e;
-            --gradient-end: #16213e;
+            --gradient-start: rgba(26, 26, 46, 0.9);
+            --gradient-end: rgba(22, 33, 62, 0.9);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
         
         * {
@@ -35,35 +37,84 @@
         body {
             color: var(--text-primary);
             line-height: 1.6;
-            background-color: var(--dark-bg);
             font-size: 16px;
-            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Video Background */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+        
+        .video-background video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .video-background::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.7) 0%, rgba(22, 33, 62, 0.8) 100%);
+            z-index: -1;
+        }
+        
+        /* Fallback background */
+        .fallback-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/images/Vision.jpg') center/cover no-repeat;
+            z-index: -3;
+        }
+        
+        .main-content {
+            position: relative;
+            z-index: 1;
             min-height: 100vh;
+            backdrop-filter: blur(2px);
         }
         
         .container {
             max-width: 1100px;
             margin: 30px auto;
-            background-color: var(--card-bg);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
             overflow: hidden;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
         }
         
         .container:hover {
             transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
         }
         
         header {
             background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            backdrop-filter: blur(30px);
             color: white;
             padding: 50px 40px;
             display: flex;
             align-items: center;
             gap: 30px;
             position: relative;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--glass-border);
         }
         
         .header-text {
@@ -79,6 +130,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-shadow: 0 0 30px rgba(52, 152, 219, 0.3);
         }
         
         h2 {
@@ -100,15 +152,18 @@
             align-items: center;
             gap: 10px;
             font-size: 0.95rem;
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
             padding: 8px 15px;
             border-radius: 20px;
+            border: 1px solid var(--glass-border);
             transition: all 0.3s ease;
         }
         
         .contact-item:hover {
             background: rgba(255, 255, 255, 0.1);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         
         .contact-item i {
@@ -122,14 +177,15 @@
             height: 160px;
             border-radius: 50%;
             object-fit: cover;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 4px solid var(--glass-border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             transition: all 0.3s ease;
         }
         
         .profile-img:hover {
             border-color: var(--primary-color);
             transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(52, 152, 219, 0.3);
         }
         
         .ai-badge {
@@ -137,6 +193,7 @@
             top: 25px;
             right: 25px;
             background: linear-gradient(135deg, var(--ai-color), #8e44ad);
+            backdrop-filter: blur(10px);
             color: white;
             padding: 8px 20px;
             border-radius: 25px;
@@ -145,7 +202,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 4px 10px rgba(155, 89, 182, 0.3);
+            box-shadow: 0 8px 20px rgba(155, 89, 182, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         main {
@@ -154,17 +212,19 @@
         
         section {
             margin-bottom: 40px;
-            background: var(--card-bg);
-            border-radius: 10px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--glass-border);
         }
         
         section:hover {
-            background: var(--card-hover);
+            background: rgba(255, 255, 255, 0.08);
             transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         }
         
         h3 {
@@ -173,7 +233,7 @@
             color: var(--primary-color);
             margin-bottom: 25px;
             padding-bottom: 12px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--glass-border);
             position: relative;
         }
         
@@ -185,6 +245,7 @@
             width: 70px;
             height: 3px;
             background: linear-gradient(90deg, var(--primary-color), transparent);
+            border-radius: 2px;
         }
         
         .ai-section h3:after {
@@ -204,7 +265,8 @@
         }
         
         .skill {
-            background: rgba(52, 152, 219, 0.1);
+            background: rgba(52, 152, 219, 0.15);
+            backdrop-filter: blur(10px);
             color: var(--primary-color);
             padding: 10px 18px;
             border-radius: 25px;
@@ -214,24 +276,26 @@
         }
         
         .skill:hover {
-            background: rgba(52, 152, 219, 0.2);
+            background: rgba(52, 152, 219, 0.25);
             transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
         }
         
         .ai-skill {
-            background: rgba(155, 89, 182, 0.1);
+            background: rgba(155, 89, 182, 0.15);
             border-color: rgba(155, 89, 182, 0.3);
             color: var(--ai-color);
         }
         
         .ai-skill:hover {
-            background: rgba(155, 89, 182, 0.2);
+            background: rgba(155, 89, 182, 0.25);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.2);
         }
         
         .experience-item, .education-item, .certification-item {
             margin-bottom: 30px;
             padding-bottom: 25px;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--glass-border);
             transition: all 0.3s ease;
         }
         
@@ -273,9 +337,11 @@
         .job-duration, .edu-duration {
             color: var(--text-muted);
             font-weight: 500;
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
             padding: 5px 12px;
             border-radius: 15px;
+            border: 1px solid var(--glass-border);
         }
         
         ul {
@@ -303,17 +369,20 @@
         }
         
         .accomplishment-card {
-            background: rgba(255, 255, 255, 0.03);
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
             padding: 25px;
-            border-radius: 10px;
+            border-radius: 15px;
             border-left: 4px solid var(--primary-color);
+            border: 1px solid var(--glass-border);
             transition: all 0.3s ease;
             height: 100%;
         }
         
         .accomplishment-card:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.08);
             transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
         }
         
         .ai-card {
@@ -348,14 +417,16 @@
         .language {
             flex: 1;
             min-width: 220px;
-            background: rgba(255, 255, 255, 0.03);
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
             transition: all 0.3s ease;
         }
         
         .language:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.08);
             transform: translateY(-3px);
         }
         
@@ -367,7 +438,7 @@
         
         .language-level {
             height: 10px;
-            background-color: var(--border-color);
+            background-color: rgba(255, 255, 255, 0.1);
             border-radius: 5px;
             margin-bottom: 8px;
             overflow: hidden;
@@ -384,9 +455,220 @@
             text-align: center;
             padding: 25px;
             background: var(--gradient-start);
+            backdrop-filter: blur(30px);
             color: var(--text-secondary);
             font-size: 0.9rem;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--glass-border);
+        }
+        
+        /* Audio Controls */
+        .audio-controls {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .audio-toggle {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .audio-toggle:hover {
+            color: var(--secondary-color);
+            transform: scale(1.1);
+        }
+        
+        .volume-control {
+            width: 80px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            outline: none;
+            cursor: pointer;
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            transform: rotate(30deg) scale(1.1);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .print-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .print-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(52, 152, 219, 0.4);
+        }
+        
+        /* Tech Skills Grid */
+        .tech-skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        .tech-category {
+            margin-bottom: 25px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+        
+        .tech-category:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-3px);
+        }
+        
+        .tech-category h4 {
+            margin-bottom: 15px;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tech-category h4:before {
+            content: "▸";
+            color: var(--primary-color);
+        }
+        
+        .progress-bar-container {
+            margin-top: 10px;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 4px;
+        }
+        
+        .ai-tools-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .ai-tool {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(155, 89, 182, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(155, 89, 182, 0.3);
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 180px;
+        }
+        
+        .ai-tool:hover {
+            background: rgba(155, 89, 182, 0.25);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.2);
+        }
+        
+        .ai-tool i {
+            color: var(--ai-color);
+            font-size: 1.2rem;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .section-title i {
+            margin-right: 12px;
+            color: var(--primary-color);
+            font-size: 1.4rem;
+        }
+        
+        .ai-section .section-title i {
+            color: var(--ai-color);
+        }
+        
+        .highlight {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .ai-highlight {
+            color: var(--ai-color);
+            font-weight: 600;
         }
         
         @media (max-width: 768px) {
@@ -429,172 +711,29 @@
             section {
                 padding: 20px;
             }
-        }
-        
-        .highlight {
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-        
-        .ai-highlight {
-            color: var(--ai-color);
-            font-weight: 600;
-        }
-        
-        .section-title {
-            display: flex;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-        
-        .section-title i {
-            margin-right: 12px;
-            color: var(--primary-color);
-            font-size: 1.4rem;
-        }
-        
-        .ai-section .section-title i {
-            color: var(--ai-color);
-        }
-        
-        .ai-tools-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .ai-tool {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(155, 89, 182, 0.1);
-            padding: 12px 20px;
-            border-radius: 8px;
-            border: 1px solid rgba(155, 89, 182, 0.3);
-            transition: all 0.3s ease;
-            flex: 1;
-            min-width: 180px;
-        }
-        
-        .ai-tool:hover {
-            background: rgba(155, 89, 182, 0.2);
-            transform: translateY(-3px);
-        }
-        
-        .ai-tool i {
-            color: var(--ai-color);
-            font-size: 1.2rem;
-        }
-        
-        .tech-skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-        
-        .tech-category {
-            margin-bottom: 25px;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 20px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-        
-        .tech-category:hover {
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateY(-3px);
-        }
-        
-        .tech-category h4 {
-            margin-bottom: 15px;
-            font-family: 'Montserrat', sans-serif;
-            color: var(--text-primary);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .tech-category h4:before {
-            content: "▸";
-            color: var(--primary-color);
-        }
-        
-        .progress-bar-container {
-            margin-top: 10px;
-        }
-        
-        .progress-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-        }
-        
-        .progress-bar {
-            height: 8px;
-            background-color: var(--border-color);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            border-radius: 4px;
-        }
-        
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 100;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .theme-toggle:hover {
-            transform: rotate(30deg);
-            background: var(--card-hover);
-        }
-        
-        .print-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            z-index: 100;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-        }
-        
-        .print-btn:hover {
-            background: #2980b9;
-            transform: translateY(-3px);
+            
+            .audio-controls {
+                top: 10px;
+                left: 10px;
+                padding: 8px 15px;
+            }
+            
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                width: 45px;
+                height: 45px;
+            }
+            
+            .print-btn {
+                bottom: 10px;
+                right: 10px;
+                padding: 10px 15px;
+            }
         }
         
         @media print {
-            .theme-toggle, .print-btn {
+            .audio-controls, .theme-toggle, .print-btn, .video-background {
                 display: none;
             }
             
@@ -607,387 +746,551 @@
                 box-shadow: none;
                 margin: 0;
                 max-width: 100%;
+                background: white;
             }
             
             section {
                 box-shadow: none;
                 border: 1px solid #ddd;
+                background: white;
             }
+        }
+        
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Particle Animation */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.6;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
         }
     </style>
 </head>
 <body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <!-- Fallback Background -->
+    <div class="fallback-bg"></div>
+    
+    <!-- Video Background -->
+    <div class="video-background">
+        <video autoplay muted loop playsinline id="bgVideo">
+            <source src="https://ghostkmr.github.io/sadwap/.mp4" type="video/mp4">
+            <!-- Fallback to a more abstract video -->
+            <source src="https://ghostkmr.github.io/sadwap/shubhbgm.mp4" type="video/mp4">
+        </video>
+    </div>
+    
+    <!-- Particle Effects -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- Audio Controls -->
+    <div class="audio-controls">
+        <button class="audio-toggle" id="audioToggle">
+            <i class="fas fa-volume-up"></i>
+        </button>
+        <input type="range" class="volume-control" id="volumeControl" min="0" max="1" step="0.1" value="0.3">
+        <span style="font-size: 0.8rem; color: var(--text-secondary);">Audio</span>
+    </div>
+    
+    <!-- Theme Toggle -->
     <div class="theme-toggle" id="themeToggle">
         <i class="fas fa-moon"></i>
     </div>
     
+    <!-- Print Button -->
     <button class="print-btn" id="printBtn">
         <i class="fas fa-print"></i> Print Resume
     </button>
     
-    <div class="container">
-        <header>
-            <div class="header-text">
-                <h1>Mueen ul Islam</h1>
-                <h2>Hospitality Manager & AI-Enhanced Professional</h2>
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <i class="fas fa-phone"></i>
-                        <span>+919622841731</span>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <span>moinranzao2@gmail.com</span>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>Baramulla, Jammu and Kashmir 193101</span>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-globe"></i>
-                        <span>LinkedIn: Mueen ul Islam</span>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            <header>
+                <div class="header-text">
+                    <h1>Mueen ul Islam</h1>
+                    <h2>Hospitality Manager & AI-Enhanced Professional</h2>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>+919622841731</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="65080a0c0b17040b1f040a57250208040c094b060a08">[email&#160;protected]</a></span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Baramulla, Jammu and Kashmir 193101</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-globe"></i>
+                            <span>LinkedIn: Mueen ul Islam</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <img src="https://ghostkmr.github.io/sadwap/IMG_20230628_192348_878.jpg" alt="Mueen ul Islam" class="profile-img">
-            <div class="ai-badge">
-                <i class="fas fa-robot"></i>
-                <span>AI-Enhanced Professional</span>
-            </div>
-        </header>
-        
-        <main>
-            <section class="summary">
-                <div class="section-title">
-                    <i class="fas fa-user"></i>
-                    <h3>PROFESSIONAL SUMMARY</h3>
-                </div>
-                <p>Results-driven hospitality manager with <span class="highlight">8 years of experience</span> in the industry, combining operational expertise with a strong IT background to streamline daily operations and enhance guest experiences. Adept at overseeing business functions, optimizing workflows, and implementing technology-driven solutions to improve efficiency and service quality.</p>
-                <p>Skilled in team leadership, problem-solving, and customer satisfaction, ensuring smooth and seamless hospitality operations. Proven ability to manage high-pressure environments while maintaining a commitment to excellence and guest satisfaction.</p>
-                <p><span class="ai-highlight">Leveraging AI tools including ChatGPT, DeepSeek, and Blackbox AI</span> to enhance operational efficiency, data analysis, and decision-making processes in hospitality management.</p>
-            </section>
-            
-            <section class="skills">
-                <div class="section-title">
-                    <i class="fas fa-tools"></i>
-                    <h3>CORE COMPETENCIES</h3>
-                </div>
-                <div class="skills-container">
-                    <span class="skill">Operational Management</span>
-                    <span class="skill">Customer Service Excellence</span>
-                    <span class="skill">Team Leadership & Development</span>
-                    <span class="skill">Inventory & Cost Control</span>
-                    <span class="skill">Health & Safety Compliance</span>
-                    <span class="skill">Staff Training & Scheduling</span>
-                    <span class="skill">Process Improvement</span>
-                    <span class="skill">Marketing & Advertising</span>
-                    <span class="skill">Financial Management</span>
-                    <span class="skill">Quality Assurance</span>
-                    <span class="skill ai-skill">AI-Enhanced Decision Making</span>
-                    <span class="skill ai-skill">Data Analysis & Interpretation</span>
-                </div>
-            </section>
-            
-            <section class="ai-section">
-                <div class="section-title">
+                <img src="https://ghostkmr.github.io/sadwap/IMG_20230628_192348_878.jpg" alt="Mueen ul Islam" class="profile-img">
+                <div class="ai-badge">
                     <i class="fas fa-robot"></i>
-                    <h3>AI TOOLS & PROFICIENCIES</h3>
+                    <span>AI-Enhanced Professional</span>
                 </div>
-                <div class="ai-tools-container">
-                    <div class="ai-tool">
-                        <i class="fas fa-comment"></i>
-                        <span>ChatGPT</span>
-                    </div>
-                    <div class="ai-tool">
-                        <i class="fas fa-search"></i>
-                        <span>DeepSeek</span>
-                    </div>
-                    <div class="ai-tool">
-                        <i class="fas fa-code"></i>
-                        <span>Blackbox AI</span>
-                    </div>
-                    <div class="ai-tool">
-                        <i class="fas fa-brain"></i>
-                        <span>Claude AI</span>
-                    </div>
-                    <div class="ai-tool">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Data Analysis AI Tools</span>
-                    </div>
-                </div>
-                <p style="margin-top: 20px;"><span class="ai-highlight">Application of AI Tools:</span> Utilizing advanced AI platforms for data analysis, market research, customer sentiment analysis, operational optimization, content creation, and strategic decision-making in hospitality management.</p>
-            </section>
+            </header>
             
-            <section class="experience">
-                <div class="section-title">
-                    <i class="fas fa-briefcase"></i>
-                    <h3>PROFESSIONAL EXPERIENCE</h3>
-                </div>
+            <main>
+                <section class="summary">
+                    <div class="section-title">
+                        <i class="fas fa-user"></i>
+                        <h3>PROFESSIONAL SUMMARY</h3>
+                    </div>
+                    <p>Results-driven hospitality manager with <span class="highlight">8 years of experience</span> in the industry, combining operational expertise with a strong IT background to streamline daily operations and enhance guest experiences. Adept at overseeing business functions, optimizing workflows, and implementing technology-driven solutions to improve efficiency and service quality.</p>
+                    <p>Skilled in team leadership, problem-solving, and customer satisfaction, ensuring smooth and seamless hospitality operations. Proven ability to manage high-pressure environments while maintaining a commitment to excellence and guest satisfaction.</p>
+                    <p><span class="ai-highlight">Leveraging AI tools including ChatGPT, DeepSeek, and Blackbox AI</span> to enhance operational efficiency, data analysis, and decision-making processes in hospitality management.</p>
+                </section>
                 
-                <div class="experience-item">
-                    <div class="job-header">
-                        <div>
-                            <div class="job-title">Assistant Restaurant Manager</div>
-                            <div class="company">Kudu | Riyadh, KSA</div>
-                        </div>
-                        <div class="job-duration">07/2024 - Current</div>
+                <section class="skills">
+                    <div class="section-title">
+                        <i class="fas fa-tools"></i>
+                        <h3>CORE COMPETENCIES</h3>
                     </div>
-                    <ul>
-                        <li>Managed daily operations of the restaurant, overseeing food quality and customer service standards.</li>
-                        <li>Handled inventory management, including ordering supplies and conducting regular stock takes.</li>
-                        <li>Resolved customer complaints with professionalism, offering solutions to ensure satisfaction.</li>
-                        <li>Implemented effective stock control procedures, reducing waste by 15% and improving profit margins.</li>
-                        <li>Drove revenue by coaching team members on customer service and up-selling techniques.</li>
-                        <li><span class="ai-highlight">Utilized AI tools for customer sentiment analysis and menu optimization</span></li>
-                    </ul>
-                </div>
+                    <div class="skills-container">
+                        <span class="skill">Operational Management</span>
+                        <span class="skill">Customer Service Excellence</span>
+                        <span class="skill">Team Leadership & Development</span>
+                        <span class="skill">Inventory & Cost Control</span>
+                        <span class="skill">Health & Safety Compliance</span>
+                        <span class="skill">Staff Training & Scheduling</span>
+                        <span class="skill">Process Improvement</span>
+                        <span class="skill">Marketing & Advertising</span>
+                        <span class="skill">Financial Management</span>
+                        <span class="skill">Quality Assurance</span>
+                        <span class="skill ai-skill">AI-Enhanced Decision Making</span>
+                        <span class="skill ai-skill">Data Analysis & Interpretation</span>
+                    </div>
+                </section>
                 
-                <div class="experience-item">
-                    <div class="job-header">
-                        <div>
-                            <div class="job-title">Restaurant Supervisor</div>
-                            <div class="company">Americana | Jeddah, KSA</div>
-                        </div>
-                        <div class="job-duration">04/2022 - 04/2024</div>
+                <section class="ai-section">
+                    <div class="section-title">
+                        <i class="fas fa-robot"></i>
+                        <h3>AI TOOLS & PROFICIENCIES</h3>
                     </div>
-                    <ul>
-                        <li>Trained workers in every position, including food preparation, money handling and cleaning roles.</li>
-                        <li>Addressed customer complaints, resolving issues promptly to uphold customer satisfaction.</li>
-                        <li>Supervised cash handling and reconciliation, ensuring accuracy in financial transactions.</li>
-                        <li>Managed conflict resolution among staff and with customers, maintaining a positive atmosphere.</li>
-                        <li>Oversaw use of ingredients to plan for costs and minimise food waste.</li>
-                        <li><span class="ai-highlight">Applied AI-powered analytics for staff scheduling optimization and performance tracking</span></li>
-                    </ul>
-                </div>
+                    <div class="ai-tools-container">
+                        <div class="ai-tool">
+                            <i class="fas fa-comment"></i>
+                            <span>ChatGPT</span>
+                        </div>
+                        <div class="ai-tool">
+                            <i class="fas fa-search"></i>
+                            <span>DeepSeek</span>
+                        </div>
+                        <div class="ai-tool">
+                            <i class="fas fa-code"></i>
+                            <span>Blackbox AI</span>
+                        </div>
+                        <div class="ai-tool">
+                            <i class="fas fa-brain"></i>
+                            <span>Claude AI</span>
+                        </div>
+                        <div class="ai-tool">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Data Analysis AI Tools</span>
+                        </div>
+                    </div>
+                    <p style="margin-top: 20px;"><span class="ai-highlight">Application of AI Tools:</span> Utilizing advanced AI platforms for data analysis, market research, customer sentiment analysis, operational optimization, content creation, and strategic decision-making in hospitality management.</p>
+                </section>
                 
-                <div class="experience-item">
-                    <div class="job-header">
-                        <div>
-                            <div class="job-title">Assistant Manager</div>
-                            <div class="company">Grand MAMTA | Srinagar, Jammu and Kashmir</div>
-                        </div>
-                        <div class="job-duration">11/2018 - 11/2022</div>
-                    </div>
-                    <ul>
-                        <li>Coordinated with senior management to implement strategic plans for revenue growth.</li>
-                        <li>Oversaw daily operations, including opening and closing procedures, to maintain store standards.</li>
-                        <li>Facilitated communication between staff and senior management, acting as a point of contact.</li>
-                        <li>Prepared detailed reports on weekly sales, expenses, and staff productivity for management review.</li>
-                        <li>Monitored inventory levels, placing orders for stock replenishment to prevent shortages.</li>
-                        <li><span class="ai-highlight">Leveraged AI tools for market analysis and competitive intelligence</span></li>
-                    </ul>
-                </div>
-            </section>
-            
-            <section class="education">
-                <div class="section-title">
-                    <i class="fas fa-graduation-cap"></i>
-                    <h3>EDUCATION</h3>
-                </div>
-                <div class="education-item">
-                    <div class="edu-header">
-                        <div>
-                            <div class="edu-degree">Bachelor of Science: Computer Applications</div>
-                            <div class="edu-institution">Kashmir University | Srinagar</div>
-                        </div>
-                        <div class="edu-duration">2013</div>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-info">
-                            <span>Technical Proficiency</span>
-                            <span>85%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 85%"></div>
-                        </div>
-                    </div>
-                    <ul>
-                        <li>Programming & Development: C, C++, HTML, CSS, JavaScript, PHP, WordPress</li>
-                        <li>Artificial Intelligence & Databases: AI fundamentals, DBMS (Database Management Systems)</li>
-                        <li>Digital & Applied Sciences: Digital Electronics, Applied Mathematics</li>
-                        <li>Software & Tools: MS Office Suite (Excel, Word, PowerPoint)</li>
-                    </ul>
-                </div>
-            </section>
-            
-            <section class="technical-skills">
-                <div class="section-title">
-                    <i class="fas fa-laptop-code"></i>
-                    <h3>TECHNICAL SKILLS</h3>
-                </div>
-                <div class="tech-skills-grid">
-                    <div class="tech-category">
-                        <h4>Programming & Development</h4>
-                        <div class="skills-container">
-                            <span class="skill">HTML/CSS</span>
-                            <span class="skill">JavaScript</span>
-                            <span class="skill">PHP</span>
-                            <span class="skill">WordPress</span>
-                            <span class="skill">C/C++</span>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-info">
-                                <span>Expertise Level</span>
-                                <span>80%</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 80%"></div>
-                            </div>
-                        </div>
+                <section class="experience">
+                    <div class="section-title">
+                        <i class="fas fa-briefcase"></i>
+                        <h3>PROFESSIONAL EXPERIENCE</h3>
                     </div>
                     
-                    <div class="tech-category">
-                        <h4>AI & Data Analysis</h4>
-                        <div class="skills-container">
-                            <span class="skill ai-skill">ChatGPT</span>
-                            <span class="skill ai-skill">DeepSeek</span>
-                            <span class="skill ai-skill">Blackbox AI</span>
-                            <span class="skill ai-skill">Data Analytics</span>
-                            <span class="skill ai-skill">AI Prompt Engineering</span>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-info">
-                                <span>Expertise Level</span>
-                                <span>75%</span>
+                    <div class="experience-item">
+                        <div class="job-header">
+                            <div>
+                                <div class="job-title">Assistant Restaurant Manager</div>
+                                <div class="company">Kudu | Riyadh, KSA</div>
                             </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 75%"></div>
-                            </div>
+                            <div class="job-duration">07/2024 - Current</div>
                         </div>
-                    </div>
-                    
-                    <div class="tech-category">
-                        <h4>Software & Tools</h4>
-                        <div class="skills-container">
-                            <span class="skill">MS Office Suite</span>
-                            <span class="skill">Database Management</span>
-                            <span class="skill">Inventory Systems</span>
-                            <span class="skill">POS Systems</span>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-info">
-                                <span>Expertise Level</span>
-                                <span>90%</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 90%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <section class="certifications">
-                <div class="section-title">
-                    <i class="fas fa-certificate"></i>
-                    <h3>CERTIFICATIONS</h3>
-                </div>
-                <div class="skills-container">
-                    <span class="skill">Food Safety Certified</span>
-                    <span class="skill">CPR & First Aid</span>
-                    <span class="skill">Effective Shift Management</span>
-                    <span class="skill">Time Management</span>
-                    <span class="skill">Effective Communication</span>
-                    <span class="skill">Leadership Skills and Management</span>
-                    <span class="skill">Restaurant Certified Trainer</span>
-                    <span class="skill">Diploma in Hospitality Management</span>
-                    <span class="skill">HACCP Certification Course</span>
-                    <span class="skill ai-skill">AI for Business Professionals</span>
-                </div>
-            </section>
-            
-            <section class="accomplishments">
-                <div class="section-title">
-                    <i class="fas fa-trophy"></i>
-                    <h3>KEY ACHIEVEMENTS</h3>
-                </div>
-                <div class="accomplishments-grid">
-                    <div class="accomplishment-card">
-                        <h4>Awards & Recognitions</h4>
                         <ul>
-                            <li>Awarded Double Platinum for outstanding performance in OA and QA audits</li>
-                            <li>Recognized with Kudu's "Good" and "Excellent" ratings in C.E.R. audits</li>
-                            <li>Achieved Top Score in internal audits for Cash Handling and Inventory Management</li>
-                            <li>Received multiple Employee of the Month awards for exceptional performance</li>
-                            <li>Recognized for implementing cost-saving measures reducing operational expenses by 12%</li>
+                            <li>Managed daily operations of the restaurant, overseeing food quality and customer service standards.</li>
+                            <li>Handled inventory management, including ordering supplies and conducting regular stock takes.</li>
+                            <li>Resolved customer complaints with professionalism, offering solutions to ensure satisfaction.</li>
+                            <li>Implemented effective stock control procedures, reducing waste by 15% and improving profit margins.</li>
+                            <li>Drove revenue by coaching team members on customer service and up-selling techniques.</li>
+                            <li><span class="ai-highlight">Utilized AI tools for customer sentiment analysis and menu optimization</span></li>
                         </ul>
                     </div>
                     
-                    <div class="accomplishment-card ai-card">
-                        <h4>AI-Enhanced Projects</h4>
+                    <div class="experience-item">
+                        <div class="job-header">
+                            <div>
+                                <div class="job-title">Restaurant Supervisor</div>
+                                <div class="company">Americana | Jeddah, KSA</div>
+                            </div>
+                            <div class="job-duration">04/2022 - 04/2024</div>
+                        </div>
                         <ul>
-                            <li>Developed Sadwap Application for Kudu's managerial use with AI integration</li>
-                            <li>Created the STM system for Americana with AI-powered performance tracking</li>
-                            <li>Developed a MoviePlus streaming platform replica using AI for recommendations</li>
-                            <li>Currently working on an AI-powered chatbot for customer engagement</li>
-                            <li>Utilized AI tools for market analysis and competitive intelligence</li>
-                            <li>Implemented AI-driven inventory optimization reducing waste by 18%</li>
+                            <li>Trained workers in every position, including food preparation, money handling and cleaning roles.</li>
+                            <li>Addressed customer complaints, resolving issues promptly to uphold customer satisfaction.</li>
+                            <li>Supervised cash handling and reconciliation, ensuring accuracy in financial transactions.</li>
+                            <li>Managed conflict resolution among staff and with customers, maintaining a positive atmosphere.</li>
+                            <li>Oversaw use of ingredients to plan for costs and minimise food waste.</li>
+                            <li><span class="ai-highlight">Applied AI-powered analytics for staff scheduling optimization and performance tracking</span></li>
                         </ul>
                     </div>
-                </div>
-            </section>
+                    
+                    <div class="experience-item">
+                        <div class="job-header">
+                            <div>
+                                <div class="job-title">Assistant Manager</div>
+                                <div class="company">Grand MAMTA | Srinagar, Jammu and Kashmir</div>
+                            </div>
+                            <div class="job-duration">11/2018 - 11/2022</div>
+                        </div>
+                        <ul>
+                            <li>Coordinated with senior management to implement strategic plans for revenue growth.</li>
+                            <li>Oversaw daily operations, including opening and closing procedures, to maintain store standards.</li>
+                            <li>Facilitated communication between staff and senior management, acting as a point of contact.</li>
+                            <li>Prepared detailed reports on weekly sales, expenses, and staff productivity for management review.</li>
+                            <li>Monitored inventory levels, placing orders for stock replenishment to prevent shortages.</li>
+                            <li><span class="ai-highlight">Leveraged AI tools for market analysis and competitive intelligence</span></li>
+                        </ul>
+                    </div>
+                </section>
+                
+                <section class="education">
+                    <div class="section-title">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h3>EDUCATION</h3>
+                    </div>
+                    <div class="education-item">
+                        <div class="edu-header">
+                            <div>
+                                <div class="edu-degree">Bachelor of Science: Computer Applications</div>
+                                <div class="edu-institution">Kashmir University | Srinagar</div>
+                            </div>
+                            <div class="edu-duration">2013</div>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-info">
+                                <span>Technical Proficiency</span>
+                                <span>85%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <ul>
+                            <li>Programming & Development: C, C++, HTML, CSS, JavaScript, PHP, WordPress</li>
+                            <li>Artificial Intelligence & Databases: AI fundamentals, DBMS (Database Management Systems)</li>
+                            <li>Digital & Applied Sciences: Digital Electronics, Applied Mathematics</li>
+                            <li>Software & Tools: MS Office Suite (Excel, Word, PowerPoint)</li>
+                        </ul>
+                    </div>
+                </section>
+                
+                <section class="technical-skills">
+                    <div class="section-title">
+                        <i class="fas fa-laptop-code"></i>
+                        <h3>TECHNICAL SKILLS</h3>
+                    </div>
+                    <div class="tech-skills-grid">
+                        <div class="tech-category">
+                            <h4>Programming & Development</h4>
+                            <div class="skills-container">
+                                <span class="skill">HTML/CSS</span>
+                                <span class="skill">JavaScript</span>
+                                <span class="skill">PHP</span>
+                                <span class="skill">WordPress</span>
+                                <span class="skill">C/C++</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-info">
+                                    <span>Expertise Level</span>
+                                    <span>80%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 80%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tech-category">
+                            <h4>AI & Data Analysis</h4>
+                            <div class="skills-container">
+                                <span class="skill ai-skill">ChatGPT</span>
+                                <span class="skill ai-skill">DeepSeek</span>
+                                <span class="skill ai-skill">Blackbox AI</span>
+                                <span class="skill ai-skill">Data Analytics</span>
+                                <span class="skill ai-skill">AI Prompt Engineering</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-info">
+                                    <span>Expertise Level</span>
+                                    <span>75%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 75%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tech-category">
+                            <h4>Software & Tools</h4>
+                            <div class="skills-container">
+                                <span class="skill">MS Office Suite</span>
+                                <span class="skill">Database Management</span>
+                                <span class="skill">Inventory Systems</span>
+                                <span class="skill">POS Systems</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-info">
+                                    <span>Expertise Level</span>
+                                    <span>90%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 90%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="certifications">
+                    <div class="section-title">
+                        <i class="fas fa-certificate"></i>
+                        <h3>CERTIFICATIONS</h3>
+                    </div>
+                    <div class="skills-container">
+                        <span class="skill">Food Safety Certified</span>
+                        <span class="skill">CPR & First Aid</span>
+                        <span class="skill">Effective Shift Management</span>
+                        <span class="skill">Time Management</span>
+                        <span class="skill">Effective Communication</span>
+                        <span class="skill">Leadership Skills and Management</span>
+                        <span class="skill">Restaurant Certified Trainer</span>
+                        <span class="skill">Diploma in Hospitality Management</span>
+                        <span class="skill">HACCP Certification Course</span>
+                        <span class="skill ai-skill">AI for Business Professionals</span>
+                    </div>
+                </section>
+                
+                <section class="accomplishments">
+                    <div class="section-title">
+                        <i class="fas fa-trophy"></i>
+                        <h3>KEY ACHIEVEMENTS</h3>
+                    </div>
+                    <div class="accomplishments-grid">
+                        <div class="accomplishment-card">
+                            <h4>Awards & Recognitions</h4>
+                            <ul>
+                                <li>Awarded Double Platinum for outstanding performance in OA and QA audits</li>
+                                <li>Recognized with Kudu's "Good" and "Excellent" ratings in C.E.R. audits</li>
+                                <li>Achieved Top Score in internal audits for Cash Handling and Inventory Management</li>
+                                <li>Received multiple Employee of the Month awards for exceptional performance</li>
+                                <li>Recognized for implementing cost-saving measures reducing operational expenses by 12%</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="accomplishment-card ai-card">
+                            <h4>AI-Enhanced Projects</h4>
+                            <ul>
+                                <li>Developed Sadwap Application for Kudu's managerial use with AI integration</li>
+                                <li>Created the STM system for Americana with AI-powered performance tracking</li>
+                                <li>Developed a MoviePlus streaming platform replica using AI for recommendations</li>
+                                <li>Currently working on an AI-powered chatbot for customer engagement</li>
+                                <li>Utilized AI tools for market analysis and competitive intelligence</li>
+                                <li>Implemented AI-driven inventory optimization reducing waste by 18%</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="languages">
+                    <div class="section-title">
+                        <i class="fas fa-language"></i>
+                        <h3>LANGUAGES</h3>
+                    </div>
+                    <div class="languages-container">
+                        <div class="language">
+                            <h4>English</h4>
+                            <div class="language-level">
+                                <div class="language-progress" style="width: 90%;"></div>
+                            </div>
+                            <span>C1 Advanced</span>
+                        </div>
+                        
+                        <div class="language">
+                            <h4>Arabic</h4>
+                            <div class="language-level">
+                                <div class="language-progress" style="width: 40%;"></div>
+                            </div>
+                            <span>A2 Elementary</span>
+                        </div>
+                        
+                        <div class="language">
+                            <h4>Hindi</h4>
+                            <div class="language-level">
+                                <div class="language-progress" style="width: 75%;"></div>
+                            </div>
+                            <span>B2 Upper Intermediate</span>
+                        </div>
+                        
+                        <div class="language">
+                            <h4>Urdu</h4>
+                            <div class="language-level">
+                                <div class="language-progress" style="width: 60%;"></div>
+                            </div>
+                            <span>B1 Intermediate</span>
+                        </div>
+                    </div>
+                </section>
+            </main>
             
-            <section class="languages">
-                <div class="section-title">
-                    <i class="fas fa-language"></i>
-                    <h3>LANGUAGES</h3>
-                </div>
-                <div class="languages-container">
-                    <div class="language">
-                        <h4>English</h4>
-                        <div class="language-level">
-                            <div class="language-progress" style="width: 90%;"></div>
-                        </div>
-                        <span>C1 Advanced</span>
-                    </div>
-                    
-                    <div class="language">
-                        <h4>Arabic</h4>
-                        <div class="language-level">
-                            <div class="language-progress" style="width: 40%;"></div>
-                        </div>
-                        <span>A2 Elementary</span>
-                    </div>
-                    
-                    <div class="language">
-                        <h4>Hindi</h4>
-                        <div class="language-level">
-                            <div class="language-progress" style="width: 75%;"></div>
-                        </div>
-                        <span>B2 Upper Intermediate</span>
-                    </div>
-                    
-                    <div class="language">
-                        <h4>Urdu</h4>
-                        <div class="language-level">
-                            <div class="language-progress" style="width: 60%;"></div>
-                        </div>
-                        <span>B1 Intermediate</span>
-                    </div>
-                </div>
-            </section>
-        </main>
-        
-        <footer>
-            &copy; 2024 Mueen ul Islam - AI-Enhanced Hospitality Professional | Designed with Modern Dark Theme
-        </footer>
+            <footer>
+                &copy; 2024 Mueen ul Islam - AI-Enhanced Hospitality Professional | Designed with Modern Glass Morphism & Video Background
+            </footer>
+        </div>
     </div>
 
-    <script>
+    <!-- Hidden Audio Element -->
+    <audio id="backgroundAudio" loop>
+        <source src="https://www.soundjay.com/misc/sounds-1222.mp3" type="audio/mpeg">
+        <source src="https://www.soundjay.com/misc/sounds-1222.wav" type="audio/wav">
+    </audio>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeParticles();
+            initializeAudio();
+            initializeAnimations();
+            hideLoadingOverlay();
+        });
+
+        // Hide loading overlay
+        function hideLoadingOverlay() {
+            setTimeout(() => {
+                const overlay = document.getElementById('loadingOverlay');
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 500);
+            }, 1500);
+        }
+
+        // Initialize particle effects
+        function initializeParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Audio functionality
+        function initializeAudio() {
+            const audio = document.getElementById('backgroundAudio');
+            const audioToggle = document.getElementById('audioToggle');
+            const volumeControl = document.getElementById('volumeControl');
+            let isPlaying = false;
+
+            // Set initial volume
+            audio.volume = 0.3;
+
+            audioToggle.addEventListener('click', function() {
+                if (isPlaying) {
+                    audio.pause();
+                    audioToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                    isPlaying = false;
+                } else {
+                    audio.play().catch(e => {
+                        console.log('Audio autoplay prevented by browser policy');
+                    });
+                    audioToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
+                    isPlaying = true;
+                }
+            });
+
+            volumeControl.addEventListener('input', function() {
+                audio.volume = this.value;
+            });
+
+            // Try to autoplay (may be blocked by browser)
+            audio.play().catch(e => {
+                console.log('Audio autoplay prevented by browser policy');
+            });
+        }
+
         // Print functionality
         document.getElementById('printBtn').addEventListener('click', function() {
             window.print();
         });
         
-        // Theme toggle functionality (for future light mode implementation)
+        // Theme toggle functionality
         document.getElementById('themeToggle').addEventListener('click', function() {
-            // This would toggle between dark and light modes
-            // For now, we'll just show a message since we're only implementing dark mode
-            alert('Dark mode is currently active. Light mode will be available in a future update.');
+            alert('This resume features an immersive dark theme with video background. Light mode coming soon!');
         });
         
-        // Add subtle animations to elements when they come into view
-        document.addEventListener('DOMContentLoaded', function() {
+        // Initialize animations
+        function initializeAnimations() {
             const sections = document.querySelectorAll('section');
             
             const observer = new IntersectionObserver((entries) => {
@@ -1002,8 +1305,40 @@
             sections.forEach(section => {
                 section.style.opacity = '0';
                 section.style.transform = 'translateY(20px)';
-                section.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                section.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
                 observer.observe(section);
+            });
+        }
+
+        // Video error handling
+        document.getElementById('bgVideo').addEventListener('error', function() {
+            console.log('Video failed to load, using fallback background');
+            this.style.display = 'none';
+        });
+
+        // Smooth scrolling for better UX
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        // Add dynamic glow effect to profile image
+        const profileImg = document.querySelector('.profile-img');
+        if (profileImg) {
+            profileImg.addEventListener('mouseover', function() {
+                this.style.boxShadow = '0 0 30px rgba(52, 152, 219, 0.6)';
+            });
+            
+            profileImg.addEventListener('mouseout', function() {
+                this.style.boxShadow = '0 15px 40px rgba(52, 152, 219, 0.3)';
+            });
+        }
+
+        // Enhanced hover effects for skills
+        document.querySelectorAll('.skill').forEach(skill => {
+            skill.addEventListener('mouseover', function() {
+                this.style.transform = 'translateY(-5px) scale(1.05)';
+            });
+            
+            skill.addEventListener('mouseout', function() {
+                this.style.transform = 'translateY(-3px) scale(1)';
             });
         });
     </script>
