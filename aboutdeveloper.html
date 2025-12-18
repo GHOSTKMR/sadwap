@@ -77,7 +77,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('/images/Vision.jpg') center/cover no-repeat;
+            background: url('public/assets/fallback-background.jpg') center/cover no-repeat;
             z-index: -3;
         }
         
@@ -671,6 +671,65 @@
             font-weight: 600;
         }
         
+        /* Audio Enable Overlay */
+        .audio-enable-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .audio-enable-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+        
+        .audio-enable-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        
+        .audio-enable-card p {
+            margin-bottom: 30px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .enable-audio-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 auto;
+        }
+        
+        .enable-audio-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.4);
+        }
+        
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -733,7 +792,7 @@
         }
         
         @media print {
-            .audio-controls, .theme-toggle, .print-btn, .video-background {
+            .audio-controls, .theme-toggle, .print-btn, .video-background, .audio-enable-overlay {
                 display: none;
             }
             
@@ -813,8 +872,20 @@
     </style>
 </head>
 <body>
+    <!-- Audio Enable Overlay -->
+    <div class="audio-enable-overlay" id="audioEnableOverlay">
+        <div class="audio-enable-card">
+            <h3><i class="fas fa-music"></i> Enable Audio Experience</h3>
+            <p>This resume features an immersive audio-visual experience with background music. Click below to enable audio and enjoy the full presentation.</p>
+            <button class="enable-audio-btn" id="enableAudioBtn">
+                <i class="fas fa-volume-up"></i>
+                Enable Audio & Continue
+            </button>
+        </div>
+    </div>
+    
     <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
         <div class="loading-spinner"></div>
     </div>
     
@@ -823,10 +894,9 @@
     
     <!-- Video Background -->
     <div class="video-background">
-        <video autoplay muted loop playsinline id="bgVideo">
-            <source src="https://ghostkmr.github.io/sadwap/.mp4" type="video/mp4">
-            <!-- Fallback to a more abstract video -->
+        <video loop playsinline id="bgVideo" muted>
             <source src="https://ghostkmr.github.io/sadwap/shubhbgm.mp4" type="video/mp4">
+            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
         </video>
     </div>
     
@@ -838,7 +908,7 @@
         <button class="audio-toggle" id="audioToggle">
             <i class="fas fa-volume-up"></i>
         </button>
-        <input type="range" class="volume-control" id="volumeControl" min="0" max="1" step="0.1" value="0.3">
+        <input type="range" class="volume-control" id="volumeControl" min="0" max="1" step="0.1" value="0.5">
         <span style="font-size: 0.8rem; color: var(--text-secondary);">Audio</span>
     </div>
     
@@ -866,7 +936,7 @@
                         </div>
                         <div class="contact-item">
                             <i class="fas fa-envelope"></i>
-                            <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="65080a0c0b17040b1f040a57250208040c094b060a08">[email&#160;protected]</a></span>
+                            <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="82efedebecf0e3ecf8e3edb0c2e5efe3ebeeace1edef">[email&#160;protected]</a></span>
                         </div>
                         <div class="contact-item">
                             <i class="fas fa-map-marker-alt"></i>
@@ -1203,28 +1273,65 @@
         </div>
     </div>
 
-    <!-- Hidden Audio Element -->
-    <audio id="backgroundAudio" loop>
-        <source src="https://www.soundjay.com/misc/sounds-1222.mp3" type="audio/mpeg">
-        <source src="https://www.soundjay.com/misc/sounds-1222.wav" type="audio/wav">
-    </audio>
-
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        let bgVideo;
+        let audioEnabled = false;
+
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            initializeParticles();
-            initializeAudio();
-            initializeAnimations();
-            hideLoadingOverlay();
+            bgVideo = document.getElementById('bgVideo');
+            initializeAudioEnableOverlay();
         });
 
-        // Hide loading overlay
-        function hideLoadingOverlay() {
-            setTimeout(() => {
-                const overlay = document.getElementById('loadingOverlay');
+        // Initialize audio enable overlay
+        function initializeAudioEnableOverlay() {
+            const overlay = document.getElementById('audioEnableOverlay');
+            const enableBtn = document.getElementById('enableAudioBtn');
+            
+            enableBtn.addEventListener('click', function() {
+                enableAudioExperience();
                 overlay.style.opacity = '0';
                 setTimeout(() => {
                     overlay.style.display = 'none';
+                    initializeApp();
+                }, 500);
+            });
+        }
+
+        // Enable audio experience
+        function enableAudioExperience() {
+            audioEnabled = true;
+            
+            // Unmute and play video with audio
+            if (bgVideo) {
+                bgVideo.muted = false;
+                bgVideo.volume = 0.5;
+                bgVideo.play().catch(e => {
+                    console.log('Video autoplay failed:', e);
+                    // Fallback: try to play muted
+                    bgVideo.muted = true;
+                    bgVideo.play();
+                });
+            }
+        }
+
+        // Initialize main app
+        function initializeApp() {
+            initializeParticles();
+            initializeAudioControls();
+            initializeAnimations();
+            showLoadingOverlay();
+        }
+
+        // Show loading overlay briefly
+        function showLoadingOverlay() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.display = 'flex';
+            
+            setTimeout(() => {
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
                 }, 500);
             }, 1500);
         }
@@ -1245,37 +1352,30 @@
             }
         }
 
-        // Audio functionality
-        function initializeAudio() {
-            const audio = document.getElementById('backgroundAudio');
+        // Audio controls functionality
+        function initializeAudioControls() {
             const audioToggle = document.getElementById('audioToggle');
             const volumeControl = document.getElementById('volumeControl');
-            let isPlaying = false;
-
+            
             // Set initial volume
-            audio.volume = 0.3;
+            volumeControl.value = 0.5;
 
             audioToggle.addEventListener('click', function() {
-                if (isPlaying) {
-                    audio.pause();
-                    audioToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
-                    isPlaying = false;
-                } else {
-                    audio.play().catch(e => {
-                        console.log('Audio autoplay prevented by browser policy');
-                    });
-                    audioToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
-                    isPlaying = true;
+                if (bgVideo) {
+                    if (bgVideo.muted) {
+                        bgVideo.muted = false;
+                        audioToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
+                    } else {
+                        bgVideo.muted = true;
+                        audioToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                    }
                 }
             });
 
             volumeControl.addEventListener('input', function() {
-                audio.volume = this.value;
-            });
-
-            // Try to autoplay (may be blocked by browser)
-            audio.play().catch(e => {
-                console.log('Audio autoplay prevented by browser policy');
+                if (bgVideo && !bgVideo.muted) {
+                    bgVideo.volume = this.value;
+                }
             });
         }
 
@@ -1316,6 +1416,11 @@
             this.style.display = 'none';
         });
 
+        // Video loaded event
+        document.getElementById('bgVideo').addEventListener('loadeddata', function() {
+            console.log('Video loaded successfully');
+        });
+
         // Smooth scrolling for better UX
         document.documentElement.style.scrollBehavior = 'smooth';
 
@@ -1340,6 +1445,19 @@
             skill.addEventListener('mouseout', function() {
                 this.style.transform = 'translateY(-3px) scale(1)';
             });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Space bar to toggle audio
+            if (e.code === 'Space' && e.target.tagName !== 'INPUT') {
+                e.preventDefault();
+                document.getElementById('audioToggle').click();
+            }
+            // M key to mute/unmute
+            if (e.key === 'm' || e.key === 'M') {
+                document.getElementById('audioToggle').click();
+            }
         });
     </script>
 </body>
