@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,10 +11,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <!-- Animate.css for animations -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- XLSX for Excel export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
     <style>
         :root {
@@ -53,6 +54,7 @@
             background-image: 
                 radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 20%),
                 radial-gradient(circle at 90% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 20%);
+            -webkit-tap-highlight-color: transparent;
         }
 
         .container {
@@ -99,18 +101,29 @@
             border-radius: 3px;
         }
 
+        /* Enhanced Button Styles for Better Responsiveness */
         .btn {
             background: var(--gradient-1);
             color: white;
             border: none;
             margin-bottom: 10px;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 500;
-            border-radius: 10px;
-            padding: 12px 24px;
+            border-radius: 12px;
+            padding: 14px 24px;
             position: relative;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+            cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
+            min-height: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1rem;
+            border: 2px solid transparent;
         }
 
         .btn::before {
@@ -128,9 +141,16 @@
             left: 100%;
         }
 
-        .btn:hover {
+        .btn:hover, .btn:focus {
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+            outline: none;
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+            transition: all 0.1s ease;
         }
 
         .btn-outline {
@@ -140,8 +160,15 @@
             box-shadow: none;
         }
 
-        .btn-outline:hover {
+        .btn-outline:hover, .btn-outline:focus {
             background: rgba(139, 92, 246, 0.1);
+            border-color: var(--primary-color);
+        }
+
+        .btn-sm {
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            min-height: 40px;
         }
 
         .form-label {
@@ -230,39 +257,49 @@
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
         }
 
+        /* Enhanced Notification Icon */
         .notification-icon {
             font-size: 20px;
             color: var(--primary-color);
             position: relative;
             cursor: pointer;
-            transition: all 0.3s ease;
-            width: 44px;
-            height: 44px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 48px;
+            height: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             background-color: rgba(139, 92, 246, 0.1);
             box-shadow: 0 4px 10px rgba(139, 92, 246, 0.2);
+            user-select: none;
+            touch-action: manipulation;
+            border: 2px solid transparent;
         }
 
-        .notification-icon:hover {
+        .notification-icon:hover, .notification-icon:focus {
             background-color: rgba(139, 92, 246, 0.2);
             transform: scale(1.1);
-            box-shadow: 0 6px 15px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+            outline: none;
+        }
+
+        .notification-icon:active {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.25);
         }
 
         .notification-count {
             color: white;
             background: var(--gradient-2);
             border-radius: 50%;
-            font-size: 11px;
+            font-size: 12px;
             position: absolute;
             top: -2px;
             right: -2px;
-            padding: 4px 7px;
+            padding: 4px 8px;
             font-weight: bold;
-            min-width: 20px;
+            min-width: 22px;
             text-align: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
@@ -281,6 +318,7 @@
             gap: 10px;
         }
 
+        /* Enhanced Icon Buttons */
         .icon-btn {
             background-color: rgba(30, 31, 48, 0.7);
             color: var(--text-color);
@@ -289,20 +327,31 @@
             height: 48px;
             text-align: center;
             cursor: pointer;
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 12px;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
+            user-select: none;
+            touch-action: manipulation;
+            min-width: 48px;
+            border: 2px solid transparent;
         }
 
-        .icon-btn:hover {
+        .icon-btn:hover, .icon-btn:focus {
             background-color: rgba(139, 92, 246, 0.1);
             color: var(--primary-color);
             border-color: var(--primary-color);
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.2);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.2);
+            outline: none;
+        }
+
+        .icon-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+            transition: all 0.1s ease;
         }
 
         .icon-btn i {
@@ -326,6 +375,24 @@
         .expiry-date {
             color: var(--text-muted);
             font-size: 0.95rem;
+        }
+
+        .hijri-date {
+            color: var(--info-blue);
+            font-size: 0.85rem;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        .hijri-days-remaining {
+            color: var(--primary-color);
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: rgba(139, 92, 246, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 4px;
         }
 
         .day-of-week {
@@ -454,24 +521,37 @@
             border: 1px solid rgba(139, 92, 246, 0.2);
         }
 
-        /* Toggle button for product list */
+        /* Enhanced Toggle button for product list */
         .toggle-btn {
             background-color: rgba(30, 31, 48, 0.7);
             color: var(--primary-color);
             border: 1px solid var(--border-color);
-            padding: 10px 18px;
-            border-radius: 10px;
+            padding: 12px 20px;
+            border-radius: 12px;
             font-size: 0.9rem;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             gap: 8px;
+            cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
+            min-height: 48px;
+            border: 2px solid transparent;
         }
 
-        .toggle-btn:hover {
+        .toggle-btn:hover, .toggle-btn:focus {
             background-color: rgba(139, 92, 246, 0.1);
             border-color: var(--primary-color);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.2);
+            outline: none;
+        }
+
+        .toggle-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+            transition: all 0.1s ease;
         }
 
         /* Summary Cards */
@@ -539,6 +619,75 @@
             color: white;
             font-size: 24px;
             box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s ease;
+        }
+
+        .app-icon:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.5);
+        }
+
+        /* Modal styling */
+        .modal-content {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            color: var(--text-color);
+        }
+
+        .btn-close {
+            filter: invert(1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-close:hover {
+            transform: rotate(90deg);
+            opacity: 0.8;
+        }
+
+        /* Enhanced Edit button styling */
+        .btn-edit {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--info-blue);
+            border: 2px solid var(--info-blue);
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-edit:hover, .btn-edit:focus {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: var(--info-blue);
+            border-color: var(--info-blue);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.2);
+            outline: none;
+        }
+
+        .btn-edit:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
         }
 
         /* Responsive adjustments */
@@ -554,6 +703,7 @@
             .search-box {
                 border-radius: 10px;
                 margin-bottom: 10px;
+                height: 52px;
             }
             
             .action-buttons {
@@ -564,6 +714,8 @@
             .icon-btn {
                 flex-grow: 1;
                 width: auto;
+                min-height: 52px;
+                height: 52px;
             }
             
             .app-header {
@@ -575,6 +727,83 @@
             .app-title {
                 width: 100%;
                 justify-content: space-between;
+            }
+            
+            .btn {
+                width: 100%;
+                padding: 16px 20px;
+                min-height: 52px;
+            }
+            
+            .toggle-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .notification-icon {
+                width: 52px;
+                height: 52px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .summary-card {
+                padding: 15px;
+            }
+            
+            .result ul li {
+                padding: 15px;
+            }
+            
+            .btn {
+                font-size: 0.95rem;
+                padding: 14px 18px;
+            }
+        }
+
+        /* Enhanced touch targets for mobile */
+        @media (hover: none) and (pointer: coarse) {
+            .btn, .icon-btn, .toggle-btn, .notification-icon, .btn-edit {
+                min-height: 56px;
+                padding: 16px 20px;
+            }
+            
+            .icon-btn {
+                min-width: 56px;
+                min-height: 56px;
+            }
+            
+            .toggle-btn {
+                min-height: 56px;
+            }
+            
+            .form-control {
+                height: 56px;
+                font-size: 16px; /* Prevents iOS zoom */
+            }
+            
+            .search-box {
+                height: 56px;
+                font-size: 16px;
+            }
+            
+            .notification-icon {
+                width: 56px;
+                height: 56px;
+            }
+            
+            /* Larger touch targets */
+            .delete-product, .edit-product {
+                min-width: 48px;
+                min-height: 48px;
             }
         }
 
@@ -625,6 +854,70 @@
         .floating {
             animation: float 5s ease-in-out infinite;
         }
+
+        /* Active state for buttons */
+        .btn:active, .icon-btn:active, .toggle-btn:active, .notification-icon:active, .btn-edit:active {
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        /* Focus styles for accessibility */
+        *:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Disabled button state */
+        .btn:disabled, .icon-btn:disabled, .toggle-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Loading state */
+        .loading {
+            position: relative;
+            color: transparent !important;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Ripple effect for buttons */
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.7);
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 
@@ -633,7 +926,7 @@
         <!-- Header with title, time, and notification -->
         <div class="app-header">
             <div class="app-title">
-                <div class="app-icon floating">
+                <div class="app-icon floating" onclick="document.getElementById('productName').focus()">
                     <i class="fas fa-hourglass-half"></i>
                 </div>
                 <div>
@@ -645,7 +938,7 @@
             </div>
             <div class="d-flex align-items-center">
                 <div class="current-time" id="currentTime"></div>
-                <span class="notification-icon ms-3" id="notificationIcon" onclick="showNotifications()" title="View Expiring Soon">
+                <span class="notification-icon ms-3" id="notificationIcon" onclick="showNotifications()" title="View Expiring Soon" tabindex="0" role="button" aria-label="Notifications">
                     <i class="fas fa-bell"></i>
                     <span class="notification-count" id="notificationCount">0</span>
                 </span>
@@ -709,7 +1002,7 @@
                         <input type="date" class="form-control" id="expiryDate" name="expiryDate" required>
                     </div>
                 </div>
-                <button type="submit" class="btn w-100 mt-3">
+                <button type="submit" class="btn w-100 mt-3 ripple" id="addProductBtn">
                     <i class="fas fa-plus-circle me-2"></i> Add Product
                 </button>
             </form>
@@ -719,23 +1012,23 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div class="d-flex align-items-center">
                 <h5 class="m-0 me-3">Your Products</h5>
-                <button class="toggle-btn" id="toggleListBtn">
+                <button class="toggle-btn" id="toggleListBtn" aria-label="Toggle product list">
                     <i class="fas fa-eye"></i> Show List
                 </button>
             </div>
             <div class="d-flex">
-                <button class="icon-btn me-2" id="exportData" title="Export to Excel">
+                <button class="icon-btn me-2 ripple" id="exportData" title="Export to Excel" aria-label="Export to Excel">
                     <i class="fas fa-file-export"></i>
                 </button>
-                <button class="icon-btn" id="clearData" title="Clear All Data">
+                <button class="icon-btn ripple" id="clearData" title="Clear All Data" aria-label="Clear all data">
                     <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
         </div>
         
         <div class="search-container mb-4">
-            <input type="search" class="form-control search-box" id="searchBox" placeholder="Search products...">
-            <button class="icon-btn ms-2" id="searchButton">
+            <input type="search" class="form-control search-box" id="searchBox" placeholder="Search products..." aria-label="Search products">
+            <button class="icon-btn ms-2 ripple" id="searchButton" aria-label="Search">
                 <i class="fas fa-search"></i>
             </button>
         </div>
@@ -749,18 +1042,176 @@
                 <i class="fas fa-box-open floating"></i>
                 <h4>No Products Found</h4>
                 <p>Add some products to start tracking their expiry dates</p>
-                <button class="btn btn-sm mt-2" onclick="document.getElementById('productName').focus()">
+                <button class="btn btn-sm mt-2 ripple" onclick="document.getElementById('productName').focus()">
                     <i class="fas fa-plus me-2"></i>Add First Product
                 </button>
             </div>
         </div>
     </div>
 
-    <audio id="alertSound" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3" preload="auto"></audio>
+    <!-- Edit Product Modal -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProductForm">
+                        <input type="hidden" id="editProductId">
+                        <div class="mb-3">
+                            <label for="editProductName" class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="editProductName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editExpiryDate" class="form-label">Expiry Date</label>
+                            <input type="date" class="form-control" id="editExpiryDate" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn ripple" id="saveEditBtn" onclick="saveEditedProduct()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="alertSound" preload="auto">
+        <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
+    </audio>
 
     <!-- JavaScript -->
     <script>
+        // Enhanced Hijri date conversion with days remaining calculation
+        function gregorianToHijri(date) {
+            const gYear = date.getFullYear();
+            const gMonth = date.getMonth() + 1;
+            const gDay = date.getDate();
+            
+            // Simple Hijri conversion algorithm (approximation)
+            const julianDay = Math.floor((1461 * (gYear + 4800 + Math.floor((gMonth - 14) / 12))) / 4) +
+                             Math.floor((367 * (gMonth - 2 - 12 * Math.floor((gMonth - 14) / 12))) / 12) -
+                             Math.floor((3 * Math.floor((gYear + 4900 + Math.floor((gMonth - 14) / 12)) / 100)) / 4) +
+                             gDay - 32075;
+            
+            const hijriJD = julianDay - 1948440 + 10632;
+            const l = hijriJD + 68569 + 7;
+            const n = Math.floor((4 * l) / 146097);
+            const i = l - Math.floor((146097 * n + 3) / 4);
+            const j = Math.floor((4000 * (i + 1)) / 1461001);
+            const k = i - Math.floor((1461 * j) / 4) + 31;
+            const m = Math.floor((80 * k) / 2447);
+            const hDay = k - Math.floor((2447 * m) / 80);
+            const l2 = Math.floor(m / 11);
+            const hMonth = m + 2 - 12 * l2;
+            const hYear = 100 * (n - 49) + j + l2;
+            
+            const hijriMonths = [
+                'Muharram', 'Safar', 'Rabi\' al-Awwal', 'Rabi\' al-Thani',
+                'Jumada al-Awwal', 'Jumada al-Thani', 'Rajab', 'Sha\'ban',
+                'Ramadan', 'Shawwal', 'Dhu al-Qi\'dah', 'Dhu al-Hijjah'
+            ];
+            
+            return {
+                day: hDay,
+                month: hijriMonths[hMonth - 1],
+                year: hYear,
+                monthNumber: hMonth,
+                fullDate: `${hDay} ${hijriMonths[hMonth - 1]} ${hYear} AH`
+            };
+        }
+
+        // Calculate Hijri days remaining
+        function calculateHijriDaysRemaining(gregorianDate) {
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            const expiry = new Date(gregorianDate);
+            expiry.setHours(0, 0, 0, 0);
+            
+            // Get Hijri dates for today and expiry
+            const todayHijri = gregorianToHijri(now);
+            const expiryHijri = gregorianToHijri(expiry);
+            
+            // Calculate approximate days difference in Hijri calendar
+            // Note: This is an approximation since Hijri months vary
+            const hijriDaysDiff = Math.round((expiry - now) / (1000 * 60 * 60 * 24) * 0.97);
+            
+            // Convert to Hijri months and days for better display
+            const hijriDays = Math.abs(hijriDaysDiff);
+            
+            if (hijriDaysDiff === 0) {
+                return {
+                    days: 0,
+                    text: 'Today in Hijri',
+                    isPast: false
+                };
+            } else if (hijriDaysDiff < 0) {
+                return {
+                    days: hijriDays,
+                    text: `${hijriDays} Hijri days ago`,
+                    isPast: true
+                };
+            } else {
+                return {
+                    days: hijriDays,
+                    text: `${hijriDays} Hijri days remaining`,
+                    isPast: false
+                };
+            }
+        }
+
+        // Ripple effect for buttons
+        function createRipple(event) {
+            const button = event.currentTarget;
+            const circle = document.createElement("span");
+            const diameter = Math.max(button.clientWidth, button.clientHeight);
+            const radius = diameter / 2;
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${event.clientX - button.getBoundingClientRect().left - radius}px`;
+            circle.style.top = `${event.clientY - button.getBoundingClientRect().top - radius}px`;
+            circle.classList.add("ripple-effect");
+
+            const ripple = button.getElementsByClassName("ripple-effect")[0];
+            if (ripple) {
+                ripple.remove();
+            }
+
+            button.appendChild(circle);
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            // Add ripple effect to all buttons with ripple class
+            const rippleButtons = document.querySelectorAll('.ripple');
+            rippleButtons.forEach(button => {
+                button.addEventListener('click', createRipple);
+            });
+
+            // Add keyboard support for notification icon
+            document.getElementById('notificationIcon').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    showNotifications();
+                }
+            });
+
+            // Add touch feedback for mobile
+            document.querySelectorAll('.btn, .icon-btn, .toggle-btn, .btn-edit').forEach(button => {
+                button.addEventListener('touchstart', function() {
+                    this.classList.add('active');
+                });
+                
+                button.addEventListener('touchend', function() {
+                    this.classList.remove('active');
+                });
+                
+                button.addEventListener('touchcancel', function() {
+                    this.classList.remove('active');
+                });
+            });
+
             // Initialize the app
             loadProductsFromLocalStorage();
             updateNotificationCount();
@@ -774,6 +1225,14 @@
             document.getElementById('searchBox').addEventListener('keyup', searchProducts);
             document.getElementById('searchButton').addEventListener('click', searchProducts);
             document.getElementById('toggleListBtn').addEventListener('click', toggleProductList);
+            
+            // Handle Enter key in search box
+            document.getElementById('searchBox').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchProducts();
+                }
+            });
             
             // Update time every second
             setInterval(updateCurrentTime, 1000);
@@ -789,6 +1248,13 @@
             // Set focus to product name field
             document.getElementById('productName').focus();
             
+            // Set today's date as default expiry date
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 30); // Default to 30 days from now
+            document.getElementById('expiryDate').valueAsDate = tomorrow;
+            document.getElementById('expiryDate').min = today.toISOString().split('T')[0];
+            
             // Initially hide the product list
             document.getElementById('productListContainer').style.display = 'none';
             document.getElementById('toggleListBtn').innerHTML = '<i class="fas fa-eye"></i> Show List';
@@ -796,40 +1262,69 @@
 
         function handleFormSubmit(event) {
             event.preventDefault();
-            const productName = document.getElementById('productName').value.trim();
-            const expiryDateInput = document.getElementById('expiryDate').value;
+            const submitBtn = document.getElementById('addProductBtn');
             
-            if (!productName || !expiryDateInput) {
-                showAlert('Please fill in all fields', 'warning');
-                return;
-            }
+            // Show loading state
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Adding...';
+            submitBtn.disabled = true;
             
-            const expiryDate = new Date(expiryDateInput);
-            if (isNaN(expiryDate.getTime())) {
-                showAlert('Invalid date format', 'warning');
-                return;
-            }
-            
-            const product = {
-                id: Date.now().toString(),
-                name: productName,
-                date: formatDate(expiryDate),
-                expiryDate: expiryDate.toISOString(),
-                daysRemaining: calculateTimeRemaining(expiryDate),
-                dayOfWeek: expiryDate.toLocaleDateString('en-US', { weekday: 'short' }),
-                addedDate: new Date().toISOString()
-            };
-            
-            addProductToList(product);
-            saveProductToLocalStorage(product);
-            updateNotificationCount();
-            updateSummary();
-            document.getElementById('expiryForm').reset();
-            document.getElementById('productName').focus();
-            
-            // Play a confirmation sound
-            playSound();
-            showAlert('Product added successfully!', 'success');
+            setTimeout(() => {
+                const productName = document.getElementById('productName').value.trim();
+                const expiryDateInput = document.getElementById('expiryDate').value;
+                
+                if (!productName || !expiryDateInput) {
+                    showAlert('Please fill in all fields', 'warning');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    return;
+                }
+                
+                const expiryDate = new Date(expiryDateInput);
+                if (isNaN(expiryDate.getTime())) {
+                    showAlert('Invalid date format', 'warning');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    return;
+                }
+                
+                const hijriDate = gregorianToHijri(expiryDate);
+                const hijriDaysRemaining = calculateHijriDaysRemaining(expiryDate);
+                
+                const product = {
+                    id: Date.now().toString(),
+                    name: productName,
+                    date: formatDate(expiryDate),
+                    expiryDate: expiryDate.toISOString(),
+                    hijriDate: hijriDate.fullDate,
+                    hijriDaysRemaining: hijriDaysRemaining,
+                    daysRemaining: calculateTimeRemaining(expiryDate),
+                    dayOfWeek: expiryDate.toLocaleDateString('en-US', { weekday: 'short' }),
+                    addedDate: new Date().toISOString()
+                };
+                
+                addProductToList(product);
+                saveProductToLocalStorage(product);
+                updateNotificationCount();
+                updateSummary();
+                document.getElementById('expiryForm').reset();
+                
+                // Reset date to default (30 days from today)
+                const today = new Date();
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 30);
+                document.getElementById('expiryDate').valueAsDate = tomorrow;
+                
+                document.getElementById('productName').focus();
+                
+                // Play a confirmation sound
+                playSound();
+                showAlert('Product added successfully!', 'success');
+                
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 500); // Simulate network delay for better UX
         }
 
         function formatDate(date) {
@@ -876,9 +1371,20 @@
             
             productListItem.id = `product-${product.id}`;
             productListItem.className = statusClass;
+            
+            // Format Hijri days remaining text
+            let hijriDaysText = '';
+            if (product.hijriDaysRemaining) {
+                hijriDaysText = `
+                    <div class="hijri-days-remaining">
+                        <i class="fas fa-calendar-alt me-1"></i>${product.hijriDaysRemaining.text}
+                    </div>
+                `;
+            }
+            
             productListItem.innerHTML = `
                 <div class="d-flex justify-content-between align-items-start">
-                    <div>
+                    <div style="flex-grow: 1;">
                         <div class="d-flex align-items-center mb-1">
                             <span class="status-indicator ${statusIndicator}"></span>
                             <span class="product-name">${product.name}</span>
@@ -890,11 +1396,18 @@
                             </span>
                             <span class="day-of-week">${product.dayOfWeek}</span>
                         </div>
+                        <div class="hijri-date">
+                            <i class="fas fa-moon me-1"></i>${product.hijriDate}
+                        </div>
+                        ${hijriDaysText}
                         <div class="countdown mt-2" id="countdown-${product.id}"></div>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <span class="current-time me-3" id="item-time-${product.id}"></span>
-                        <button class="icon-btn btn-sm delete-product" data-id="${product.id}" title="Delete">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="current-time" id="item-time-${product.id}"></span>
+                        <button class="icon-btn btn-sm btn-edit edit-product ripple" data-id="${product.id}" title="Edit" aria-label="Edit ${product.name}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="icon-btn btn-sm delete-product ripple" data-id="${product.id}" title="Delete" aria-label="Delete ${product.name}">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -902,6 +1415,11 @@
             `;
             
             productList.appendChild(productListItem);
+            
+            // Add event listener to edit button
+            productListItem.querySelector('.edit-product').addEventListener('click', function() {
+                editProduct(product.id);
+            });
             
             // Add event listener to delete button
             productListItem.querySelector('.delete-product').addEventListener('click', function() {
@@ -915,9 +1433,109 @@
             updateItemTime(`item-time-${product.id}`);
         }
 
+        function editProduct(productId) {
+            const products = getProductsFromStorage();
+            const product = products.find(p => p.id === productId);
+            
+            if (!product) return;
+            
+            // Populate modal with product data
+            document.getElementById('editProductId').value = product.id;
+            document.getElementById('editProductName').value = product.name;
+            
+            // Convert ISO date to YYYY-MM-DD format for input
+            const expiryDate = new Date(product.expiryDate);
+            const dateString = expiryDate.toISOString().split('T')[0];
+            document.getElementById('editExpiryDate').value = dateString;
+            
+            // Set minimum date to today
+            const today = new Date();
+            document.getElementById('editExpiryDate').min = today.toISOString().split('T')[0];
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('editProductModal'));
+            modal.show();
+            
+            // Focus on the first input
+            setTimeout(() => {
+                document.getElementById('editProductName').focus();
+            }, 500);
+        }
+
+        function saveEditedProduct() {
+            const saveBtn = document.getElementById('saveEditBtn');
+            const originalText = saveBtn.innerHTML;
+            
+            // Show loading state
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Saving...';
+            saveBtn.disabled = true;
+            
+            setTimeout(() => {
+                const productId = document.getElementById('editProductId').value;
+                const newName = document.getElementById('editProductName').value.trim();
+                const newExpiryDate = document.getElementById('editExpiryDate').value;
+                
+                if (!newName || !newExpiryDate) {
+                    showAlert('Please fill in all fields', 'warning');
+                    saveBtn.innerHTML = originalText;
+                    saveBtn.disabled = false;
+                    return;
+                }
+                
+                const expiryDate = new Date(newExpiryDate);
+                if (isNaN(expiryDate.getTime())) {
+                    showAlert('Invalid date format', 'warning');
+                    saveBtn.innerHTML = originalText;
+                    saveBtn.disabled = false;
+                    return;
+                }
+                
+                // Update product in localStorage
+                const products = getProductsFromStorage();
+                const productIndex = products.findIndex(p => p.id === productId);
+                
+                if (productIndex !== -1) {
+                    const hijriDate = gregorianToHijri(expiryDate);
+                    const hijriDaysRemaining = calculateHijriDaysRemaining(expiryDate);
+                    
+                    products[productIndex].name = newName;
+                    products[productIndex].date = formatDate(expiryDate);
+                    products[productIndex].expiryDate = expiryDate.toISOString();
+                    products[productIndex].hijriDate = hijriDate.fullDate;
+                    products[productIndex].hijriDaysRemaining = hijriDaysRemaining;
+                    products[productIndex].daysRemaining = calculateTimeRemaining(expiryDate);
+                    products[productIndex].dayOfWeek = expiryDate.toLocaleDateString('en-US', { weekday: 'short' });
+                    
+                    localStorage.setItem('products', JSON.stringify(products));
+                    
+                    // Remove old product from DOM
+                    const element = document.getElementById(`product-${productId}`);
+                    if (element) {
+                        element.remove();
+                    }
+                    
+                    // Add updated product to DOM
+                    addProductToList(products[productIndex]);
+                    
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editProductModal'));
+                    modal.hide();
+                    
+                    updateNotificationCount();
+                    updateSummary();
+                    showAlert('Product updated successfully!', 'success');
+                    playSound();
+                }
+                
+                // Reset button
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            }, 500);
+        }
+
         function deleteProduct(productId, productName) {
             if (confirm(`Delete "${productName}"? This action cannot be undone.`)) {
-                // Remove from DOM
+                // Remove from DOM with animation
                 const element = document.getElementById(`product-${productId}`);
                 if (element) {
                     element.classList.add('animate__animated', 'animate__fadeOut');
@@ -960,8 +1578,11 @@
             products.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
             
             products.forEach(product => {
-                // Recalculate days remaining based on current date
+                // Recalculate days remaining and Hijri date based on current date
                 product.daysRemaining = calculateTimeRemaining(new Date(product.expiryDate));
+                const hijriDate = gregorianToHijri(new Date(product.expiryDate));
+                product.hijriDate = hijriDate.fullDate;
+                product.hijriDaysRemaining = calculateHijriDaysRemaining(product.expiryDate);
                 addProductToList(product);
             });
             
@@ -995,14 +1616,15 @@
                 const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
                 
                 let statusText = '';
                 if (days < 0) {
                     statusText = 'Expired';
                 } else if (days === 0) {
-                    statusText = `Expires today in ${hours}h ${minutes}m`;
+                    statusText = `Expires today in ${hours}h ${minutes}m ${seconds}s`;
                 } else if (days <= 7) {
-                    statusText = `${days} day${days !== 1 ? 's' : ''} remaining`;
+                    statusText = `${days} day${days !== 1 ? 's' : ''} ${hours}h ${minutes}m remaining`;
                 } else {
                     statusText = `Expires in ${days} days`;
                 }
@@ -1015,7 +1637,7 @@
             }
             
             updateCountdown();
-            setInterval(updateCountdown, 60000); // Update every minute
+            setInterval(updateCountdown, 1000); // Update every second for live countdown
         }
 
         function formatRelativeTime(date) {
@@ -1028,33 +1650,50 @@
         }
 
         function exportToExcel() {
-            const products = getProductsFromStorage();
-            if (products.length === 0) {
-                showAlert('No products to export', 'warning');
-                return;
-            }
+            const exportBtn = document.getElementById('exportData');
+            const originalText = exportBtn.innerHTML;
             
-            // Format data for export
-            const exportData = products.map(product => {
-                const status = product.daysRemaining <= 0 ? 'Expired' : 
-                              product.daysRemaining <= 7 ? 'Expiring Soon' : 'Good';
+            // Show loading state
+            exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            exportBtn.disabled = true;
+            
+            setTimeout(() => {
+                const products = getProductsFromStorage();
+                if (products.length === 0) {
+                    showAlert('No products to export', 'warning');
+                    exportBtn.innerHTML = originalText;
+                    exportBtn.disabled = false;
+                    return;
+                }
                 
-                return {
-                    'Product Name': product.name,
-                    'Expiry Date': product.date,
-                    'Day of Week': product.dayOfWeek,
-                    'Days Remaining': product.daysRemaining,
-                    'Status': status,
-                    'Added Date': formatDate(new Date(product.addedDate))
-                };
-            });
-            
-            const worksheet = XLSX.utils.json_to_sheet(exportData);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Product Expiry");
-            XLSX.writeFile(workbook, 'Product_Expiry_Report.xlsx');
-            
-            showAlert('Export completed successfully', 'success');
+                // Format data for export
+                const exportData = products.map(product => {
+                    const status = product.daysRemaining <= 0 ? 'Expired' : 
+                                  product.daysRemaining <= 7 ? 'Expiring Soon' : 'Good';
+                    
+                    return {
+                        'Product Name': product.name,
+                        'Expiry Date (Gregorian)': product.date,
+                        'Expiry Date (Hijri)': product.hijriDate,
+                        'Hijri Days Remaining': product.hijriDaysRemaining ? product.hijriDaysRemaining.text : 'N/A',
+                        'Day of Week': product.dayOfWeek,
+                        'Days Remaining': product.daysRemaining,
+                        'Status': status,
+                        'Added Date': formatDate(new Date(product.addedDate))
+                    };
+                });
+                
+                const worksheet = XLSX.utils.json_to_sheet(exportData);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Product Expiry");
+                XLSX.writeFile(workbook, 'Product_Expiry_Report.xlsx');
+                
+                showAlert('Export completed successfully', 'success');
+                
+                // Reset button
+                exportBtn.innerHTML = originalText;
+                exportBtn.disabled = false;
+            }, 1000);
         }
 
         function searchProducts() {
@@ -1065,8 +1704,9 @@
             for (let item of productItems) {
                 const productName = item.querySelector('.product-name').textContent.toLowerCase();
                 const expiryDate = item.querySelector('.expiry-date').textContent.toLowerCase();
+                const hijriDate = item.querySelector('.hijri-date').textContent.toLowerCase();
                 
-                if (productName.includes(query) || expiryDate.includes(query)) {
+                if (productName.includes(query) || expiryDate.includes(query) || hijriDate.includes(query)) {
                     item.style.display = 'flex';
                     foundItems++;
                 } else {
@@ -1128,6 +1768,9 @@
                 return;
             }
             
+            // Play sound alert
+            playSound();
+            
             let notificationText = '<div class="notification-list">';
             notificationText += '<h6 class="mb-3">Expiring Products</h6>';
             
@@ -1146,13 +1789,17 @@
                     statusClass = 'text-warning';
                 }
                 
+                const hijriDaysText = product.hijriDaysRemaining ? 
+                    `<small class="text-muted d-block">${product.hijriDaysRemaining.text}</small>` : '';
+                
                 notificationText += `
-                    <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex justify-content-between align-items-center mb-2 p-2" style="background: rgba(30, 31, 48, 0.5); border-radius: 8px;">
                         <div>
                             ${icon}
                             <span style="color: var(--text-color);">${product.name}</span>
+                            ${hijriDaysText}
                         </div>
-                        <div>
+                        <div class="text-end">
                             <small style="color: var(--text-muted);">${product.date}</small>
                             <span class="badge ${daysRemaining <= 0 ? 'badge-critical' : 'badge-warning'} ms-2">
                                 ${daysRemaining <= 0 ? 'EXPIRED' : daysRemaining + 'd'}
@@ -1184,12 +1831,12 @@
                     <h5 class="m-0" style="color: var(--primary-color);">
                         <i class="fas fa-bell me-2"></i>Alerts
                     </h5>
-                    <button class="icon-btn btn-sm close-popup">
+                    <button class="icon-btn btn-sm close-popup ripple" aria-label="Close">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
                 ${notificationText}
-                <button class="btn w-100 mt-3 close-popup">
+                <button class="btn w-100 mt-3 close-popup ripple">
                     <i class="fas fa-check me-2"></i>Got it
                 </button>
             `;
@@ -1220,24 +1867,56 @@
                 btn.addEventListener('click', closePopup);
             });
             
+            // Close on overlay click
+            overlay.addEventListener('click', closePopup);
+            
+            // Add keyboard support
+            function handleKeyDown(e) {
+                if (e.key === 'Escape') {
+                    closePopup();
+                }
+            }
+            
+            document.addEventListener('keydown', handleKeyDown);
+            
+            // Clean up event listener when popup closes
+            const originalClosePopup = closePopup;
+            closePopup = function() {
+                document.removeEventListener('keydown', handleKeyDown);
+                originalClosePopup();
+            };
+            
             // Add to DOM
             document.body.appendChild(overlay);
             document.body.appendChild(notificationPopup);
             
-            // Play alert sound if there are critical items
-            if (criticalProducts.length > 0) {
-                playSound();
-            }
+            // Focus on close button for accessibility
+            setTimeout(() => {
+                notificationPopup.querySelector('.close-popup').focus();
+            }, 100);
         }
 
         function clearAllData() {
             if (confirm('Are you sure you want to delete ALL product data? This cannot be undone.')) {
-                localStorage.removeItem('products');
-                document.getElementById('productList').innerHTML = '';
-                updateNotificationCount();
-                updateSummary();
-                checkEmptyState();
-                showAlert('All data cleared', 'success');
+                const clearBtn = document.getElementById('clearData');
+                const originalText = clearBtn.innerHTML;
+                
+                // Show loading state
+                clearBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                clearBtn.disabled = true;
+                
+                setTimeout(() => {
+                    localStorage.removeItem('products');
+                    document.getElementById('productList').innerHTML = '';
+                    updateNotificationCount();
+                    updateSummary();
+                    checkEmptyState();
+                    showAlert('All data cleared', 'success');
+                    
+                    // Reset button
+                    clearBtn.innerHTML = originalText;
+                    clearBtn.disabled = false;
+                }, 500);
             }
         }
 
@@ -1258,7 +1937,7 @@
                         <i class="fas fa-box-open floating"></i>
                         <h4>No Products Found</h4>
                         <p>Add some products to start tracking their expiry dates</p>
-                        <button class="btn btn-sm mt-2" onclick="document.getElementById('productName').focus()">
+                        <button class="btn btn-sm mt-2 ripple" onclick="document.getElementById('productName').focus()">
                             <i class="fas fa-plus me-2"></i>Add First Product
                         </button>
                     `;
@@ -1280,7 +1959,7 @@
                 updateSummary();
                 
                 // Only show alert if the page isn't currently visible
-                if (document.hidden) {
+                if (document.hidden && Notification.permission === 'granted') {
                     const notification = new Notification('Expiry Tracker Alert', {
                         body: `${expiringSoon.length} product(s) expiring soon!`,
                         icon: 'https://cdn-icons-png.flaticon.com/512/2232/2232688.png'
